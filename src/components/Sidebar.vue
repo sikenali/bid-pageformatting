@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   RiLayout2Line,
   RiFileTextLine,
@@ -7,8 +8,11 @@ import {
   RiBarChart2Line,
   RiListCheck,
   RiLayoutTop2Line,
-  RiFileEditLine
+  RiFileEditLine,
+  RiBookmark3Line
 } from '@remixicon/vue'
+
+const router = useRouter()
 
 const emit = defineEmits(['tab-change'])
 const activeTab = ref('page')
@@ -79,6 +83,20 @@ const selectTab = (tabId) => {
             <div class="text-[11px] text-brown-muted">Page Number</div>
           </div>
         </div>
+      </button>
+    </div>
+
+    <div class="px-4 pb-4 flex flex-col gap-3">
+      <button class="w-full flex items-center justify-center gap-2 py-3 bg-cream-dark border border-gold-dark rounded-xl text-[14px] font-semibold text-brown">
+        <RiBookmark3Line size="18" color="#C8A45C" />
+        保存到模板
+      </button>
+      <button
+        class="w-full flex items-center justify-center gap-2 py-3 bg-cinnabar rounded-xl text-[14px] font-semibold text-white"
+        @click="router.push('/compare')"
+      >
+        <RiFileEditLine size="18" color="white" />
+        一键修改
       </button>
     </div>
   </aside>

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { RiArrowLeftSLine, RiSearchLine, RiBookOpenLine, RiFileTextLine, RiBuildingLine, RiBook2Line, RiBarChart2Line, RiCheckLine, RiFileList3Line } from '@remixicon/vue'
+import { RiArrowLeftSLine, RiSearchLine, RiBookOpenLine, RiFileTextLine, RiBuildingLine, RiBook2Line, RiBarChart2Line, RiCheckLine, RiFileList3Line, RiCalendarLine, RiFilePaper2Line } from '@remixicon/vue'
 
 const router = useRouter()
 const activeCategory = ref('all')
@@ -15,20 +15,27 @@ const categoryLabels = {
 }
 
 const books = [
-  { id: 1, name: 'GB/T 国家标准格式', category: 'official', selected: true, spineColor: 'bg-cinnabar', author: '国务院', desc: '符合国家公文标准格式' },
-  { id: 2, name: '党政机关公文格式', category: 'official', selected: false, spineColor: 'bg-brown-muted', author: '中共中央', desc: '党政机关公文标准' },
-  { id: 3, name: '学术论文模板', category: 'academic', selected: false, spineColor: 'bg-jade-light', author: '教育部', desc: '符合学术出版规范' },
-  { id: 4, name: '企业报告模板', category: 'business', selected: false, spineColor: 'bg-gold-dark', author: '商务部', desc: '企业通用文档模板' },
-  { id: 5, name: '创意设计模板', category: 'creative', selected: false, spineColor: 'bg-cloud-blue', author: '文化部', desc: '创意类文档排版' },
+  {
+    id: 1, name: 'GB/T 国标', category: 'official', selected: true,
+    spineColor: 'bg-cinnabar', icon: RiFileList3Line, iconBg: 'bg-cream-darker', iconColor: '#C23B22',
+    author: '国务院', desc1: 'GB/T 9704-2012', desc2: '党政机关公文标准格式'
+  },
+  {
+    id: 2, name: '政府公文', category: 'official', selected: false,
+    spineColor: 'bg-gold-dark', icon: RiBuildingLine, iconBg: 'bg-cream-darker', iconColor: '#C8A45C',
+    author: '中共中央', desc1: '行政专用格式', desc2: '适用于政府机关正式公文'
+  },
+  {
+    id: 3, name: '红头文件', category: 'official', selected: false,
+    spineColor: 'bg-cinnabar', icon: RiFilePaper2Line, iconBg: 'bg-diff-red-bg', iconColor: '#C23B22',
+    author: '党委系统', desc1: '党委专用格式', desc2: '大红色文件头 + 发文字号'
+  },
+  {
+    id: 4, name: '会议纪要', category: 'official', selected: false,
+    spineColor: 'bg-cloud-blue', icon: RiCalendarLine, iconBg: 'bg-blue-50', iconColor: '#5B7DB1',
+    author: '政务部门', desc1: '政务会议专用', desc2: '标准会议纪要排版格式'
+  },
 ]
-
-const bookIcons = {
-  1: RiFileList3Line,
-  2: RiBuildingLine,
-  3: RiBook2Line,
-  4: RiBarChart2Line,
-  5: RiFileTextLine
-}
 
 const sectionMeta = {
   official: { label: '公文格式', subtitle: '符合国家公文标准', barColor: 'bg-cinnabar' },
@@ -77,7 +84,7 @@ const currentTemplate = computed(() => {
           </div>
           <div class="flex items-center gap-2 px-4 py-2 bg-cream border border-tan-border rounded-lg">
             <RiSearchLine size="16" color="#8B7355" />
-            <span class="text-[13px] text-[#B8A88A]">搜索模板...</span>
+            <span class="text-[13px] text-brown-muted">搜索模板...</span>
           </div>
         </div>
       </div>
@@ -102,34 +109,39 @@ const currentTemplate = computed(() => {
               <div
                 v-for="book in books.filter(b => b.category === cat)"
                 :key="book.id"
-                class="w-[180px] flex-shrink-0 transition-all cursor-pointer"
-                :class="book.selected ? 'scale-105' : 'opacity-80 hover:opacity-100'"
+                class="w-[180px] flex-shrink-0"
               >
                 <div
-                  class="w-full h-[240px] rounded-lg overflow-hidden shadow-lg transition-all"
-                  :class="book.selected ? 'ring-2 ring-cinnabar' : ''"
+                  class="w-full h-[240px] rounded-lg overflow-hidden transition-all"
+                  :class="book.selected
+                    ? 'ring-[2.7px] ring-cinnabar shadow-[0_6px_20px_rgba(196,58,49,0.25)]'
+                    : 'border-[0.7px] border-tan-border shadow-[0_4px_16px_rgba(0,0,0,0.08)]'"
                 >
                   <div class="h-2" :class="book.spineColor"></div>
-                  <div class="p-4 bg-white h-[228px] flex flex-col">
-                    <div class="w-10 h-10 rounded-lg bg-cream-darker flex items-center justify-center mb-2">
-                      <component :is="bookIcons[book.id]" size="18" color="#8B7355" />
+                  <div class="bg-white h-[224px] flex flex-col items-center justify-center px-6">
+                    <div class="w-14 h-14 rounded-full flex items-center justify-center" :class="book.iconBg">
+                      <component :is="book.icon" size="28" :color="book.iconColor" />
                     </div>
-                    <h3 class="text-[15px] font-bold text-brown-dark mb-1">{{ book.name }}</h3>
-                    <p class="text-[11px] text-brown-muted mb-3">{{ book.author }}</p>
-                    <p class="text-[12px] text-brown flex-1 leading-relaxed">{{ book.desc }}</p>
-                    <div
-                      v-if="book.selected"
-                      class="mt-auto py-1.5 text-center text-[12px] font-semibold text-white bg-cinnabar rounded"
-                    >
-                      已选择
-                    </div>
-                    <div
-                      v-else
-                      class="mt-auto py-1.5 text-center text-[12px] font-medium text-brown-muted bg-cream-dark rounded"
-                    >
-                      选择此模板
+                    <div class="mt-4 text-center">
+                      <div class="text-[16px] font-bold text-brown-dark">{{ book.name }}</div>
+                      <div class="h-1"></div>
+                      <div class="text-[11px] text-brown-muted">{{ book.desc1 }}</div>
+                      <div class="h-2"></div>
+                      <div class="text-[12px] text-brown leading-relaxed">{{ book.desc2 }}</div>
                     </div>
                   </div>
+                  <div class="h-2" :class="book.spineColor"></div>
+                </div>
+                <div class="h-3"></div>
+                <div v-if="book.selected" class="flex items-center justify-center gap-2">
+                  <div class="w-5 h-5 rounded bg-cinnabar flex items-center justify-center">
+                    <RiCheckLine size="14" color="white" />
+                  </div>
+                  <span class="text-[13px] font-semibold text-cinnabar">已选择</span>
+                </div>
+                <div v-else class="flex items-center justify-center gap-2">
+                  <div class="w-[21px] h-5 rounded border-[0.7px] border-tan-dark bg-cream-darker"></div>
+                  <span class="text-[13px] font-medium text-brown-muted">选择</span>
                 </div>
               </div>
             </div>
