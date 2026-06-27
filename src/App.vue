@@ -8,7 +8,7 @@ const { currentThemeClasses } = useSettings()
 <template>
   <div :class="[currentThemeClasses.bg, currentThemeClasses.text, 'min-h-screen', 'font-songti']">
     <Navbar />
-    <main class="pt-16" :class="currentThemeClasses.bg">
+    <main :class="currentThemeClasses.bg">
       <router-view />
     </main>
   </div>
