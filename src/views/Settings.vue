@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSettings } from '../composables/useSettings'
-import { RiPaletteLine, RiBookmark3Line, RiEyeLine, RiCheckLine, RiSaveLine, RiMagicLine, RiFileTextLine, RiBuildingLine, RiBook2Line, RiBarChart2Line, RiFileEditLine, RiSettings3Line } from '@remixicon/vue'
+import { RiPaletteLine, RiBookmark3Line, RiEyeLine, RiCheckLine, RiFileTextLine, RiBuildingLine, RiBook2Line, RiBarChart2Line, RiFileEditLine, RiSettings3Line } from '@remixicon/vue'
 
 const router = useRouter()
 const { theme: currentTheme, template: currentTemplate, annotationEnabled, highlightEnabled, setTheme, setTemplate, toggleAnnotation, toggleHighlight } = useSettings()
@@ -23,8 +23,8 @@ const templates = [
 ]
 
 const displayOptions = [
-  { id: 'annotation', name: '以批注形式展示修改', desc: '开启后，排版修改将以批注气泡形式显示在文档右侧' },
   { id: 'highlight', name: '高亮修改处', desc: '开启后，页面中将高亮标记所有被修改的内容' },
+  { id: 'annotation', name: '以批注形式展示修改', desc: '开启后，排版修改将以批注气泡形式显示在文档右侧' },
 ]
 </script>
 
@@ -84,35 +84,38 @@ const displayOptions = [
         </button>
       </div>
 
-      <div class="px-4 py-5 space-y-3">
-        <button class="w-full flex items-center justify-center gap-2 py-3 bg-cream-dark border border-gold-dark/50 rounded-xl text-brown font-semibold text-[14px]">
-          <RiSaveLine size="18" color="#C8A45C" />
-          保存到模板
-        </button>
-        <button class="w-full flex items-center justify-center gap-2 py-3 bg-cinnabar text-white rounded-xl font-semibold text-[14px]" @click="router.push('/compare')">
-          <RiMagicLine size="18" color="white" />
-          一键修改
-        </button>
-      </div>
     </div>
 
     <div class="flex-1 bg-warm-gray flex flex-col">
-      <div class="px-8 py-5 bg-parchment flex items-center gap-3">
-        <div
-          class="w-10 h-10 rounded-lg flex items-center justify-center"
-          :class="activeSection === 'theme' ? 'bg-cinnabar' : activeSection === 'template' ? 'bg-gold-dark' : 'bg-jade-light'"
-        >
-          <RiPaletteLine v-if="activeSection === 'theme'" size="20" color="white" />
-          <RiBookmark3Line v-else-if="activeSection === 'template'" size="20" color="white" />
-          <RiEyeLine v-else size="20" color="white" />
+      <div class="px-8 py-5 bg-parchment flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-lg flex items-center justify-center"
+            :class="activeSection === 'theme' ? 'bg-cinnabar' : activeSection === 'template' ? 'bg-gold-dark' : 'bg-jade-light'"
+          >
+            <RiPaletteLine v-if="activeSection === 'theme'" size="20" color="white" />
+            <RiBookmark3Line v-else-if="activeSection === 'template'" size="20" color="white" />
+            <RiEyeLine v-else size="20" color="white" />
+          </div>
+          <div>
+            <h2 class="text-[18px] font-bold text-brown-dark">
+              {{ activeSection === 'theme' ? '主题设置' : activeSection === 'template' ? '内置模板' : '显示模式' }}
+            </h2>
+            <p class="text-[12px] text-brown-muted">
+              {{ activeSection === 'theme' ? '选择界面配色方案' : activeSection === 'template' ? '选择文档排版标准模板' : '控制修改建议的展示方式' }}
+            </p>
+          </div>
         </div>
-        <div>
-          <h2 class="text-[18px] font-bold text-brown-dark">
-            {{ activeSection === 'theme' ? '主题设置' : activeSection === 'template' ? '内置模板' : '显示模式' }}
-          </h2>
-          <p class="text-[12px] text-brown-muted">
-            {{ activeSection === 'theme' ? '选择界面配色方案' : activeSection === 'template' ? '选择文档排版标准模板' : '控制修改建议的展示方式' }}
-          </p>
+        <div class="flex items-center gap-3">
+          <button class="px-6 py-3 bg-cream-dark border border-tan-border rounded-xl text-[14px] font-medium text-brown">取消</button>
+          <button
+            class="flex items-center gap-2 px-6 py-3 text-white rounded-xl text-[14px] font-semibold"
+            :class="activeSection === 'template' ? 'bg-gold-dark' : activeSection === 'display' ? 'bg-jade-light' : 'bg-cinnabar'"
+            @click="router.back()"
+          >
+            <RiCheckLine size="16" color="white" />
+            <span>应用设置</span>
+          </button>
         </div>
       </div>
 
@@ -202,18 +205,31 @@ const displayOptions = [
               </button>
             </div>
 
-            <div class="bg-white rounded-xl border border-tan-light overflow-hidden">
-              <div class="flex h-[140px]">
-                <div class="flex-1 p-5 space-y-3">
-                  <div class="h-3 w-3/4 bg-cream-dark rounded"></div>
-                  <div class="h-3 w-full bg-cream-dark rounded"></div>
-                  <div class="h-3 w-5/6 bg-cream-dark rounded"></div>
-                  <div class="h-3 w-2/3 bg-cream-dark rounded"></div>
+            <div v-if="annotationEnabled" class="bg-white rounded-xl border border-tan-light overflow-hidden">
+              <div class="flex p-6">
+                <div class="flex-1">
+                  <div class="text-[13px] text-brown leading-[1.8]">
+                    <p class="mb-4">2024年是公司发展历程中具有里程碑意义的一年。在董事会的正确领导下，全体员工团结一心，攻坚克难，圆满完成了年度各项目标任务。</p>
+                    <p class="mb-4">市场拓展方面，我们新开拓了华东、华南两大区域市场，新增客户超过200家，客户满意度达到96.8%。</p>
+                    <p>技术研发方面，公司全年申请专利56项，获得授权32项，其中发明专利18项。</p>
+                  </div>
                 </div>
-                <div class="w-12 bg-parchment border-l border-tan-light flex flex-col items-center justify-center gap-3">
-                  <div class="w-2 h-6 rounded-full bg-gold-dark"></div>
-                  <div class="w-2 h-6 rounded-full bg-jade-light"></div>
-                  <div class="w-2 h-6 rounded-full bg-cinnabar"></div>
+                <div class="w-6 shrink-0"></div>
+                <div class="w-[2px] shrink-0 bg-tan-border"></div>
+                <div class="w-6 shrink-0"></div>
+                <div class="w-[220px] shrink-0 space-y-3">
+                  <div class="rounded-lg p-3" style="border-width: 2.7px; border-style: solid; background: rgba(200,164,92,0.1); border-color: #C8A45C;">
+                    <div class="text-[12px] font-semibold text-gold-dark">格式建议</div>
+                    <p class="text-[12px] text-brown leading-relaxed mt-1">建议首行缩进2字符，符合公文排版规范</p>
+                  </div>
+                  <div class="rounded-lg p-3" style="border-width: 2.7px; border-style: solid; background: rgba(91,140,90,0.1); border-color: #5B8C5A;">
+                    <div class="text-[12px] font-semibold text-jade-light">排版优化</div>
+                    <p class="text-[12px] text-brown leading-relaxed mt-1">行距已调整为28磅固定值</p>
+                  </div>
+                  <div class="rounded-lg p-3" style="border-width: 2.7px; border-style: solid; background: rgba(107,140,174,0.1); border-color: #6B8CAE;">
+                    <div class="text-[12px] font-semibold text-cloud-blue">字体建议</div>
+                    <p class="text-[12px] text-brown leading-relaxed mt-1">正文建议使用仿宋_GB2312</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -221,16 +237,7 @@ const displayOptions = [
         </div>
       </div>
 
-      <div class="px-8 py-5 bg-parchment border-t border-tan-border flex items-center justify-end gap-3">
-        <button class="px-6 py-3 bg-cream-dark border border-tan-border rounded-xl text-[14px] font-medium text-brown">取消</button>
-        <button
-          class="flex items-center gap-2 px-6 py-3 bg-cinnabar text-white rounded-xl text-[14px] font-semibold"
-          @click="router.push('/editor')"
-        >
-          <RiCheckLine size="16" color="white" />
-          <span>应用设置</span>
-        </button>
-      </div>
+
     </div>
   </div>
 </template>
