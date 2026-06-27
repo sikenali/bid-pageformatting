@@ -1,6 +1,11 @@
 <script setup>
+import { computed } from 'vue'
 import Sidebar from '../components/Sidebar.vue'
 import DocumentPreview from '../components/DocumentPreview.vue'
+import { useDocument } from '../composables/useDocument'
+
+const { getFile } = useDocument()
+const currentFile = computed(() => getFile())
 </script>
 
 <template>
@@ -8,7 +13,7 @@ import DocumentPreview from '../components/DocumentPreview.vue'
     <Sidebar />
     <div class="flex-1 flex flex-col">
       <div class="flex-1 p-4">
-        <DocumentPreview />
+        <DocumentPreview :file="currentFile" />
       </div>
     </div>
     <div class="w-80 bg-white/80 backdrop-blur-sm border-l border-gold/30 p-6 overflow-y-auto">

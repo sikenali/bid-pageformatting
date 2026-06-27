@@ -1,9 +1,46 @@
 <script setup>
+import { ref, watch, computed, onUnmounted } from 'vue'
+import { Docx } from 'vue-office'
+
 const props = defineProps({
   file: {
     type: File,
     default: null,
   },
+})
+
+const previewComponent = ref(null)
+const previewUrl = ref(null)
+
+// 计算文件扩展名
+const fileExtension = computed(() => {
+  if (!props.file) return ''
+  return props.file.name.split('.').pop().toLowerCase()
+})
+
+// 监听文件变化
+watch(() => props.file, (newFile) => {
+  if (!newFile) {
+    previewComponent.value = null
+    previewUrl.value = null
+    return
+  }
+
+  const ext = fileExtension.value
+  
+  // 根据文件类型设置对应的预览组件
+  if (ext === 'docx') {
+    previewComponent.value = Docx
+    // 创建 Blob URL 用于预览
+    previewUrl.value = URL.createObjectURL(newFile)
+  }
+}, { immediate: true })
+
+// 组件卸载时清理
+onUnmounted(() => {
+  if (previewUrl.value) {
+    URL.revokeObjectURL(previewUrl.value)
+  }
 })
 </script>
 
@@ -16,14 +53,28 @@ const props = defineProps({
       <div class="mb-4 pb-4 border-b border-gold/30">
         <h3 class="font-calligraphy text-2xl text-cinnabar">{{ file.name }}</h3>
       </div>
-      <div class="prose prose-slate max-w-none">
-        <p class="font-songti leading-relaxed text-justify">
-          文档预览区域（vue-office 将在实际使用时集成）
-        </p>
-        <p class="font-songti leading-relaxed text-justify mt-4">
-          这里将显示 Office 文档的排版效果，支持 Word、PDF、Excel、PPT 等格式。
-        </p>
+      
+      <!-- DOCX 预览 -->
+      <div v-if="fileExtension === 'docx' && previewComponent" class="doc-preview">
+        <component
+          :is="previewComponent"
+          :src="previewUrl"
+          class="w-full"
+          @rendered="console.log('文档预览渲染完成')"
+        />
+      </div>
+
+      <!-- 不支持的格式提示 -->
+      <div v-else-if="file && !previewComponent" class="text-center py-12 text-ink-black/50 font-xiaowei">
+        <p class="text-lg mb-2">暂不支持预览此格式</p>
+        <p class="text-sm">当前仅支持 DOCX 格式预览</p>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.doc-preview {
+  min-height: 600px;
+}
+</style>

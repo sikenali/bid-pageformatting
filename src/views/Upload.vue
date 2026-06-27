@@ -2,8 +2,10 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Upload, FileText, FileType } from 'lucide-vue-next'
+import { useDocument } from '../composables/useDocument'
 
 const router = useRouter()
+const { setFile } = useDocument()
 const isDragging = ref(false)
 const selectedFile = ref(null)
 
@@ -33,6 +35,7 @@ const handleFileChange = (e) => {
 
 const startEditing = () => {
   if (selectedFile.value) {
+    setFile(selectedFile.value)
     router.push('/editor')
   }
 }
