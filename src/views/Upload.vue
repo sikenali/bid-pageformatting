@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { Upload, FileText, FileType } from 'lucide-vue-next'
 import { useDocument } from '../composables/useDocument'
 
 const router = useRouter()
@@ -42,54 +41,68 @@ const startEditing = () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center p-8">
-    <div class="max-w-2xl w-full">
-      <div class="text-center mb-12">
-        <h1 class="text-5xl font-calligraphy text-cinnabar mb-4">墨韵排版</h1>
-        <p class="text-xl font-xiaowei text-ink-black/70">中国古典水墨风格文档排版工具</p>
+  <div class="min-h-screen flex items-center justify-center pt-20 px-8">
+    <div class="max-w-[800px] w-full flex flex-col items-center">
+      <!-- 欢迎标题区 -->
+      <div class="text-center mb-10">
+        <h1 class="text-3xl font-bold text-[#3D2B1F] mb-2">开始您的文档排版之旅</h1>
+        <p class="text-base text-[#8B7355]">上传文档，智能识别排版元素，一键美化您的文档</p>
       </div>
 
+      <!-- 上传拖拽区 -->
       <div
-        class="border-2 border-dashed rounded-xl p-12 text-center transition-all"
-        :class="isDragging ? 'border-cinnabar bg-cinnabar/5' : 'border-gold/40 bg-white/50'"
+        class="w-full border-2 border-dashed rounded-xl bg-[#FBF7EF] p-[60px_40px] text-center transition-all cursor-pointer"
+        :class="isDragging ? 'border-[#C43A31] bg-[#C43A31]/5' : 'border-[#D4C4A8]'"
         @drag-over="handleDragOver"
         @dragleave="handleDragLeave"
         @drop="handleDrop"
       >
-        <Upload :size="64" class="mx-auto mb-6 text-gold" />
-        <p class="text-lg font-xiaowei mb-4">
-          {{ selectedFile ? `已选择: ${selectedFile.name}` : '拖拽文件到此处或点击上传' }}
+        <!-- 上传图标 -->
+        <div class="w-20 h-20 mx-auto mb-6 bg-[#F0E8D5] rounded-full flex items-center justify-center">
+          <span class="text-[#C43A31] text-4xl">↑</span>
+        </div>
+
+        <p class="text-xl font-semibold text-[#3D2B1F] mb-2">
+          {{ selectedFile ? `已选择: ${selectedFile.name}` : '拖拽文件到此处，或点击上传' }}
         </p>
+        <p class="text-sm text-[#8B7355] mb-6">
+          支持 .docx / .pdf / .txt / .md 格式，单文件最大 50MB
+        </p>
+
         <input
           type="file"
           class="hidden"
           id="file-input"
-          accept=".docx,.pdf,.xlsx,.pptx"
+          accept=".docx,.pdf,.txt,.md"
           @change="handleFileChange"
         />
         <label
           for="file-input"
-          class="inline-flex items-center gap-2 px-6 py-3 bg-cinnabar text-white font-xiaowei rounded-lg cursor-pointer hover:bg-cinnabar/90 transition-colors"
+          class="inline-flex items-center gap-2 px-6 py-3 bg-[#C43A31] text-white rounded-lg cursor-pointer hover:bg-[#A83028] transition-colors font-medium"
         >
-          <FileText :size="18" />
+          <span>📎</span>
           选择文件
         </label>
-
-        <div class="mt-8 flex justify-center gap-4 text-sm text-ink-black/50">
-          <span class="flex items-center gap-1"><FileType :size="14" /> DOCX</span>
-          <span class="flex items-center gap-1"><FileType :size="14" /> PDF</span>
-          <span class="flex items-center gap-1"><FileType :size="14" /> XLSX</span>
-          <span class="flex items-center gap-1"><FileType :size="14" /> PPTX</span>
-        </div>
       </div>
 
-      <div v-if="selectedFile" class="mt-8 text-center">
-        <button
-          @click="startEditing"
-          class="px-8 py-3 bg-jade text-white font-xiaowei rounded-lg hover:bg-jade/90 transition-colors"
-        >
-          开始排版
-        </button>
+      <!-- 支持格式区 -->
+      <div class="flex items-center gap-6 mt-10">
+        <div class="flex items-center gap-2 px-4 py-2 bg-[#F0E8D5] rounded-full">
+          <span class="text-[#5B8C5A] text-base">📄</span>
+          <span class="text-sm font-medium text-[#5C4033]">DOCX</span>
+        </div>
+        <div class="flex items-center gap-2 px-4 py-2 bg-[#F0E8D5] rounded-full">
+          <span class="text-[#C43A31] text-base">📕</span>
+          <span class="text-sm font-medium text-[#5C4033]">PDF</span>
+        </div>
+        <div class="flex items-center gap-2 px-4 py-2 bg-[#F0E8D5] rounded-full">
+          <span class="text-[#6B8CAE] text-base">📝</span>
+          <span class="text-sm font-medium text-[#5C4033]">TXT</span>
+        </div>
+        <div class="flex items-center gap-2 px-4 py-2 bg-[#F0E8D5] rounded-full">
+          <span class="text-[#C8A45C] text-base">📋</span>
+          <span class="text-sm font-medium text-[#5C4033]">MD</span>
+        </div>
       </div>
     </div>
   </div>

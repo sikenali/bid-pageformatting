@@ -1,29 +1,39 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import { Settings, LayoutTemplate } from 'lucide-vue-next'
+import { Settings } from 'lucide-vue-next'
 
 const router = useRouter()
 </script>
 
 <template>
-  <nav class="fixed top-0 left-0 right-0 h-16 bg-white/90 backdrop-blur-sm border-b border-gold/30 flex items-center justify-between px-6 z-50">
+  <nav class="fixed top-0 left-0 right-0 h-[72px] bg-parchment flex items-center justify-between px-8 z-50">
+    <!-- 左侧品牌区 -->
     <div class="flex items-center gap-3 cursor-pointer" @click="router.push('/')">
-      <span class="text-3xl font-calligraphy text-cinnabar">墨韵排版</span>
+      <!-- Logo 图标 -->
+      <div class="w-11 h-11 bg-[#C43A31] rounded-lg flex items-center justify-center">
+        <span class="text-white text-2xl">墨</span>
+      </div>
+      <!-- 品牌名称 -->
+      <div class="flex flex-col">
+        <span class="text-lg font-bold text-[#3D2B1F] tracking-tight">墨韵排版</span>
+        <span class="text-xs text-[#8B7355]">MoYun Typesetting</span>
+      </div>
     </div>
+
+    <!-- 右侧操作区 -->
     <div class="flex items-center gap-4">
       <button
         @click="router.push('/editor')"
-        class="flex items-center gap-2 px-4 py-2 text-sm font-xiaowei text-ink-black hover:text-cinnabar transition-colors"
+        class="flex items-center gap-2 px-4 py-2 text-sm bg-[#F5EFE0] border border-[#E0D5C0] rounded-lg hover:bg-[#F0E8D5] transition-colors"
       >
-        <LayoutTemplate :size="18" />
-        模板
+        <span class="text-[#8B7355] text-base">📋</span>
+        <span class="text-[#5C4033] font-medium">模板</span>
       </button>
       <button
         @click="router.push('/settings')"
-        class="flex items-center gap-2 px-4 py-2 text-sm font-xiaowei text-ink-black hover:text-cinnabar transition-colors rounded-lg hover:bg-parchment/50"
+        class="w-10 h-10 flex items-center justify-center bg-[#F5EFE0] border border-[#E0D5C0] rounded-lg hover:bg-[#F0E8D5] transition-colors"
       >
-        <Settings :size="18" />
-        设置
+        <Settings :size="20" class="text-[#8B7355]" />
       </button>
     </div>
   </nav>
