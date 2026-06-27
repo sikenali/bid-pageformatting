@@ -149,6 +149,12 @@ const handleSaveTemplate = () => {
   showSaveModal.value = true
 }
 
+const handleSave = () => {
+  applyFormatting()
+  // Show a brief toast notification
+  alert('排版参数已保存')
+}
+
 const handleOneClickModify = async () => {
   if (!await handleLargeFileWarning()) return
   isProcessing.value = true
@@ -224,13 +230,11 @@ const showEditor = computed(() => isDocx.value && isEditMode.value)
                 重置
               </button>
               <button
-                class="flex items-center gap-2 px-6 py-3 bg-jade-light text-white rounded-xl text-[14px] font-semibold hover:bg-jade transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-                :disabled="isProcessing"
-                @click="handleOneClickModify"
+                class="flex items-center gap-2 px-6 py-3 bg-jade-light text-white rounded-xl text-[14px] font-semibold hover:bg-jade transition-colors"
+                @click="handleSave"
               >
-                <RiLoader2Line v-if="isProcessing" size="16" color="white" class="animate-spin" />
-                <RiCheckLine v-else size="16" color="white" />
-                <span>{{ isProcessing ? '文档智能排版中...' : '一键排版' }}</span>
+                <RiCheckLine size="16" color="white" />
+                <span>保存</span>
               </button>
             </div>
           </div>

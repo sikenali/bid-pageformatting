@@ -172,12 +172,12 @@ const selectTab = (tabId) => {
       </button>
       <button
         @click="emit('one-click-modify')"
-        class="w-full flex items-center justify-center gap-1.5 py-2 bg-cinnabar text-white rounded-xl font-semibold text-[12px] transition-all hover:bg-cinnabar-dark disabled:opacity-60 disabled:cursor-not-allowed"
+        class="w-full flex flex-col items-center justify-center gap-1 py-2 bg-cinnabar text-white rounded-xl font-semibold transition-all hover:bg-cinnabar-dark disabled:opacity-60 disabled:cursor-not-allowed"
         :disabled="props.isProcessing"
       >
-        <RiLoader2Line v-if="props.isProcessing" size="16" color="white" class="animate-spin" />
-        <RiSparklingLine v-else size="16" color="white" />
-        {{ props.isProcessing ? '文档智能排版中...' : '一键排版' }}
+        <RiLoader2Line v-if="props.isProcessing" size="20" color="white" class="animate-spin" />
+        <RiSparklingLine v-else size="18" color="white" />
+        <span class="text-[12px]">{{ props.isProcessing ? '文档智能化排版处理中...' : '一键排版' }}</span>
       </button>
     </div>
   </aside>
