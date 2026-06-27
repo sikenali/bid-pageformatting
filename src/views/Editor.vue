@@ -10,11 +10,14 @@ import { DocxEditor } from '@eigenpal/docx-editor-vue'
 import '@eigenpal/docx-editor-vue/styles.css'
 import VueOfficeDocx from '@vue-office/docx'
 import '@vue-office/docx/lib/index.css'
+import VueOfficePdf from '@vue-office/pdf'
+import VueOfficeExcel from '@vue-office/excel'
+import '@vue-office/excel/lib/index.css'
 import {
   RiZoomOutLine, RiZoomInLine, RiPagesLine, RiTextSnippet, RiHeading,
   RiBarChart2Line, RiListCheck2, RiLayoutTop2Line, RiPhoneFindFill,
   RiFootprintLine, RiDoubleQuotesL, RiFileTextLine, RiFileEditLine,
-  RiSideBarLine, RiCheckLine, RiEdit2Line, RiEyeLine
+  RiSideBarLine, RiCheckLine, RiEdit2Line, RiEyeLine, RiLoader2Line
 } from '@remixicon/vue'
 
 const router = useRouter()
@@ -35,6 +38,23 @@ const documentBuffer = ref(null)
 const editorRef = ref(null)
 const isEditMode = ref(false)
 const vueOfficeBuffer = ref(null)
+const isProcessing = ref(false)
+
+// Large file warning threshold
+const LARGE_FILE_SIZE = 50 * 1024 * 1024 // 50MB
+const LARGE_PAGE_COUNT = 200
+
+const isLargeFile = computed(() => {
+  if (!currentFile.value) return false
+  const size = currentFile.value.size
+  const pages = totalPages.value
+  return size > LARGE_FILE_SIZE || (typeof pages === 'number' && pages > LARGE_PAGE_COUNT)
+})
+
+const handleLargeFileWarning = () => {
+  if (!isLargeFile.value) return true
+  return confirm(`文档较大（${totalPages.value} 页），排版可能需要较长时间，是否继续？`)
+}
 
 const tabIcons = {
   page: RiPagesLine,
@@ -129,9 +149,16 @@ const handleSaveTemplate = () => {
   showSaveModal.value = true
 }
 
-const handleOneClickModify = () => {
-  applyFormatting()
-  router.push('/compare')
+const handleOneClickModify = async () => {
+  if (!await handleLargeFileWarning()) return
+  isProcessing.value = true
+  try {
+    applyFormatting()
+    await new Promise(resolve => setTimeout(resolve, 1500)) // simulate processing
+    router.push('/compare')
+  } finally {
+    isProcessing.value = false
+  }
 }
 
 const handleReset = () => {
@@ -152,12 +179,25 @@ const isDocx = computed(() => {
   const name = currentFile.value?.name?.toLowerCase() || ''
   return name.endsWith('.docx')
 })
+
+const isPdf = computed(() => {
+  const name = currentFile.value?.name?.toLowerCase() || ''
+  return name.endsWith('.pdf')
+})
+
+const isXlsx = computed(() => {
+  const name = currentFile.value?.name?.toLowerCase() || ''
+  return name.endsWith('.xlsx') || name.endsWith('.xls')
+})
+
+const showEditor = computed(() => isDocx.value && isEditMode.value)
 </script>
 
 <template>
   <main class="pt-16 bg-parchment">
     <div class="h-[calc(100vh-4rem)] flex">
       <Sidebar
+        :is-processing="isProcessing"
         @tab-change="activeTab = $event"
         @save-template="handleSaveTemplate"
         @one-click-modify="handleOneClickModify"
@@ -184,11 +224,13 @@ const isDocx = computed(() => {
                 重置
               </button>
               <button
-                class="flex items-center gap-2 px-6 py-3 bg-jade-light text-white rounded-xl text-[14px] font-semibold hover:bg-jade transition-colors"
+                class="flex items-center gap-2 px-6 py-3 bg-jade-light text-white rounded-xl text-[14px] font-semibold hover:bg-jade transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                :disabled="isProcessing"
                 @click="handleOneClickModify"
               >
-                <RiCheckLine size="16" color="white" />
-                <span>保存</span>
+                <RiLoader2Line v-if="isProcessing" size="16" color="white" class="animate-spin" />
+                <RiCheckLine v-else size="16" color="white" />
+                <span>{{ isProcessing ? '文档智能排版中...' : '一键排版' }}</span>
               </button>
             </div>
           </div>
@@ -528,7 +570,7 @@ const isDocx = computed(() => {
           >
             <!-- DocxEditor: edit mode for .docx files -->
             <div
-              v-if="isEditMode && documentBuffer"
+              v-if="showEditor && documentBuffer"
               class="docx-editor-container"
             >
               <DocxEditor
@@ -539,7 +581,19 @@ const isDocx = computed(() => {
 
             <!-- VueOfficeDocx: preview mode for .docx files -->
             <div
-              v-else-if="!isEditMode && vueOfficeBuffer"
+              v-else-if="!isDocx && isPdf && vueOfficeBuffer"
+              class="max-w-[864px] mx-auto bg-white shadow"
+            >
+              <VueOfficePdf :src="vueOfficeBuffer" style="width: 100%;" />
+            </div>
+            <div
+              v-else-if="!isDocx && isXlsx && vueOfficeBuffer"
+              class="max-w-[864px] mx-auto bg-white shadow"
+            >
+              <VueOfficeExcel :src="vueOfficeBuffer" style="width: 100%;" />
+            </div>
+            <div
+              v-else-if="isDocx && !isEditMode && vueOfficeBuffer"
               class="max-w-[864px] mx-auto bg-white shadow"
             >
               <VueOfficeDocx :src="vueOfficeBuffer" style="width: 100%;" />
@@ -578,5 +632,14 @@ const isDocx = computed(() => {
 .docx-editor-container :deep(.doc-name),
 .docx-editor-container :deep(.doc-name__input) {
   display: none !important;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 </style>

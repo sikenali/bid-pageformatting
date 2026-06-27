@@ -11,11 +11,15 @@ import {
   RiFootprintLine,
   RiDoubleQuotesL,
   RiSaveLine,
-  RiSparklingLine
+  RiSparklingLine,
+  RiLoader2Line
 } from '@remixicon/vue'
 
 const emit = defineEmits(['tab-change', 'save-template', 'one-click-modify'])
 const activeTab = ref('page')
+const props = defineProps({
+  isProcessing: { type: Boolean, default: false },
+})
 
 const tabs = [
   { id: 'page', label: '页面', sublabel: 'Page Layout', icon: RiPagesLine },
@@ -168,11 +172,24 @@ const selectTab = (tabId) => {
       </button>
       <button
         @click="emit('one-click-modify')"
-        class="w-full flex items-center justify-center gap-1.5 py-2 bg-cinnabar text-white rounded-xl font-semibold text-[12px] transition-all hover:bg-cinnabar-dark"
+        class="w-full flex items-center justify-center gap-1.5 py-2 bg-cinnabar text-white rounded-xl font-semibold text-[12px] transition-all hover:bg-cinnabar-dark disabled:opacity-60 disabled:cursor-not-allowed"
+        :disabled="props.isProcessing"
       >
-        <RiSparklingLine size="16" color="white" />
-        一键修改
+        <RiLoader2Line v-if="props.isProcessing" size="16" color="white" class="animate-spin" />
+        <RiSparklingLine v-else size="16" color="white" />
+        {{ props.isProcessing ? '文档智能排版中...' : '一键排版' }}
       </button>
     </div>
   </aside>
 </template>
+
+<style scoped>
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+</style>
