@@ -31,7 +31,10 @@ const tabTitles = {
         <button class="px-6 py-2 text-sm font-medium text-brown bg-cream-dark border border-tan-border rounded-lg hover:bg-cream-darker">
           保存到模板
         </button>
-        <button class="px-6 py-2 text-sm font-medium text-white bg-cinnabar rounded-lg hover:bg-cinnabar-dark">
+        <button
+          class="px-6 py-2 text-sm font-medium text-white bg-cinnabar rounded-lg hover:bg-cinnabar-dark"
+          @click="$router.push('/compare')"
+        >
           一键修改
         </button>
       </div>

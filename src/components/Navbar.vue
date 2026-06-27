@@ -30,7 +30,7 @@ const { currentFile } = useDocument()
       </div>
 
       <button
-        @click="router.push('/editor')"
+        @click="router.push('/template')"
         class="flex items-center gap-2 px-4 py-2 bg-cream-dark border border-tan-border rounded-lg text-sm hover:bg-cream-darker transition-colors"
       >
         <RiBookmark3Line size="18" color="#8B7355" />

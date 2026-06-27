@@ -1,8 +1,17 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { RiFileTextLine, RiEditLine, RiCheckLine, RiDownloadLine, RiArrowLeftSLine, RiArrowRightSLine, RiLayout2Line, RiCollageLine, RiBookmark3Line, RiSettings3Line } from '@remixicon/vue'
 
+const router = useRouter()
 const compareMode = ref('side-by-side')
+const diffIndex = ref(0)
+const totalDiffs = 23
+
+const prevDiff = () => { if (diffIndex.value > 0) diffIndex.value-- }
+const nextDiff = () => { if (diffIndex.value < totalDiffs - 1) diffIndex.value++ }
+const acceptAll = () => { alert('已接受全部修改') }
+const exportDoc = () => { alert('文档导出中...') }
 </script>
 
 <template>
@@ -38,11 +47,17 @@ const compareMode = ref('side-by-side')
         </div>
 
         <div class="flex items-center gap-3">
-          <button class="flex items-center gap-2 px-5 py-2 bg-jade-light text-white rounded-lg text-[14px] font-semibold">
+          <button
+            class="flex items-center gap-2 px-5 py-2 bg-jade-light text-white rounded-lg text-[14px] font-semibold"
+            @click="acceptAll"
+          >
             <RiCheckLine size="18" color="white" />
             接受全部修改
           </button>
-          <button class="flex items-center gap-2 px-5 py-2 bg-cinnabar text-white rounded-lg text-[14px] font-semibold">
+          <button
+            class="flex items-center gap-2 px-5 py-2 bg-cinnabar text-white rounded-lg text-[14px] font-semibold"
+            @click="exportDoc"
+          >
             <RiDownloadLine size="18" color="white" />
             导出文档
           </button>
@@ -193,11 +208,11 @@ const compareMode = ref('side-by-side')
       </div>
 
       <div class="flex items-center gap-2">
-        <button class="flex items-center gap-1 px-3 py-2 bg-cream-darker rounded-lg">
+        <button class="flex items-center gap-1 px-3 py-2 bg-cream-darker rounded-lg" @click="prevDiff">
           <RiArrowLeftSLine size="16" color="#5C4033" />
           <span class="text-[13px] font-medium text-brown">上一处</span>
         </button>
-        <button class="flex items-center gap-1 px-3 py-2 bg-cream-darker rounded-lg">
+        <button class="flex items-center gap-1 px-3 py-2 bg-cream-darker rounded-lg" @click="nextDiff">
           <span class="text-[13px] font-medium text-brown">下一处</span>
           <RiArrowRightSLine size="16" color="#5C4033" />
         </button>
