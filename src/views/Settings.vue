@@ -107,7 +107,7 @@ const displayOptions = [
           </div>
         </div>
         <div class="flex items-center gap-3">
-          <button class="px-6 py-3 bg-cream-dark border border-tan-border rounded-xl text-[14px] font-medium text-brown">取消</button>
+          <button class="px-6 py-3 bg-cream-dark border border-tan-border rounded-xl text-[14px] font-medium text-brown" @click="router.back()">取消</button>
           <button
             class="flex items-center gap-2 px-6 py-3 text-white rounded-xl text-[14px] font-semibold"
             :class="activeSection === 'template' ? 'bg-gold-dark' : activeSection === 'display' ? 'bg-jade-light' : 'bg-cinnabar'"

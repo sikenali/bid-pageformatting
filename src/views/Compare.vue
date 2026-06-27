@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { useDocument } from '../composables/useDocument'
 import { useFormatState } from '../composables/useFormatState'
 import { useDocumentExport } from '../composables/useDocumentExport'
-import { RiFileTextLine, RiEditLine, RiCheckLine, RiDownloadLine, RiArrowLeftSLine, RiArrowRightSLine, RiLayout2Line, RiCollageLine, RiLinksLine, RiPagesLine, RiTextSnippet, RiHeading, RiBarChart2Line, RiListCheck2, RiLayoutTop2Line, RiPhoneFindFill, RiFootprintLine, RiDoubleQuotesL } from '@remixicon/vue'
+import { RiFileTextLine, RiEditLine, RiCheckLine, RiDownloadLine, RiArrowLeftSLine, RiArrowRightSLine, RiLayout2Line, RiCollageLine, RiLinksLine, RiPagesLine, RiTextSnippet, RiHeading, RiBarChart2Line, RiListCheck2, RiLayoutTop2Line, RiPhoneFindFill, RiFootprintLine, RiDoubleQuotesL, RiCheckDoubleLine } from '@remixicon/vue'
 import DocumentPreview from '../components/DocumentPreview.vue'
 
 const router = useRouter()
@@ -310,7 +310,7 @@ const exportDoc = async () => {
                 </td>
                 <td class="py-3 px-3">
                   <span v-if="field.changed" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-diff-green-bg text-jade-light">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="#2D8B57" class="remixicon"><path d="M10.0007 15.1709L19.1931 5.97852L20.6073 7.39273L10.0007 17.9993L3.63672 11.6354L5.05093 10.2212L10.0007 15.1709Z"></path></svg>
+                    <RiCheckDoubleLine size="10" color="#2D8B57" />
                     已修改
                   </span>
                   <span v-else class="text-[11px] text-brown-muted">--</span>
