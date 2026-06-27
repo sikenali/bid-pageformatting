@@ -1,6 +1,7 @@
 <script setup>
-import { ref, watch, computed, onUnmounted } from 'vue'
-import { Docx } from 'vue-office'
+import { ref, watch, computed } from 'vue'
+import VueOfficeDocx from '@vue-office/docx'
+import '@vue-office/docx/lib/index.css'
 
 const props = defineProps({
   file: {
@@ -9,72 +10,51 @@ const props = defineProps({
   },
 })
 
-const previewComponent = ref(null)
-const previewUrl = ref(null)
+const docxBuffer = ref(null)
 
-// 计算文件扩展名
 const fileExtension = computed(() => {
   if (!props.file) return ''
   return props.file.name.split('.').pop().toLowerCase()
 })
 
-// 监听文件变化
-watch(() => props.file, (newFile) => {
-  if (!newFile) {
-    previewComponent.value = null
-    previewUrl.value = null
-    return
-  }
+const readFileAsArrayBuffer = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = reject
+    reader.readAsArrayBuffer(file)
+  })
+}
 
-  const ext = fileExtension.value
-  
-  // 根据文件类型设置对应的预览组件
-  if (ext === 'docx') {
-    previewComponent.value = Docx
-    // 创建 Blob URL 用于预览
-    previewUrl.value = URL.createObjectURL(newFile)
+watch(() => props.file, async (newFile) => {
+  docxBuffer.value = null
+  if (!newFile) return
+  if (fileExtension.value === 'docx') {
+    try {
+      docxBuffer.value = await readFileAsArrayBuffer(newFile)
+    } catch (e) {
+      console.error('读取文件失败:', e)
+    }
   }
 }, { immediate: true })
-
-// 组件卸载时清理
-onUnmounted(() => {
-  if (previewUrl.value) {
-    URL.revokeObjectURL(previewUrl.value)
-  }
-})
 </script>
 
 <template>
-  <div class="w-full h-full bg-white shadow-lg overflow-auto p-8">
-    <div v-if="!file" class="flex items-center justify-center h-full text-ink-black/40 font-xiaowei">
-      请先上传文档
+  <div class="w-full min-h-full bg-warm-gray overflow-auto py-8">
+    <div v-if="!file" class="max-w-[680px] mx-auto bg-white shadow-[0_4px_24px_rgba(0,0,0,0.12)] rounded-xl min-h-[842px] flex items-center justify-center">
+      <p class="text-brown-muted text-lg font-xiaowei">请先上传文档</p>
     </div>
-    <div v-else class="max-w-[800px] mx-auto">
-      <div class="mb-4 pb-4 border-b border-gold/30">
-        <h3 class="font-calligraphy text-2xl text-cinnabar">{{ file.name }}</h3>
+    <div v-else class="max-w-[864px] mx-auto bg-white shadow-[0_4px_24px_rgba(0,0,0,0.12)] rounded-xl p-[1px]">
+      <div v-if="fileExtension === 'docx' && docxBuffer" class="w-full">
+        <VueOfficeDocx :src="docxBuffer" style="width: 100%;" />
       </div>
-      
-      <!-- DOCX 预览 -->
-      <div v-if="fileExtension === 'docx' && previewComponent" class="doc-preview">
-        <component
-          :is="previewComponent"
-          :src="previewUrl"
-          class="w-full"
-          @rendered="console.log('文档预览渲染完成')"
-        />
+      <div v-else-if="fileExtension === 'docx' && !docxBuffer" class="flex items-center justify-center py-12 text-brown-muted font-xiaowei">
+        <p class="text-lg">正在加载文档...</p>
       </div>
-
-      <!-- 不支持的格式提示 -->
-      <div v-else-if="file && !previewComponent" class="text-center py-12 text-ink-black/50 font-xiaowei">
+      <div v-else class="text-center py-12 text-brown-muted font-xiaowei">
         <p class="text-lg mb-2">暂不支持预览此格式</p>
         <p class="text-sm">当前仅支持 DOCX 格式预览</p>
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.doc-preview {
-  min-height: 600px;
-}
-</style>
