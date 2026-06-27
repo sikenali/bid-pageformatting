@@ -1,55 +1,80 @@
 <script setup>
 import { ref } from 'vue'
-import {
-  File,
-  Type,
-  Heading1,
-  Table,
-  List,
-  Save,
-  Wand2,
-  FileText,
-  AlignLeft,
-} from 'lucide-vue-next'
 
+const emit = defineEmits(['tab-change'])
 const activeTab = ref('page')
 
 const tabs = [
-  { id: 'page', label: '页面', icon: File },
-  { id: 'body', label: '正文', icon: Type },
-  { id: 'heading', label: '标题', icon: Heading1 },
-  { id: 'chart', label: '图表', icon: Table },
-  { id: 'toc', label: '目录', icon: List },
-  { id: 'header', label: '页眉', icon: AlignLeft },
-  { id: 'footer', label: '页脚', icon: FileText },
+  { id: 'page', label: '页面', sublabel: 'Page Layout', icon: '📄' },
+  { id: 'body', label: '正文', sublabel: 'Body Text', icon: '📝' },
+  { id: 'heading', label: '标题', sublabel: 'Headings', icon: '🔤' },
+  { id: 'chart', label: '图表', sublabel: 'Charts & Tables', icon: '📊' },
+  { id: 'toc', label: '目录', sublabel: 'Table of Contents', icon: '📑' },
+  { id: 'header', label: '页眉页脚', sublabel: 'Header & Footer', icon: '📃' },
 ]
+
+const selectTab = (tabId) => {
+  activeTab.value = tabId
+  emit('tab-change', tabId)
+}
 </script>
 
 <template>
-  <aside class="w-64 bg-white/80 backdrop-blur-sm border-r border-gold/30 flex flex-col">
-    <div class="flex-1 overflow-y-auto p-4">
+  <aside class="w-[280px] bg-[#FBF7EF] border-r border-[#E0D5C0] flex flex-col">
+    <!-- 面板标题区 -->
+    <div class="px-6 pt-5 pb-5">
+      <h3 class="text-base font-semibold text-[#3D2B1F]">文档排版标签</h3>
+      <div class="w-full h-[1px] bg-[#E0D5C0] mt-[2px]"></div>
+      <p class="text-xs text-[#8B7355] mt-2">选择需要识别的排版元素</p>
+    </div>
+
+    <!-- 标签列表区 -->
+    <div class="flex-1 overflow-y-auto px-4 pb-4">
       <div class="space-y-2">
         <button
           v-for="tab in tabs"
           :key="tab.id"
-          @click="activeTab = tab.id"
-          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all"
-          :class="activeTab === tab.id ? 'bg-cinnabar/10 text-cinnabar border-l-2 border-cinnabar' : 'hover:bg-parchment/50 text-ink-black/70'"
+          @click="selectTab(tab.id)"
+          class="w-full rounded-xl p-3 transition-all text-left"
+          :class="activeTab === tab.id 
+            ? 'bg-[#C43A31] text-white' 
+            : 'bg-[#F5EFE0] hover:bg-[#EDE5D0]'"
         >
-          <component :is="tab.icon" :size="18" />
-          <span class="font-xiaowei">{{ tab.label }}</span>
+          <div class="flex items-center gap-3">
+            <span class="text-[20px] w-6 text-center">{{ tab.icon }}</span>
+            <div class="flex-1">
+              <div class="text-[15px]" :class="activeTab === tab.id ? 'font-semibold text-white' : 'font-medium text-[#3D2B1F]'">
+                {{ tab.label }}
+              </div>
+              <div class="text-[11px]" :class="activeTab === tab.id ? 'text-white/75' : 'text-[#8B7355]'">
+                {{ tab.sublabel }}
+              </div>
+            </div>
+            <!-- 选中指示器 -->
+            <div 
+              v-if="activeTab === tab.id"
+              class="w-[9px] h-[8px] bg-white rounded-[4px]"
+            ></div>
+          </div>
         </button>
       </div>
-    </div>
 
-    <div class="p-4 border-t border-gold/30 space-y-2">
-      <button class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-jade text-white font-xiaowei rounded-lg hover:bg-jade/90 transition-colors">
-        <Save :size="16" />
-        保存到模板
-      </button>
-      <button class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-cinnabar text-white font-xiaowei rounded-lg hover:bg-cinnabar/90 transition-colors">
-        <Wand2 :size="16" />
-        一键修改
+      <!-- 分隔线 -->
+      <div class="mt-4 mb-4">
+        <div class="w-full h-[1px] bg-[#E0D5C0]"></div>
+      </div>
+
+      <!-- 页码标签 -->
+      <button
+        class="w-full rounded-xl p-3 bg-[#F5EFE0] hover:bg-[#EDE5D0] transition-all text-left"
+      >
+        <div class="flex items-center gap-3">
+          <span class="text-[20px] w-6 text-center">🔢</span>
+          <div class="flex-1">
+            <div class="text-[15px] font-medium text-[#3D2B1F]">页码</div>
+            <div class="text-[11px] text-[#8B7355]">Page Number</div>
+          </div>
+        </div>
       </button>
     </div>
   </aside>

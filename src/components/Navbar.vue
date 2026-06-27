@@ -1,8 +1,12 @@
 <script setup>
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { Settings } from 'lucide-vue-next'
+import { Settings, FileText } from 'lucide-vue-next'
+import { useDocument } from '../composables/useDocument'
 
 const router = useRouter()
+const { getFile } = useDocument()
+const currentFile = computed(() => getFile())
 </script>
 
 <template>
@@ -22,6 +26,15 @@ const router = useRouter()
 
     <!-- 右侧操作区 -->
     <div class="flex items-center gap-4">
+      <!-- 当前文件信息 -->
+      <div
+        v-if="currentFile"
+        class="flex items-center gap-2 px-3 py-2 bg-[#F5EFE0] rounded-lg text-sm"
+      >
+        <span class="text-[#5B8C5A] text-base">📄</span>
+        <span class="text-[#5C4033] font-medium truncate max-w-[143px]">{{ currentFile.name }}</span>
+      </div>
+
       <button
         @click="router.push('/editor')"
         class="flex items-center gap-2 px-4 py-2 text-sm bg-[#F5EFE0] border border-[#E0D5C0] rounded-lg hover:bg-[#F0E8D5] transition-colors"
