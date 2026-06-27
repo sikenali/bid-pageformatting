@@ -15,7 +15,7 @@ const { currentFile } = useDocument()
         <RiFileTextLine size="24" color="white" />
       </div>
       <div class="flex flex-col">
-        <span class="text-lg font-bold text-brown-dark">墨韵排版</span>
+        <span class="text-lg font-bold text-brown-dark">墨墨梧文</span>
         <span class="text-xs text-brown-muted">MoYun Typesetting</span>
       </div>
     </div>
