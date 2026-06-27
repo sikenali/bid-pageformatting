@@ -7,4 +7,7 @@ export default defineConfig({
     vue(),
     tailwindcss(),
   ],
+  optimizeDeps: {
+    include: ['@vue-office/docx', 'vue-demi'],
+  },
 })

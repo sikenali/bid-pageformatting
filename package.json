@@ -10,8 +10,13 @@
   },
   "dependencies": {
     "@remixicon/vue": "^4.9.0",
+    "@vue-office/docx": "^1.6.3",
+    "@vue-office/excel": "^1.7.14",
+    "@vue-office/pdf": "^2.0.10",
+    "@vue-office/pptx": "^1.0.1",
+    "docx": "^9.7.1",
+    "mammoth": "^1.12.0",
     "vue": "^3.4.0",
-    "vue-office": "^0.0.5",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
