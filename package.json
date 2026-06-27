@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@eigenpal/docx-editor-vue": "^1.9.0",
     "@remixicon/vue": "^4.9.0",
     "@vue-office/docx": "^1.6.3",
     "@vue-office/excel": "^1.7.14",
