@@ -9,7 +9,7 @@ const { currentFile } = useDocument()
 </script>
 
 <template>
-  <nav class="fixed top-0 left-0 right-0 h-16 bg-parchment flex items-center justify-between px-8 z-50">
+  <nav class="fixed top-0 left-0 right-0 h-16 bg-parchment flex items-center justify-between px-8 z-50 relative">
     <div class="flex items-center gap-3 cursor-pointer" @click="router.push('/')">
       <div class="w-11 h-11 bg-cinnabar rounded-lg flex items-center justify-center">
         <RiBrushLine size="24" color="white" />
@@ -41,5 +41,6 @@ const { currentFile } = useDocument()
         <span class="text-[14px] font-medium text-brown group-hover:text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200">设置</span>
       </button>
     </div>
+    <div class="absolute bottom-0 left-0 right-0 h-[2px] bg-tan-dark rounded-[1px]"></div>
   </nav>
 </template>
