@@ -1,11 +1,14 @@
 <script setup>
+import { useSettings } from './composables/useSettings'
 import Navbar from './components/Navbar.vue'
+
+const { currentThemeClasses } = useSettings()
 </script>
 
 <template>
-  <div class="min-h-screen bg-parchment font-songti text-ink-black">
+  <div :class="[currentThemeClasses.bg, currentThemeClasses.text, 'min-h-screen', 'font-songti']">
     <Navbar />
-    <main class="pt-16">
+    <main class="pt-16" :class="currentThemeClasses.bg">
       <router-view />
     </main>
   </div>

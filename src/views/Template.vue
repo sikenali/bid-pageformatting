@@ -51,6 +51,10 @@ const displayedCategories = computed(() => {
   return cats.filter(cat => books.some(b => b.category === cat))
 })
 
+const toggleBook = (book) => {
+  book.selected = !book.selected
+}
+
 const currentTemplate = computed(() => {
   const selected = books.filter(b => b.selected)
   return selected.length ? { name: selected[0].name, count: selected.length } : null
@@ -109,7 +113,8 @@ const currentTemplate = computed(() => {
               <div
                 v-for="book in books.filter(b => b.category === cat)"
                 :key="book.id"
-                class="w-[180px] flex-shrink-0"
+                class="w-[180px] flex-shrink-0 cursor-pointer"
+                @click="toggleBook(book)"
               >
                 <div
                   class="w-full h-[240px] rounded-lg overflow-hidden transition-all"

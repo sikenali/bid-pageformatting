@@ -81,7 +81,7 @@ const activeTab = ref('page')
           <div class="flex items-center gap-3">
             <span class="text-[13px] font-medium text-brown">方向</span>
             <div class="flex bg-cream-darker rounded-lg p-0.5">
-              <button class="px-4 py-1.5 bg-white text-cinnabar rounded-md text-[13px] font-semibold">纵向</button>
+              <button class="px-4 py-1.5 bg-cinnabar text-white rounded-md text-[13px] font-semibold">纵向</button>
               <button class="px-4 py-1.5 text-brown rounded-md text-[13px] font-medium">横向</button>
             </div>
           </div>
@@ -172,8 +172,8 @@ const activeTab = ref('page')
           <RiFileEditLine size="16" color="#8B7355" />
         </div>
         <div class="flex bg-cream-darker rounded-lg p-0.5">
-          <button class="w-8 h-7 flex items-center justify-center bg-white rounded">
-            <RiLayout2Line size="16" color="#C23B22" />
+          <button class="w-8 h-7 flex items-center justify-center bg-cinnabar rounded">
+            <RiLayout2Line size="16" color="white" />
           </button>
           <button class="w-8 h-7 flex items-center justify-center rounded">
             <RiCollageLine size="16" color="#8B7355" />
