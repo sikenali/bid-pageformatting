@@ -154,10 +154,10 @@ const ruleNames = ['第1章', '1.1', '1.1.1', '1.1.1.1']
                   <span class="text-[12px] text-brown shrink-0">字号</span>
                   <DropdownSelect v-model="props.params[activeLevel].size_cn" :options="sizeCN" width-class="w-[65px]" />
                 </div>
-                <div class="flex items-center gap-1">
+                <div class="flex items-center gap-[3px]">
                   <span class="text-[12px] text-brown shrink-0">颜色</span>
                   <label class="relative cursor-pointer">
-                    <div class="w-[22px] h-[22px] rounded-[3px] border border-tan-border cursor-pointer"></div>
+                    <div class="w-[18px] h-[18px] rounded-[3px] border border-tan-border cursor-pointer"></div>
                     <input type="color" class="absolute inset-0 opacity-0 w-full h-full cursor-pointer" />
                   </label>
                 </div>
@@ -166,14 +166,14 @@ const ruleNames = ['第1章', '1.1', '1.1.1', '1.1.1.1']
                     :class="props.params[activeLevel].bold ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
                     <RiCheckLine v-if="props.params[activeLevel].bold" size="10" class="text-white" />
                   </div>
-                  <span class="text-[12px] text-brown shrink-0">粗</span>
+                  <span class="text-[12px] text-brown shrink-0">粗体</span>
                 </div>
                 <div class="flex items-center gap-[3px] cursor-pointer" @click="props.params[activeLevel].italic = !props.params[activeLevel].italic">
                   <div class="w-[16px] h-[16px] rounded-[3px] flex items-center justify-center transition-colors shrink-0"
                     :class="props.params[activeLevel].italic ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
                     <RiCheckLine v-if="props.params[activeLevel].italic" size="10" class="text-white" />
                   </div>
-                  <span class="text-[12px] text-brown shrink-0">斜</span>
+                  <span class="text-[12px] text-brown shrink-0">斜体</span>
                 </div>
                 <div class="flex items-center gap-[3px] cursor-pointer" @click="props.params[activeLevel].underline = !props.params[activeLevel].underline">
                   <div class="w-[16px] h-[16px] rounded-[3px] flex items-center justify-center transition-colors shrink-0"
@@ -245,25 +245,28 @@ const ruleNames = ['第1章', '1.1', '1.1.1', '1.1.1.1']
               <div class="flex flex-wrap items-center gap-[6px]">
                 <div class="flex items-center gap-1">
                   <span class="text-[12px] text-brown shrink-0">对齐方式</span>
-                  <div class="bg-cream-darker rounded-lg p-[3px] flex items-center">
+                  <div class="bg-cream-darker rounded-lg p-[3px] flex items-center relative">
+                    <div class="absolute top-[3px] bottom-[3px] w-7 bg-white rounded-[3px] shadow-sm transition-all duration-300 ease-out pointer-events-none"
+                      :style="{ left: `${3 + ['LEFT', 'CENTER', 'RIGHT', 'JUSTIFY'].indexOf(props.params[activeLevel].align) * 28}px` }">
+                    </div>
                     <button @click="props.params[activeLevel].align = 'LEFT'"
-                      class="w-7 h-6 rounded-[3px] flex items-center justify-center transition-all duration-200"
-                      :class="props.params[activeLevel].align === 'LEFT' ? 'bg-white text-cinnabar shadow-sm' : 'text-brown-muted hover:text-brown'">
+                      class="relative z-10 w-7 h-6 rounded-[3px] flex items-center justify-center transition-colors duration-200"
+                      :class="props.params[activeLevel].align === 'LEFT' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
                       <RiAlignLeft size="13" />
                     </button>
                     <button @click="props.params[activeLevel].align = 'CENTER'"
-                      class="w-7 h-6 rounded-[3px] flex items-center justify-center transition-all duration-200"
-                      :class="props.params[activeLevel].align === 'CENTER' ? 'bg-white text-cinnabar shadow-sm' : 'text-brown-muted hover:text-brown'">
+                      class="relative z-10 w-7 h-6 rounded-[3px] flex items-center justify-center transition-colors duration-200"
+                      :class="props.params[activeLevel].align === 'CENTER' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
                       <RiAlignCenter size="13" />
                     </button>
                     <button @click="props.params[activeLevel].align = 'RIGHT'"
-                      class="w-7 h-6 rounded-[3px] flex items-center justify-center transition-all duration-200"
-                      :class="props.params[activeLevel].align === 'RIGHT' ? 'bg-white text-cinnabar shadow-sm' : 'text-brown-muted hover:text-brown'">
+                      class="relative z-10 w-7 h-6 rounded-[3px] flex items-center justify-center transition-colors duration-200"
+                      :class="props.params[activeLevel].align === 'RIGHT' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
                       <RiAlignRight size="13" />
                     </button>
                     <button @click="props.params[activeLevel].align = 'JUSTIFY'"
-                      class="w-7 h-6 rounded-[3px] flex items-center justify-center transition-all duration-200"
-                      :class="props.params[activeLevel].align === 'JUSTIFY' ? 'bg-white text-cinnabar shadow-sm' : 'text-brown-muted hover:text-brown'">
+                      class="relative z-10 w-7 h-6 rounded-[3px] flex items-center justify-center transition-colors duration-200"
+                      :class="props.params[activeLevel].align === 'JUSTIFY' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
                       <RiAlignJustify size="13" />
                     </button>
                   </div>

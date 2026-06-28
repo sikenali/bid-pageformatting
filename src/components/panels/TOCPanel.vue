@@ -160,14 +160,14 @@ function rgbToHex(rgb) {
                       :class="params.level_styles[activeLevel].bold ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
                       <RiCheckLine v-if="params.level_styles[activeLevel].bold" size="10" class="text-white" />
                     </div>
-                    <span class="text-[12px] text-brown shrink-0">粗</span>
+                    <span class="text-[12px] text-brown shrink-0">粗体</span>
                   </div>
                   <div class="flex items-center gap-[3px] cursor-pointer" @click="params.level_styles[activeLevel].italic = !params.level_styles[activeLevel].italic">
                     <div class="w-[16px] h-[16px] rounded-[3px] flex items-center justify-center transition-colors shrink-0"
                       :class="params.level_styles[activeLevel].italic ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
                       <RiCheckLine v-if="params.level_styles[activeLevel].italic" size="10" class="text-white" />
                     </div>
-                    <span class="text-[12px] text-brown shrink-0">斜</span>
+                    <span class="text-[12px] text-brown shrink-0">斜体</span>
                   </div>
                 </div>
               </div>
