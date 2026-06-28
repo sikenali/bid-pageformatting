@@ -29,26 +29,26 @@ const paperSizes = [
           <div class="flex items-center gap-2">
             <span class="text-[13px] text-brown whitespace-nowrap shrink-0">上边距</span>
             <input type="number" step="0.1" v-model.number="params.top_cm"
-              class="w-full bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-            <span class="text-[13px] text-brown">毫米</span>
+              class="w-[80px] shrink-0 bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
+            <span class="text-[13px] text-brown shrink-0">毫米</span>
           </div>
           <div class="flex items-center gap-2">
             <span class="text-[13px] text-brown whitespace-nowrap shrink-0">下边距</span>
             <input type="number" step="0.1" v-model.number="params.bottom_cm"
-              class="w-full bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-            <span class="text-[13px] text-brown">毫米</span>
+              class="w-[80px] shrink-0 bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
+            <span class="text-[13px] text-brown shrink-0">毫米</span>
           </div>
           <div class="flex items-center gap-2">
             <span class="text-[13px] text-brown whitespace-nowrap shrink-0">左边距</span>
             <input type="number" step="0.1" v-model.number="params.left_cm"
-              class="w-full bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-            <span class="text-[13px] text-brown">毫米</span>
+              class="w-[80px] shrink-0 bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
+            <span class="text-[13px] text-brown shrink-0">毫米</span>
           </div>
           <div class="flex items-center gap-2">
             <span class="text-[13px] text-brown whitespace-nowrap shrink-0">右边距</span>
             <input type="number" step="0.1" v-model.number="params.right_cm"
-              class="w-full bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-            <span class="text-[13px] text-brown">毫米</span>
+              class="w-[80px] shrink-0 bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
+            <span class="text-[13px] text-brown shrink-0">毫米</span>
           </div>
         </div>
         <div class="w-full h-[1px] bg-tan-border"></div>
@@ -67,21 +67,21 @@ const paperSizes = [
           <div class="flex items-center gap-2">
             <span class="text-[13px] text-brown whitespace-nowrap shrink-0">装订线</span>
             <input type="number" step="0.1" v-model.number="params.gutter_cm"
-              class="w-full bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-            <span class="text-[13px] text-brown">毫米</span>
+              class="w-[80px] shrink-0 bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
+            <span class="text-[13px] text-brown shrink-0">毫米</span>
           </div>
           <div class="flex items-center gap-2">
             <span class="text-[13px] text-brown whitespace-nowrap shrink-0">页眉</span>
             <input type="number" step="0.1" v-model.number="params.header_margin_cm"
-              class="w-full bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-            <span class="text-[13px] text-brown">毫米</span>
+              class="w-[80px] shrink-0 bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
+            <span class="text-[13px] text-brown shrink-0">毫米</span>
           </div>
           <div class="flex items-center gap-[4px] cursor-pointer" @click="params.keep_original_orientation = !params.keep_original_orientation">
             <div class="w-[18px] h-[18px] rounded-[4px] flex items-center justify-center transition-colors shrink-0"
               :class="params.keep_original_orientation ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
               <RiCheckLine v-if="params.keep_original_orientation" size="12" class="text-white" />
             </div>
-            <span class="text-[13px] text-brown">保持原方向</span>
+            <span class="text-[13px] text-brown shrink-0">保持原方向</span>
           </div>
         </div>
       </div>
@@ -96,11 +96,14 @@ const paperSizes = [
         <div class="flex items-center gap-3">
           <div class="flex items-center gap-2">
             <span class="text-[13px] text-brown whitespace-nowrap shrink-0">栏数</span>
-            <div class="bg-cream-darker rounded-lg p-[4px] flex items-center gap-1">
+            <div class="bg-cream-darker rounded-lg p-[4px] flex items-center gap-1 relative">
+              <div class="absolute top-[4px] bottom-[4px] w-[40px] bg-white rounded-lg shadow-sm transition-all duration-300 ease-out pointer-events-none"
+                :style="{ left: `${4 + [1, 2, 3].indexOf(params.columns) * 44}px` }">
+              </div>
               <button v-for="(n, i) in [1, 2, 3]" :key="n"
                 @click="params.columns = n"
-                class="w-[40px] h-[34px] rounded-lg text-[13px] font-semibold transition-all duration-200 cursor-pointer"
-                :class="params.columns === n ? 'bg-white text-cinnabar shadow-sm' : 'text-brown hover:text-brown-dark'"
+                class="relative z-10 w-[40px] h-[34px] rounded-lg text-[13px] font-semibold transition-colors duration-200 cursor-pointer"
+                :class="params.columns === n ? 'text-cinnabar' : 'text-brown hover:text-brown-dark'"
               >{{ n }}</button>
             </div>
           </div>

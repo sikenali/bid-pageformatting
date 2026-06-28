@@ -124,20 +124,23 @@ const indentUnits = ['字符', '厘米', '毫米', '英寸'].map(v => ({ value: 
             <span class="text-[13px] text-brown">字符</span>
           </div>
           <div class="w-[2px] h-[24px] bg-tan-border shrink-0"></div>
-          <div class="bg-cream-darker rounded-lg p-1 flex items-center">
+          <div class="bg-cream-darker rounded-lg p-1 flex items-center relative">
+            <div class="absolute top-1 bottom-1 w-8 bg-white rounded-[4px] shadow-sm transition-all duration-300 ease-out pointer-events-none"
+              :style="{ left: `${4 + ['LEFT', 'CENTER', 'RIGHT'].indexOf(figCaption.align) * 32}px` }">
+            </div>
             <button @click="figCaption.align = 'LEFT'"
-              class="w-8 h-7 rounded-[4px] flex items-center justify-center transition-all duration-200"
-              :class="figCaption.align === 'LEFT' ? 'bg-white text-cinnabar shadow-sm' : 'text-brown-muted hover:text-brown'">
+              class="relative z-10 w-8 h-7 rounded-[4px] flex items-center justify-center transition-colors duration-200"
+              :class="figCaption.align === 'LEFT' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
               <RiAlignLeft size="16" />
             </button>
             <button @click="figCaption.align = 'CENTER'"
-              class="w-8 h-7 rounded-[4px] flex items-center justify-center transition-all duration-200"
-              :class="figCaption.align === 'CENTER' ? 'bg-white text-cinnabar shadow-sm' : 'text-brown-muted hover:text-brown'">
+              class="relative z-10 w-8 h-7 rounded-[4px] flex items-center justify-center transition-colors duration-200"
+              :class="figCaption.align === 'CENTER' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
               <RiAlignCenter size="16" />
             </button>
             <button @click="figCaption.align = 'RIGHT'"
-              class="w-8 h-7 rounded-[4px] flex items-center justify-center transition-all duration-200"
-              :class="figCaption.align === 'RIGHT' ? 'bg-white text-cinnabar shadow-sm' : 'text-brown-muted hover:text-brown'">
+              class="relative z-10 w-8 h-7 rounded-[4px] flex items-center justify-center transition-colors duration-200"
+              :class="figCaption.align === 'RIGHT' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
               <RiAlignRight size="16" />
             </button>
           </div>

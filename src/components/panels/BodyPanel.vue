@@ -134,25 +134,28 @@ const lineSpacingModes = [
         <div class="h-2"></div>
         <div class="flex flex-wrap items-center gap-2">
           <span class="text-[13px] text-brown whitespace-nowrap shrink-0">对齐方式</span>
-          <div class="bg-cream-darker rounded-lg p-1 flex">
+          <div class="bg-cream-darker rounded-lg p-1 flex relative">
+            <div class="absolute top-1 bottom-1 w-8 bg-white rounded-[4px] shadow-sm transition-all duration-300 ease-out pointer-events-none"
+              :style="{ left: `${4 + ['LEFT', 'CENTER', 'RIGHT', 'JUSTIFY'].indexOf(params.align) * 32}px` }">
+            </div>
             <button @click="params.align = 'LEFT'"
-              class="w-8 h-7 rounded-[4px] flex items-center justify-center transition-colors"
-              :class="params.align === 'LEFT' ? 'bg-white text-cinnabar' : 'text-brown-muted hover:text-brown'">
+              class="relative z-10 w-8 h-7 rounded-[4px] flex items-center justify-center transition-colors duration-200"
+              :class="params.align === 'LEFT' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
               <RiAlignLeft size="16" />
             </button>
             <button @click="params.align = 'CENTER'"
-              class="w-8 h-7 rounded-[4px] flex items-center justify-center transition-colors"
-              :class="params.align === 'CENTER' ? 'bg-white text-cinnabar' : 'text-brown-muted hover:text-brown'">
+              class="relative z-10 w-8 h-7 rounded-[4px] flex items-center justify-center transition-colors duration-200"
+              :class="params.align === 'CENTER' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
               <RiAlignCenter size="16" />
             </button>
             <button @click="params.align = 'RIGHT'"
-              class="w-8 h-7 rounded-[4px] flex items-center justify-center transition-colors"
-              :class="params.align === 'RIGHT' ? 'bg-white text-cinnabar' : 'text-brown-muted hover:text-brown'">
+              class="relative z-10 w-8 h-7 rounded-[4px] flex items-center justify-center transition-colors duration-200"
+              :class="params.align === 'RIGHT' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
               <RiAlignRight size="16" />
             </button>
             <button @click="params.align = 'JUSTIFY'"
-              class="w-8 h-7 rounded-[4px] flex items-center justify-center transition-colors"
-              :class="params.align === 'JUSTIFY' ? 'bg-white text-cinnabar' : 'text-brown-muted hover:text-brown'">
+              class="relative z-10 w-8 h-7 rounded-[4px] flex items-center justify-center transition-colors duration-200"
+              :class="params.align === 'JUSTIFY' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
               <RiAlignJustify size="16" />
             </button>
           </div>
