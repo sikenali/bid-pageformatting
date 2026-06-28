@@ -13,6 +13,7 @@ import HeadingPanel from '../components/panels/HeadingPanel.vue'
 import ChartPanel from '../components/panels/ChartPanel.vue'
 import TOCPanel from '../components/panels/TOCPanel.vue'
 import HeaderFooterPanel from '../components/panels/HeaderFooterPanel.vue'
+import ResetPanel from '../components/panels/ResetPanel.vue'
 import { DocxEditor } from '@eigenpal/docx-editor-vue'
 import '@eigenpal/docx-editor-vue/styles.css'
 import VueOfficeDocx from '@vue-office/docx'
@@ -284,11 +285,10 @@ const showEditor = computed(() => isDocx.value && isEditMode.value)
           v-else-if="activeTab === 'header'"
           :params="formatParams.header_footer"
         />
-        <div v-else-if="activeTab === 'reset'" class="bg-cream px-6 py-4 border-b border-tan-border">
-          <div class="flex items-center justify-center py-6 text-brown-muted">
-            <p class="text-[13px]">点击"重置"按钮恢复初始排版参数</p>
-          </div>
-        </div>
+        <ResetPanel
+          v-else-if="activeTab === 'reset'"
+          @reset="handleReset"
+        />
 
 
 
