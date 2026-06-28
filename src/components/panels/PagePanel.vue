@@ -7,10 +7,10 @@ defineProps({
 })
 
 const paperSizes = [
-  { value: 'A4', label: 'A4 (210×297mm)', w: 21.0, h: 29.7 },
-  { value: 'A3', label: 'A3 (297×420mm)', w: 29.7, h: 42.0 },
-  { value: 'B5', label: 'B5 (176×250mm)', w: 17.6, h: 25.0 },
-  { value: 'Letter', label: 'Letter (216×279mm)', w: 21.6, h: 27.9 },
+  { value: 'A4', label: 'A4 (21.0×29.7cm)', w: 21.0, h: 29.7 },
+  { value: 'A3', label: 'A3 (29.7×42.0cm)', w: 29.7, h: 42.0 },
+  { value: 'B5', label: 'B5 (17.6×25.0cm)', w: 17.6, h: 25.0 },
+  { value: 'Letter', label: 'Letter (21.6×27.9cm)', w: 21.6, h: 27.9 },
   { value: 'custom', label: '自定义', w: 21.0, h: 29.7 },
 ]
 </script>
@@ -31,25 +31,25 @@ const paperSizes = [
             <span class="text-[13px] text-brown whitespace-nowrap shrink-0">上边距</span>
             <input type="number" step="0.1" v-model.number="params.top_cm"
               class="w-[80px] shrink-0 bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-            <span class="text-[13px] text-brown shrink-0">毫米</span>
+            <span class="text-[13px] text-brown shrink-0">厘米</span>
           </div>
           <div class="flex items-center gap-2">
             <span class="text-[13px] text-brown whitespace-nowrap shrink-0">下边距</span>
             <input type="number" step="0.1" v-model.number="params.bottom_cm"
               class="w-[80px] shrink-0 bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-            <span class="text-[13px] text-brown shrink-0">毫米</span>
+            <span class="text-[13px] text-brown shrink-0">厘米</span>
           </div>
           <div class="flex items-center gap-2">
             <span class="text-[13px] text-brown whitespace-nowrap shrink-0">左边距</span>
             <input type="number" step="0.1" v-model.number="params.left_cm"
               class="w-[80px] shrink-0 bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-            <span class="text-[13px] text-brown shrink-0">毫米</span>
+            <span class="text-[13px] text-brown shrink-0">厘米</span>
           </div>
           <div class="flex items-center gap-2">
             <span class="text-[13px] text-brown whitespace-nowrap shrink-0">右边距</span>
             <input type="number" step="0.1" v-model.number="params.right_cm"
               class="w-[80px] shrink-0 bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-            <span class="text-[13px] text-brown shrink-0">毫米</span>
+            <span class="text-[13px] text-brown shrink-0">厘米</span>
           </div>
         </div>
         <div class="w-full h-[1px] bg-tan-border"></div>
@@ -63,13 +63,13 @@ const paperSizes = [
             <span class="text-[13px] text-brown whitespace-nowrap shrink-0">装订线</span>
             <input type="number" step="0.1" v-model.number="params.gutter_cm"
               class="w-[80px] shrink-0 bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-            <span class="text-[13px] text-brown shrink-0">毫米</span>
+            <span class="text-[13px] text-brown shrink-0">厘米</span>
           </div>
           <div class="flex items-center gap-2">
             <span class="text-[13px] text-brown whitespace-nowrap shrink-0">页眉</span>
             <input type="number" step="0.1" v-model.number="params.header_margin_cm"
               class="w-[80px] shrink-0 bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-            <span class="text-[13px] text-brown shrink-0">毫米</span>
+            <span class="text-[13px] text-brown shrink-0">厘米</span>
           </div>
           <div class="flex items-center gap-[4px] cursor-pointer" @click="params.keep_original_orientation = !params.keep_original_orientation">
             <div class="w-[18px] h-[18px] rounded-[4px] flex items-center justify-center transition-colors shrink-0"
@@ -107,7 +107,7 @@ const paperSizes = [
             <span class="text-[13px] text-brown whitespace-nowrap shrink-0">栏间距</span>
             <input type="number" step="0.1" v-model.number="params.column_spacing_cm"
               class="w-[64px] bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-            <span class="text-[13px] text-brown">毫米</span>
+            <span class="text-[13px] text-brown">厘米</span>
           </div>
         </div>
       </div>
