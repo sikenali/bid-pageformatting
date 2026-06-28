@@ -65,7 +65,60 @@ const ruleNames = ['第1章', '1.1', '1.1.1', '1.1.1.1']
 
 <template>
   <div class="bg-cream border-b border-tan-border h-full px-5 py-3">
-    <div class="grid grid-cols-2 gap-4">
+    <div class="flex flex-col gap-4">
+      <!-- 编号规则 -->
+      <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4">
+        <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
+        <div class="flex items-center gap-[8px]">
+          <div class="w-[5px] h-[18px] rounded-[2px] bg-gold-dark shrink-0"></div>
+          <span class="text-[15px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">编号规则</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-separate" style="border-spacing: 0;">
+            <thead>
+              <tr class="text-[12px] font-semibold text-brown-muted">
+                <th class="py-3 px-2 w-[50px] shrink-0">启用</th>
+                <th class="py-3 px-2 w-[80px] shrink-0">规则名称</th>
+                <th class="py-3 px-2">编号方案</th>
+                <th class="py-3 px-2">包装器</th>
+                <th class="py-3 px-2 w-[70px] shrink-0">多层深度</th>
+                <th class="py-3 px-2 w-[100px] shrink-0">效果示例</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(rule, ri) in props.patterns.rules" :key="ri" class="text-[13px] border-t border-tan-border">
+                <td class="py-2 px-2">
+                  <div class="flex items-center gap-[4px] cursor-pointer w-fit" @click="rule.enabled = !rule.enabled">
+                    <div class="w-[18px] h-[18px] rounded-[4px] flex items-center justify-center transition-colors shrink-0"
+                      :class="rule.enabled ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
+                      <RiCheckLine v-if="rule.enabled" size="12" class="text-white" />
+                    </div>
+                  </div>
+                </td>
+                <td class="py-2 px-2 text-brown font-medium">{{ ruleNames[ri] }}</td>
+                <td class="py-2 px-2">
+                  <DropdownSelect v-model="rule.scheme" :options="numberingSchemes" width-class="w-full" />
+                </td>
+                <td class="py-2 px-2">
+                  <DropdownSelect v-model="rule.wrapper" :options="wrappers" width-class="w-full" />
+                </td>
+                <td class="py-2 px-2">
+                  <input type="number" min="1" max="5" v-model.number="rule.multi_depth"
+                    class="w-[55px] bg-white border border-tan-border rounded-lg px-[10px] py-[7px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
+                </td>
+                <td class="py-2 px-2 text-brown-muted text-[12px]">
+                  <span v-if="ri === 0 && rule.scheme === 'ZH_NUM' && rule.wrapper === 'DUNHAO'">第X章</span>
+                  <span v-else-if="ri === 0 && rule.scheme === 'ARABIC'">第X章</span>
+                  <span v-else-if="ri === 1">1.1</span>
+                  <span v-else-if="ri === 2">1.1.1</span>
+                  <span v-else>1.1.1.1</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- 标题级别设置 -->
       <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
@@ -231,59 +284,6 @@ const ruleNames = ['第1章', '1.1', '1.1.1', '1.1.1.1']
             </div>
           </div>
         </Transition>
-      </div>
-
-      <!-- 编号规则 -->
-      <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4">
-        <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
-        <div class="flex items-center gap-[8px]">
-          <div class="w-[5px] h-[18px] rounded-[2px] bg-gold-dark shrink-0"></div>
-          <span class="text-[15px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">编号规则</span>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-separate" style="border-spacing: 0;">
-            <thead>
-              <tr class="text-[12px] font-semibold text-brown-muted">
-                <th class="py-3 px-2 w-[50px] shrink-0">启用</th>
-                <th class="py-3 px-2 w-[80px] shrink-0">规则名称</th>
-                <th class="py-3 px-2">编号方案</th>
-                <th class="py-3 px-2">包装器</th>
-                <th class="py-3 px-2 w-[70px] shrink-0">多层深度</th>
-                <th class="py-3 px-2 w-[100px] shrink-0">效果示例</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(rule, ri) in props.patterns.rules" :key="ri" class="text-[13px] border-t border-tan-border">
-                <td class="py-2 px-2">
-                  <div class="flex items-center gap-[4px] cursor-pointer w-fit" @click="rule.enabled = !rule.enabled">
-                    <div class="w-[18px] h-[18px] rounded-[4px] flex items-center justify-center transition-colors shrink-0"
-                      :class="rule.enabled ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
-                      <RiCheckLine v-if="rule.enabled" size="12" class="text-white" />
-                    </div>
-                  </div>
-                </td>
-                <td class="py-2 px-2 text-brown font-medium">{{ ruleNames[ri] }}</td>
-                <td class="py-2 px-2">
-                  <DropdownSelect v-model="rule.scheme" :options="numberingSchemes" width-class="w-full" />
-                </td>
-                <td class="py-2 px-2">
-                  <DropdownSelect v-model="rule.wrapper" :options="wrappers" width-class="w-full" />
-                </td>
-                <td class="py-2 px-2">
-                  <input type="number" min="1" max="5" v-model.number="rule.multi_depth"
-                    class="w-[55px] bg-white border border-tan-border rounded-lg px-[10px] py-[7px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-                </td>
-                <td class="py-2 px-2 text-brown-muted text-[12px]">
-                  <span v-if="ri === 0 && rule.scheme === 'ZH_NUM' && rule.wrapper === 'DUNHAO'">第X章</span>
-                  <span v-else-if="ri === 0 && rule.scheme === 'ARABIC'">第X章</span>
-                  <span v-else-if="ri === 1">1.1</span>
-                  <span v-else-if="ri === 2">1.1.1</span>
-                  <span v-else>1.1.1.1</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
       </div>
     </div>
   </div>
