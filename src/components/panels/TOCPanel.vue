@@ -67,7 +67,7 @@ function rgbToHex(rgb) {
 
 <template>
   <div class="bg-cream border-b border-tan-border h-full px-5 py-3">
-    <div class="grid grid-cols-2 gap-4">
+    <div class="flex flex-col gap-4">
       <!-- 目录标题 -->
       <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
