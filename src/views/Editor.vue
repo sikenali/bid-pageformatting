@@ -290,7 +290,6 @@ const showEditor = computed(() => isDocx.value && isEditMode.value)
             :style-cleanup="formatParams.cleanup.style_cleanup"
             :object-structure="formatParams.cleanup.object_structure"
             :caption-detection="formatParams.cleanup.caption_detection"
-            :global-switches="formatParams.cleanup.global_switches"
             @reset="handleReset"
           />
         </div>
