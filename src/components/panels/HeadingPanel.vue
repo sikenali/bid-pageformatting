@@ -65,7 +65,7 @@ const ruleNames = ['第1章', '1.1', '1.1.1', '1.1.1.1']
 
 <template>
   <div class="bg-cream border-b border-tan-border h-full px-5 py-3">
-    <div class="flex flex-col gap-4">
+    <div class="grid grid-cols-2 gap-4">
       <!-- 编号规则 -->
       <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
