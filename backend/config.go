@@ -24,6 +24,8 @@ type Config struct {
 	PreprocessClearSnapToGrid   bool `json:"preprocess_clear_snap_to_grid"`
 	PreprocessFlattenSDT        bool `json:"preprocess_flatten_sdt"`
 	PreprocessPostCleanStyles   bool `json:"preprocess_post_clean_styles"`
+	AutoRefreshFields           bool `json:"auto_refresh_fields"`
+	CloseWordAfterRefresh       bool `json:"close_word_after_refresh"`
 
 	Margins      Margins        `json:"margins"`
 	Body         BodyStyle      `json:"body"`
