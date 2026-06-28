@@ -21,7 +21,7 @@ const indentUnits = ['字符', '厘米', '毫米', '英寸'].map(v => ({ value: 
 </script>
 
 <template>
-  <div class="bg-cream border-b border-tan-border max-h-[calc(100vh-16rem)] overflow-y-auto space-y-5 px-5 py-3">
+  <div class="bg-cream border-b border-tan-border h-full space-y-5 px-5 py-3">
     <template v-if="activeSubTab === 'fig'">
       <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-5">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
