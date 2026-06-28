@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { RiCheckLine, RiAlignLeft, RiAlignCenter, RiAlignRight, RiAlignJustify } from '@remixicon/vue'
 import DropdownSelect from '../DropdownSelect.vue'
 
@@ -9,6 +9,29 @@ const props = defineProps({
 })
 
 const activeLevel = ref(0)
+const levelBarRef = ref(null)
+const indicatorStyle = ref({ left: '4px', width: '56px' })
+
+function positionIndicator() {
+  const bar = levelBarRef.value
+  if (!bar) return
+  const btns = bar.querySelectorAll('button')
+  const btn = btns[activeLevel.value]
+  if (!btn) return
+  const barRect = bar.getBoundingClientRect()
+  const btnRect = btn.getBoundingClientRect()
+  indicatorStyle.value = {
+    left: `${btnRect.left - barRect.left}px`,
+    width: `${btnRect.width}px`,
+  }
+}
+
+function selectLevel(idx) {
+  activeLevel.value = idx
+  nextTick(positionIndicator)
+}
+
+onMounted(() => { nextTick(positionIndicator) })
 
 const cnFonts = ['宋体', '仿宋', '黑体', '楷体', '微软雅黑', '思源宋体'].map(v => ({ value: v, label: v }))
 const enFonts = ['Times New Roman', 'Arial', 'Calibri', 'Verdana', 'Courier New'].map(v => ({ value: v, label: v }))
@@ -41,209 +64,226 @@ const ruleNames = ['第1章', '1.1', '1.1.1', '1.1.1.1']
 </script>
 
 <template>
-  <div class="bg-cream border-b border-tan-border max-h-[calc(100vh-16rem)] overflow-y-auto space-y-5 px-5 py-3">
-    <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-5">
-      <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
-      <div class="flex items-center gap-[8px]">
-        <div class="w-[5px] h-[18px] rounded-[2px] bg-cinnabar shrink-0"></div>
-        <span class="text-[15px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">标题级别</span>
-      </div>
-      <div class="bg-cream-darker rounded-lg p-1 flex items-center gap-1">
-        <button
-          v-for="(label, idx) in levelLabels" :key="idx"
-          @click="activeLevel = idx"
-          class="px-[16px] py-[8px] text-[13px] rounded-lg transition-all duration-200 cursor-pointer"
-          :class="activeLevel === idx ? 'bg-white text-cinnabar font-semibold shadow-sm' : 'text-brown hover:text-brown-dark'"
-        >{{ label }}</button>
-      </div>
-      <Transition name="fade-slide" mode="out-in">
-        <div :key="activeLevel" class="flex flex-col gap-5">
-          <div>
-            <span class="text-[13px] font-semibold text-brown-muted block mb-[12px]">字体</span>
-            <div class="flex items-center gap-3 flex-wrap">
-              <div class="flex items-center gap-2">
-                <span class="text-[13px] text-brown whitespace-nowrap shrink-0">中文字体</span>
-                <DropdownSelect v-model="props.params[activeLevel].cn_font" :options="cnFonts" width-class="w-[120px]" />
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="text-[13px] text-brown whitespace-nowrap shrink-0">英文字体</span>
-                <DropdownSelect v-model="props.params[activeLevel].en_font" :options="enFonts" width-class="w-[160px]" />
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="text-[13px] text-brown whitespace-nowrap shrink-0">字号</span>
-                <DropdownSelect v-model="props.params[activeLevel].size_cn" :options="sizeCN" width-class="w-[90px]" />
-              </div>
-              <div class="flex items-center gap-[4px] cursor-pointer" @click="props.params[activeLevel].bold = !props.params[activeLevel].bold">
-                <div class="w-[18px] h-[18px] rounded-[4px] flex items-center justify-center transition-colors shrink-0"
-                  :class="props.params[activeLevel].bold ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
-                  <RiCheckLine v-if="props.params[activeLevel].bold" size="12" class="text-white" />
-                </div>
-                <span class="text-[13px] text-brown">粗体</span>
-              </div>
-              <div class="flex items-center gap-[4px] cursor-pointer" @click="props.params[activeLevel].italic = !props.params[activeLevel].italic">
-                <div class="w-[18px] h-[18px] rounded-[4px] flex items-center justify-center transition-colors shrink-0"
-                  :class="props.params[activeLevel].italic ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
-                  <RiCheckLine v-if="props.params[activeLevel].italic" size="12" class="text-white" />
-                </div>
-                <span class="text-[13px] text-brown">斜体</span>
-              </div>
-              <div class="flex items-center gap-[4px] cursor-pointer" @click="props.params[activeLevel].underline = !props.params[activeLevel].underline">
-                <div class="w-[18px] h-[18px] rounded-[4px] flex items-center justify-center transition-colors shrink-0"
-                  :class="props.params[activeLevel].underline ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
-                  <RiCheckLine v-if="props.params[activeLevel].underline" size="12" class="text-white" />
-                </div>
-                <span class="text-[13px] text-brown">下划线</span>
-              </div>
-            </div>
-          </div>
-          <div class="w-full h-[1px] bg-tan-border"></div>
-          <div>
-            <span class="text-[13px] font-semibold text-brown-muted block mb-[12px]">行距与段落间距</span>
-            <div class="flex items-center gap-3 flex-wrap">
-              <div class="flex items-center gap-2">
-                <span class="text-[13px] text-brown whitespace-nowrap shrink-0">行距模式</span>
-                <DropdownSelect v-model="props.params[activeLevel].line_spacing_mode" :options="lineSpacingModes" width-class="w-[110px]" />
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="text-[13px] text-brown whitespace-nowrap shrink-0">行距值</span>
-                <input type="number" step="0.5" v-model.number="props.params[activeLevel].line_spacing_value"
-                  class="w-[70px] bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-                <span class="text-[13px] text-brown">磅</span>
-              </div>
-              <div class="w-[2px] h-[20px] bg-tan-border shrink-0"></div>
-              <div class="flex items-center gap-2">
-                <span class="text-[13px] text-brown whitespace-nowrap shrink-0">段前</span>
-                <input type="number" step="0.5" v-model.number="props.params[activeLevel].space_before_value"
-                  class="w-[65px] bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-                <DropdownSelect v-model="props.params[activeLevel].space_before_unit" :options="spacingUnits" width-class="w-[55px]" />
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="text-[13px] text-brown whitespace-nowrap shrink-0">段后</span>
-                <input type="number" step="0.5" v-model.number="props.params[activeLevel].space_after_value"
-                  class="w-[65px] bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-                <DropdownSelect v-model="props.params[activeLevel].space_after_unit" :options="spacingUnits" width-class="w-[55px]" />
-              </div>
-            </div>
-          </div>
-          <div class="w-full h-[1px] bg-tan-border"></div>
-          <div>
-            <span class="text-[13px] font-semibold text-brown-muted block mb-[12px]">缩进</span>
-            <div class="flex items-center gap-3 flex-wrap">
-              <div class="flex items-center gap-2">
-                <span class="text-[13px] text-brown whitespace-nowrap shrink-0">左缩进</span>
-                <input type="number" step="0.1" v-model.number="props.params[activeLevel].left_indent_value"
-                  class="w-[65px] bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-                <DropdownSelect v-model="props.params[activeLevel].left_indent_unit" :options="indentUnits" width-class="w-[60px]" />
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="text-[13px] text-brown whitespace-nowrap shrink-0">右缩进</span>
-                <input type="number" step="0.1" v-model.number="props.params[activeLevel].right_indent_value"
-                  class="w-[65px] bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-                <DropdownSelect v-model="props.params[activeLevel].right_indent_unit" :options="indentUnits" width-class="w-[60px]" />
-              </div>
-              <div class="w-[2px] h-[20px] bg-tan-border shrink-0"></div>
-              <div class="flex items-center gap-2">
-                <span class="text-[13px] text-brown whitespace-nowrap shrink-0">首行缩进</span>
-                <input type="number" step="0.1" v-model.number="props.params[activeLevel].first_line_indent_chars"
-                  class="w-[65px] bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-                <span class="text-[13px] text-brown">字符</span>
-              </div>
-            </div>
-          </div>
-          <div class="w-full h-[1px] bg-tan-border"></div>
-          <div>
-            <span class="text-[13px] font-semibold text-brown-muted block mb-[12px]">对齐</span>
-            <div class="flex items-center gap-3 flex-wrap">
-              <div class="bg-cream-darker rounded-lg p-1 flex items-center">
-                <button @click="props.params[activeLevel].align = 'LEFT'"
-                  class="w-8 h-7 rounded-[4px] flex items-center justify-center transition-all duration-200"
-                  :class="props.params[activeLevel].align === 'LEFT' ? 'bg-white text-cinnabar shadow-sm' : 'text-brown-muted hover:text-brown'">
-                  <RiAlignLeft size="16" />
-                </button>
-                <button @click="props.params[activeLevel].align = 'CENTER'"
-                  class="w-8 h-7 rounded-[4px] flex items-center justify-center transition-all duration-200"
-                  :class="props.params[activeLevel].align === 'CENTER' ? 'bg-white text-cinnabar shadow-sm' : 'text-brown-muted hover:text-brown'">
-                  <RiAlignCenter size="16" />
-                </button>
-                <button @click="props.params[activeLevel].align = 'RIGHT'"
-                  class="w-8 h-7 rounded-[4px] flex items-center justify-center transition-all duration-200"
-                  :class="props.params[activeLevel].align === 'RIGHT' ? 'bg-white text-cinnabar shadow-sm' : 'text-brown-muted hover:text-brown'">
-                  <RiAlignRight size="16" />
-                </button>
-                <button @click="props.params[activeLevel].align = 'JUSTIFY'"
-                  class="w-8 h-7 rounded-[4px] flex items-center justify-center transition-all duration-200"
-                  :class="props.params[activeLevel].align === 'JUSTIFY' ? 'bg-white text-cinnabar shadow-sm' : 'text-brown-muted hover:text-brown'">
-                  <RiAlignJustify size="16" />
-                </button>
-              </div>
-              <div class="w-[2px] h-[20px] bg-tan-border shrink-0"></div>
-              <div class="flex items-center gap-[4px] cursor-pointer" @click="props.params[activeLevel].add_space = !props.params[activeLevel].add_space">
-                <div class="w-[18px] h-[18px] rounded-[4px] flex items-center justify-center transition-colors shrink-0"
-                  :class="props.params[activeLevel].add_space ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
-                  <RiCheckLine v-if="props.params[activeLevel].add_space" size="12" class="text-white" />
-                </div>
-                <span class="text-[13px] text-brown">中英文间加空格</span>
-              </div>
-              <div v-if="props.params[activeLevel].add_space" class="flex items-center gap-2">
-                <span class="text-[13px] text-brown">空格数</span>
-                <input type="number" min="1" max="5" v-model.number="props.params[activeLevel].space_count"
-                  class="w-[55px] bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-              </div>
-            </div>
-          </div>
+  <div class="bg-cream border-b border-tan-border max-h-[calc(100vh-16rem)] overflow-y-auto px-5 py-3">
+    <div class="grid grid-cols-2 gap-4">
+      <!-- 标题级别设置 -->
+      <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4">
+        <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
+        <div class="flex items-center gap-[8px]">
+          <div class="w-[5px] h-[18px] rounded-[2px] bg-cinnabar shrink-0"></div>
+          <span class="text-[15px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">标题级别</span>
         </div>
-      </Transition>
-    </div>
-
-    <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-5">
-      <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
-      <div class="flex items-center gap-[8px]">
-        <div class="w-[5px] h-[18px] rounded-[2px] bg-gold-dark shrink-0"></div>
-        <span class="text-[15px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">编号规则</span>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-separate" style="border-spacing: 0 4px;">
-          <thead>
-            <tr class="text-[12px] font-semibold text-brown-muted">
-              <th class="py-3 px-2 w-[70px]">启用</th>
-              <th class="py-3 px-2 w-[100px]">规则名称</th>
-              <th class="py-3 px-2 w-[180px]">编号方案</th>
-              <th class="py-3 px-2 w-[180px]">包装器</th>
-              <th class="py-3 px-2 w-[100px]">多层深度</th>
-              <th class="py-3 px-2">效果示例</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(rule, ri) in props.patterns.rules" :key="ri" class="text-[13px]">
-              <td class="py-2 px-2">
-                <div class="flex items-center gap-[4px] cursor-pointer w-fit" @click="rule.enabled = !rule.enabled">
+        <div ref="levelBarRef" class="bg-cream-darker rounded-lg p-1 flex items-center gap-1 relative">
+          <div class="absolute top-1 bottom-1 bg-white rounded-lg shadow-sm transition-all duration-300 ease-out pointer-events-none"
+            :style="indicatorStyle">
+          </div>
+          <button
+            v-for="(label, idx) in levelLabels" :key="idx"
+            @click="selectLevel(idx)"
+            class="relative z-10 px-[16px] py-[8px] text-[13px] rounded-lg transition-colors duration-200 cursor-pointer"
+            :class="activeLevel === idx ? 'text-cinnabar font-semibold' : 'text-brown hover:text-brown-dark'"
+          >{{ label }}</button>
+        </div>
+        <Transition name="fade-slide" mode="out-in">
+          <div :key="activeLevel" class="flex flex-col gap-4">
+            <div>
+              <span class="text-[13px] font-semibold text-brown-muted block mb-[10px]">字体</span>
+              <div class="grid grid-cols-4 gap-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-[13px] text-brown whitespace-nowrap shrink-0">中文字体</span>
+                  <DropdownSelect v-model="props.params[activeLevel].cn_font" :options="cnFonts" width-class="w-full" />
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[13px] text-brown whitespace-nowrap shrink-0">英文字体</span>
+                  <DropdownSelect v-model="props.params[activeLevel].en_font" :options="enFonts" width-class="w-full" />
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[13px] text-brown whitespace-nowrap shrink-0">字号</span>
+                  <DropdownSelect v-model="props.params[activeLevel].size_cn" :options="sizeCN" width-class="w-full" />
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[13px] text-brown">字体颜色</span>
+                  <label class="relative cursor-pointer">
+                    <div class="w-[25px] h-[24px] rounded-[4px] border border-tan-border cursor-pointer"></div>
+                    <input type="color" class="absolute inset-0 opacity-0 w-full h-full cursor-pointer" />
+                  </label>
+                </div>
+                <div class="flex items-center gap-[4px] cursor-pointer" @click="props.params[activeLevel].bold = !props.params[activeLevel].bold">
                   <div class="w-[18px] h-[18px] rounded-[4px] flex items-center justify-center transition-colors shrink-0"
-                    :class="rule.enabled ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
-                    <RiCheckLine v-if="rule.enabled" size="12" class="text-white" />
+                    :class="props.params[activeLevel].bold ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
+                    <RiCheckLine v-if="props.params[activeLevel].bold" size="12" class="text-white" />
+                  </div>
+                  <span class="text-[13px] text-brown shrink-0">粗体</span>
+                </div>
+                <div class="flex items-center gap-[4px] cursor-pointer" @click="props.params[activeLevel].italic = !props.params[activeLevel].italic">
+                  <div class="w-[18px] h-[18px] rounded-[4px] flex items-center justify-center transition-colors shrink-0"
+                    :class="props.params[activeLevel].italic ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
+                    <RiCheckLine v-if="props.params[activeLevel].italic" size="12" class="text-white" />
+                  </div>
+                  <span class="text-[13px] text-brown shrink-0">斜体</span>
+                </div>
+                <div class="flex items-center gap-[4px] cursor-pointer" @click="props.params[activeLevel].underline = !props.params[activeLevel].underline">
+                  <div class="w-[18px] h-[18px] rounded-[4px] flex items-center justify-center transition-colors shrink-0"
+                    :class="props.params[activeLevel].underline ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
+                    <RiCheckLine v-if="props.params[activeLevel].underline" size="12" class="text-white" />
+                  </div>
+                  <span class="text-[13px] text-brown shrink-0">下划线</span>
+                </div>
+              </div>
+            </div>
+            <div class="w-full h-[1px] bg-tan-border"></div>
+            <!-- 行距与段落间距 -->
+            <div>
+              <span class="text-[13px] font-semibold text-brown-muted block mb-[10px]">行距与段落间距</span>
+              <div class="grid grid-cols-2 gap-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-[13px] text-brown whitespace-nowrap shrink-0">行距模式</span>
+                  <DropdownSelect v-model="props.params[activeLevel].line_spacing_mode" :options="lineSpacingModes" width-class="w-full" />
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[13px] text-brown shrink-0">行距值</span>
+                  <input type="number" step="0.5" v-model.number="props.params[activeLevel].line_spacing_value"
+                    class="w-[70px] shrink-0 bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
+                  <span class="text-[13px] text-brown shrink-0">磅</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[13px] text-brown shrink-0">段前</span>
+                  <input type="number" step="0.5" v-model.number="props.params[activeLevel].space_before_value"
+                    class="w-[65px] shrink-0 bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
+                  <DropdownSelect v-model="props.params[activeLevel].space_before_unit" :options="spacingUnits" width-class="w-full" />
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[13px] text-brown shrink-0">段后</span>
+                  <input type="number" step="0.5" v-model.number="props.params[activeLevel].space_after_value"
+                    class="w-[65px] shrink-0 bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
+                  <DropdownSelect v-model="props.params[activeLevel].space_after_unit" :options="spacingUnits" width-class="w-full" />
+                </div>
+              </div>
+            </div>
+            <div class="w-full h-[1px] bg-tan-border"></div>
+            <!-- 缩进 -->
+            <div>
+              <span class="text-[13px] font-semibold text-brown-muted block mb-[10px]">缩进</span>
+              <div class="grid grid-cols-3 gap-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-[13px] text-brown shrink-0">左缩进</span>
+                  <input type="number" step="0.1" v-model.number="props.params[activeLevel].left_indent_value"
+                    class="w-full shrink-0 bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
+                  <DropdownSelect v-model="props.params[activeLevel].left_indent_unit" :options="indentUnits" width-class="w-full" />
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[13px] text-brown shrink-0">右缩进</span>
+                  <input type="number" step="0.1" v-model.number="props.params[activeLevel].right_indent_value"
+                    class="w-full shrink-0 bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
+                  <DropdownSelect v-model="props.params[activeLevel].right_indent_unit" :options="indentUnits" width-class="w-full" />
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[13px] text-brown shrink-0">首行缩进</span>
+                  <input type="number" step="0.1" v-model.number="props.params[activeLevel].first_line_indent_chars"
+                    class="w-full shrink-0 bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
+                  <span class="text-[13px] text-brown shrink-0">字符</span>
+                </div>
+              </div>
+            </div>
+            <div class="w-full h-[1px] bg-tan-border"></div>
+            <!-- 对齐 -->
+            <div>
+              <span class="text-[13px] font-semibold text-brown-muted block mb-[10px]">对齐</span>
+              <div class="grid grid-cols-2 gap-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-[13px] text-brown shrink-0">对齐方式</span>
+                  <div class="bg-cream-darker rounded-lg p-1 flex items-center">
+                    <button @click="props.params[activeLevel].align = 'LEFT'"
+                      class="w-8 h-7 rounded-[4px] flex items-center justify-center transition-all duration-200"
+                      :class="props.params[activeLevel].align === 'LEFT' ? 'bg-white text-cinnabar shadow-sm' : 'text-brown-muted hover:text-brown'">
+                      <RiAlignLeft size="16" />
+                    </button>
+                    <button @click="props.params[activeLevel].align = 'CENTER'"
+                      class="w-8 h-7 rounded-[4px] flex items-center justify-center transition-all duration-200"
+                      :class="props.params[activeLevel].align === 'CENTER' ? 'bg-white text-cinnabar shadow-sm' : 'text-brown-muted hover:text-brown'">
+                      <RiAlignCenter size="16" />
+                    </button>
+                    <button @click="props.params[activeLevel].align = 'RIGHT'"
+                      class="w-8 h-7 rounded-[4px] flex items-center justify-center transition-all duration-200"
+                      :class="props.params[activeLevel].align === 'RIGHT' ? 'bg-white text-cinnabar shadow-sm' : 'text-brown-muted hover:text-brown'">
+                      <RiAlignRight size="16" />
+                    </button>
+                    <button @click="props.params[activeLevel].align = 'JUSTIFY'"
+                      class="w-8 h-7 rounded-[4px] flex items-center justify-center transition-all duration-200"
+                      :class="props.params[activeLevel].align === 'JUSTIFY' ? 'bg-white text-cinnabar shadow-sm' : 'text-brown-muted hover:text-brown'">
+                      <RiAlignJustify size="16" />
+                    </button>
                   </div>
                 </div>
-              </td>
-              <td class="py-2 px-2 text-brown font-medium">{{ ruleNames[ri] }}</td>
-              <td class="py-2 px-2">
-                <DropdownSelect v-model="rule.scheme" :options="numberingSchemes" width-class="w-[170px]" />
-              </td>
-              <td class="py-2 px-2">
-                <DropdownSelect v-model="rule.wrapper" :options="wrappers" width-class="w-[170px]" />
-              </td>
-              <td class="py-2 px-2">
-                <input type="number" min="1" max="5" v-model.number="rule.multi_depth"
-                  class="w-[55px] bg-white border border-tan-border rounded-lg px-[10px] py-[7px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-              </td>
-              <td class="py-2 px-2 text-brown-muted text-[12px]">
-                <span v-if="ri === 0 && rule.scheme === 'ZH_NUM' && rule.wrapper === 'DUNHAO'">第X章</span>
-                <span v-else-if="ri === 0 && rule.scheme === 'ARABIC'">第X章</span>
-                <span v-else-if="ri === 1">1.1</span>
-                <span v-else-if="ri === 2">1.1.1</span>
-                <span v-else>1.1.1.1</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                <div class="flex items-center gap-[4px] cursor-pointer" @click="props.params[activeLevel].add_space = !props.params[activeLevel].add_space">
+                  <div class="w-[18px] h-[18px] rounded-[4px] flex items-center justify-center transition-colors shrink-0"
+                    :class="props.params[activeLevel].add_space ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
+                    <RiCheckLine v-if="props.params[activeLevel].add_space" size="12" class="text-white" />
+                  </div>
+                  <span class="text-[13px] text-brown shrink-0">中英文间加空格</span>
+                </div>
+                <div v-if="props.params[activeLevel].add_space" class="flex items-center gap-2 col-span-2">
+                  <span class="text-[13px] text-brown shrink-0">空格数</span>
+                  <input type="number" min="1" max="5" v-model.number="props.params[activeLevel].space_count"
+                    class="w-[55px] shrink-0 bg-white border border-tan-border rounded-lg px-[12px] py-[8px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </Transition>
+      </div>
+
+      <!-- 编号规则 -->
+      <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4">
+        <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
+        <div class="flex items-center gap-[8px]">
+          <div class="w-[5px] h-[18px] rounded-[2px] bg-gold-dark shrink-0"></div>
+          <span class="text-[15px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">编号规则</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-separate" style="border-spacing: 0;">
+            <thead>
+              <tr class="text-[12px] font-semibold text-brown-muted">
+                <th class="py-3 px-2 w-[50px] shrink-0">启用</th>
+                <th class="py-3 px-2 w-[80px] shrink-0">规则名称</th>
+                <th class="py-3 px-2">编号方案</th>
+                <th class="py-3 px-2">包装器</th>
+                <th class="py-3 px-2 w-[70px] shrink-0">多层深度</th>
+                <th class="py-3 px-2 w-[100px] shrink-0">效果示例</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(rule, ri) in props.patterns.rules" :key="ri" class="text-[13px] border-t border-tan-border">
+                <td class="py-2 px-2">
+                  <div class="flex items-center gap-[4px] cursor-pointer w-fit" @click="rule.enabled = !rule.enabled">
+                    <div class="w-[18px] h-[18px] rounded-[4px] flex items-center justify-center transition-colors shrink-0"
+                      :class="rule.enabled ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
+                      <RiCheckLine v-if="rule.enabled" size="12" class="text-white" />
+                    </div>
+                  </div>
+                </td>
+                <td class="py-2 px-2 text-brown font-medium">{{ ruleNames[ri] }}</td>
+                <td class="py-2 px-2">
+                  <DropdownSelect v-model="rule.scheme" :options="numberingSchemes" width-class="w-full" />
+                </td>
+                <td class="py-2 px-2">
+                  <DropdownSelect v-model="rule.wrapper" :options="wrappers" width-class="w-full" />
+                </td>
+                <td class="py-2 px-2">
+                  <input type="number" min="1" max="5" v-model.number="rule.multi_depth"
+                    class="w-[55px] bg-white border border-tan-border rounded-lg px-[10px] py-[7px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
+                </td>
+                <td class="py-2 px-2 text-brown-muted text-[12px]">
+                  <span v-if="ri === 0 && rule.scheme === 'ZH_NUM' && rule.wrapper === 'DUNHAO'">第X章</span>
+                  <span v-else-if="ri === 0 && rule.scheme === 'ARABIC'">第X章</span>
+                  <span v-else-if="ri === 1">1.1</span>
+                  <span v-else-if="ri === 2">1.1.1</span>
+                  <span v-else>1.1.1.1</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
