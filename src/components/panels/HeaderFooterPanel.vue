@@ -31,7 +31,7 @@ const pageNumberTypes = [
 </script>
 
 <template>
-  <div class="bg-cream border-b border-tan-border max-h-[calc(100vh-16rem)] overflow-y-auto px-5 py-3">
+  <div class="bg-cream border-b border-tan-border h-full px-5 py-3">
     <div class="flex gap-5">
       <div class="flex-1 min-w-0 bg-cream-dark border border-tan-border rounded-2xl p-5 flex flex-col gap-4">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
