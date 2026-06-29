@@ -342,7 +342,6 @@ const tocTitleParams = ref({
             </div>
           </div>
         </div>
-        </div>
       </div>
     </div>
   </div>
