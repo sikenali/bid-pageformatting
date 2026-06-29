@@ -1,12 +1,68 @@
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
-import { RiCheckLine, RiAlignLeft, RiAlignCenter, RiAlignRight, RiAlignJustify } from '@remixicon/vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
+import { RiCheckLine, RiAlignLeft, RiAlignCenter, RiAlignRight, RiAlignJustify, RiAddLine, RiSubtractLine } from '@remixicon/vue'
 import DropdownSelect from '../DropdownSelect.vue'
 
 const props = defineProps({
   params: { type: Array, required: true },
   patterns: { type: Object, required: true },
 })
+
+function addRule() {
+  const defaultHeading = {
+    cn_font: '仿宋', en_font: 'Times New Roman', size_cn: '五号',
+    bold: false, italic: false, underline: false,
+    line_spacing_mode: 'SINGLE', line_spacing_value: 28,
+    space_before_value: 6, space_before_unit: 'pt',
+    space_after_value: 3, space_after_unit: 'pt',
+    left_indent_value: 0, left_indent_unit: 'char',
+    right_indent_value: 0, right_indent_unit: 'char',
+    first_line_indent_chars: 0, align: 'LEFT',
+    add_space: false, space_count: 0,
+  }
+  props.patterns.rules.push({ enabled: false, scheme: 'ARABIC', wrapper: 'DOT', multi_depth: '1', custom_example: '' })
+  props.params.push(defaultHeading)
+  activeLevel.value = props.params.length - 1
+  nextTick(positionIndicator)
+}
+
+function removeRule() {
+  if (props.patterns.rules.length > 1) {
+    props.patterns.rules.pop()
+    props.params.pop()
+    if (activeLevel.value >= props.params.length) {
+      activeLevel.value = props.params.length - 1
+    }
+    nextTick(positionIndicator)
+  }
+}
+
+const schemeChars = {
+  NONE: '',
+  ARABIC: '1',
+  ZH_NUM: '一',
+  ALPHA_UPPER: 'A',
+  ALPHA_LOWER: 'a',
+  ROMAN_UPPER: 'I',
+  ROMAN_LOWER: 'i',
+}
+
+function getPreview(rule) {
+  const n = schemeChars[rule.scheme] || '1'
+  switch (rule.wrapper) {
+    case 'NONE': return n
+    case 'DOT': return n + '.'
+    case 'DOUBLE_PAREN': return '(' + n + ')'
+    case 'SINGLE_PAREN': return n + ')'
+    case 'DUNHAO': return n + '、'
+    case 'DOUBLE_BRACKET': return '[' + n + ']'
+    case 'SINGLE_BRACKET': return n + ']'
+    case 'DOUBLE_ANGLE': return '<' + n + '>'
+    case 'SINGLE_ANGLE': return n + '>'
+    case 'CN_BRACKET': return '【' + n + '】'
+    default: return n
+  }
+}
 
 const activeLevel = ref(0)
 const levelBarRef = ref(null)
@@ -42,47 +98,68 @@ const lineSpacingModes = [
   { value: 'MULTIPLE', label: '多倍行距' },
   { value: 'AT_LEAST', label: '最小值' },
 ]
-const spacingUnits = ['磅', '行'].map(v => ({ value: v, label: v }))
-const indentUnits = ['字符', '厘米', '毫米'].map(v => ({ value: v, label: v }))
-const levelLabels = ['一级标题', '二级标题', '三级标题', '四级标题']
+const spacingUnits = ['行', '厘米', '字符', '磅'].map(v => ({ value: v === '磅' ? 'pt' : v === '行' ? 'line' : v === '字符' ? 'char' : v === '厘米' ? 'cm' : v, label: v }))
+const indentUnits = ['行', '厘米', '字符', '磅'].map(v => ({ value: v === '磅' ? 'pt' : v === '行' ? 'line' : v === '字符' ? 'char' : v === '厘米' ? 'cm' : v, label: v }))
+const cnLevelNames = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
+const levelLabels = computed(() =>
+  props.params.map((_, i) => (cnLevelNames[i] || `${i + 1}`) + '级标题')
+)
 
 const numberingSchemes = [
-  { value: 'ARABIC', label: '1, 2, 3' },
-  { value: 'ZH_NUM', label: '一、二、三' },
-  { value: 'ALPHA', label: 'A, B, C' },
-  { value: 'ROMAN', label: 'I, II, III' },
+  { value: 'NONE', label: '原有级别&标题' },
+  { value: 'ZH_NUM', label: '中文数字' },
+  { value: 'ALPHA_UPPER', label: '大写字母' },
+  { value: 'ALPHA_LOWER', label: '小写字母' },
+  { value: 'ARABIC', label: '阿拉伯数字' },
+  { value: 'ROMAN_UPPER', label: '大写罗马数字' },
+  { value: 'ROMAN_LOWER', label: '小写罗马数字' },
 ]
 
 const wrappers = [
-  { value: 'NONE', label: '无' },
-  { value: 'DUNHAO', label: '第X章' },
-  { value: 'SECTION', label: '第X节' },
-  { value: 'ARTICLE', label: '第X条' },
+  { value: 'NONE', label: '无前后缀' },
+  { value: 'DOT', label: '尾部加点.' },
+  { value: 'DOUBLE_PAREN', label: '双圆括号()' },
+  { value: 'SINGLE_PAREN', label: '单圆括号)' },
+  { value: 'DUNHAO', label: '顿号、' },
+  { value: 'DOUBLE_BRACKET', label: '双方括号[]' },
+  { value: 'SINGLE_BRACKET', label: '单方括号]' },
+  { value: 'DOUBLE_ANGLE', label: '双尖括号<>' },
+  { value: 'SINGLE_ANGLE', label: '单尖括号>' },
+  { value: 'CN_BRACKET', label: '中文方括号【】' },
 ]
 
-const ruleNames = ['第1章', '1.1', '1.1.1', '1.1.1.1']
 </script>
 
 <template>
   <div class="bg-cream border-b border-tan-border h-full px-5 py-3">
     <div class="grid grid-cols-2 gap-4">
-      <!-- 编号规则 -->
+      <!-- 标题规则 -->
       <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
         <div class="flex items-center gap-[8px]">
           <div class="w-[5px] h-[18px] rounded-[2px] bg-gold-dark shrink-0"></div>
-          <span class="text-[15px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">编号规则</span>
+          <span class="text-[15px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">标题规则</span>
+          <div class="flex-1"></div>
+          <div class="flex items-center gap-1">
+            <button @click="addRule"
+              class="w-7 h-6 rounded-[3px] flex items-center justify-center transition-colors duration-200 text-brown-muted hover:text-cinnabar hover:bg-cream-darker" title="新增">
+              <RiAddLine size="14" />
+            </button>
+            <button @click="removeRule" :disabled="props.patterns.rules.length <= 1"
+              class="w-7 h-6 rounded-[3px] flex items-center justify-center transition-colors duration-200 text-brown-muted hover:text-cinnabar hover:bg-cream-darker disabled:opacity-30 disabled:cursor-not-allowed" title="删除最末项">
+              <RiSubtractLine size="14" />
+            </button>
+          </div>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left border-separate" style="border-spacing: 0;">
             <thead>
               <tr class="text-[12px] font-semibold text-brown-muted">
-                <th class="py-3 px-2 w-[50px] shrink-0">启用</th>
-                <th class="py-3 px-2 w-[80px] shrink-0">规则名称</th>
-                <th class="py-3 px-2">编号方案</th>
-                <th class="py-3 px-2">包装器</th>
-                <th class="py-3 px-2 w-[70px] shrink-0">多层深度</th>
-                <th class="py-3 px-2 w-[100px] shrink-0">效果示例</th>
+                <th class="py-3 px-2 w-[60px] shrink-0">自定义</th>
+                <th class="py-3 px-2 w-[80px] shrink-0">标题级别</th>
+                <th class="py-3 px-2">标题编号</th>
+                <th class="py-3 px-2 w-[110px] shrink-0">标题后缀符号</th>
+                <th class="py-3 px-2 w-[80px] shrink-0">标题预览</th>
               </tr>
             </thead>
             <tbody>
@@ -95,24 +172,22 @@ const ruleNames = ['第1章', '1.1', '1.1.1', '1.1.1.1']
                     </div>
                   </div>
                 </td>
-                <td class="py-2 px-2 text-brown font-medium">{{ ruleNames[ri] }}</td>
+                <td class="py-2 px-2 text-brown font-medium">{{ (cnLevelNames[ri] || `${ri + 1}`) + '级标题' }}</td>
                 <td class="py-2 px-2">
-                  <DropdownSelect v-model="rule.scheme" :options="numberingSchemes" width-class="w-full" />
+                  <input v-if="rule.enabled" type="text" v-model="rule.custom_example"
+                    class="w-full bg-white border border-tan-border rounded-lg px-[10px] py-[7px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" placeholder="输入自定义标题" />
+                  <DropdownSelect v-else v-model="rule.scheme" :options="numberingSchemes" width-class="w-full" />
                 </td>
-                <td class="py-2 px-2">
-                  <DropdownSelect v-model="rule.wrapper" :options="wrappers" width-class="w-full" />
-                </td>
-                <td class="py-2 px-2">
-                  <input type="number" min="1" max="5" v-model.number="rule.multi_depth"
-                    class="w-[55px] bg-white border border-tan-border rounded-lg px-[10px] py-[7px] text-[13px] text-brown outline-none focus:border-cinnabar transition-colors" />
-                </td>
-                <td class="py-2 px-2 text-brown-muted text-[12px]">
-                  <span v-if="ri === 0 && rule.scheme === 'ZH_NUM' && rule.wrapper === 'DUNHAO'">第X章</span>
-                  <span v-else-if="ri === 0 && rule.scheme === 'ARABIC'">第X章</span>
-                  <span v-else-if="ri === 1">1.1</span>
-                  <span v-else-if="ri === 2">1.1.1</span>
-                  <span v-else>1.1.1.1</span>
-                </td>
+                <template v-if="!rule.enabled">
+                  <td class="py-2 px-2">
+                    <DropdownSelect v-model="rule.wrapper" :options="wrappers" width-class="w-[130px]" />
+                  </td>
+                  <td class="py-2 px-2 text-cinnabar text-[13px] font-semibold text-center">{{ getPreview(rule) }}</td>
+                </template>
+                <template v-else>
+                  <td class="py-2 px-2"></td>
+                  <td class="py-2 px-2"></td>
+                </template>
               </tr>
             </tbody>
           </table>
@@ -142,7 +217,7 @@ const ruleNames = ['第1章', '1.1', '1.1.1', '1.1.1.1']
             <div>
               <span class="text-[12px] font-semibold text-brown-muted block mb-[6px]">字体</span>
               <div class="w-full flex flex-col gap-[6px]">
-                <div class="flex items-center gap-[6px]">
+                <div class="flex items-center justify-between gap-[6px]">
                   <div class="flex items-center gap-1">
                     <span class="text-[12px] text-brown shrink-0">中文</span>
                     <DropdownSelect v-model="props.params[activeLevel].cn_font" :options="cnFonts" width-class="auto" />
@@ -151,7 +226,7 @@ const ruleNames = ['第1章', '1.1', '1.1.1', '1.1.1.1']
                     <span class="text-[12px] text-brown shrink-0">英文</span>
                     <DropdownSelect v-model="props.params[activeLevel].en_font" :options="enFonts" width-class="auto" />
                   </div>
-                  <div class="ml-auto flex items-center gap-1">
+                  <div class="flex items-center gap-1">
                     <span class="text-[12px] text-brown shrink-0">字号</span>
                     <DropdownSelect v-model="props.params[activeLevel].size_cn" :options="sizeCN" width-class="auto" />
                   </div>
@@ -199,21 +274,21 @@ const ruleNames = ['第1章', '1.1', '1.1.1', '1.1.1.1']
                 </div>
                 <div class="flex items-center gap-1">
                   <span class="text-[12px] text-brown shrink-0">值</span>
-                  <input type="number" step="0.5" v-model.number="props.params[activeLevel].line_spacing_value"
+                  <input type="number" min="0" step="0.5" v-model.number="props.params[activeLevel].line_spacing_value"
                     class="w-[50px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
                   <span class="text-[12px] text-brown shrink-0">磅</span>
                 </div>
                 <div class="flex items-center gap-1">
                   <span class="text-[12px] text-brown shrink-0">段前</span>
-                  <input type="number" step="0.5" v-model.number="props.params[activeLevel].space_before_value"
+                  <input type="number" min="0" step="0.5" v-model.number="props.params[activeLevel].space_before_value"
                     class="w-[48px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
-                  <DropdownSelect v-model="props.params[activeLevel].space_before_unit" :options="spacingUnits" width-class="w-[50px]" />
-                </div>
-                <div class="flex items-center gap-1">
-                  <span class="text-[12px] text-brown shrink-0">段后</span>
-                  <input type="number" step="0.5" v-model.number="props.params[activeLevel].space_after_value"
-                    class="w-[48px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
-                  <DropdownSelect v-model="props.params[activeLevel].space_after_unit" :options="spacingUnits" width-class="w-[50px]" />
+                    <DropdownSelect v-model="props.params[activeLevel].space_before_unit" :options="spacingUnits" width-class="w-[65px]" />
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <span class="text-[12px] text-brown shrink-0">段后</span>
+                    <input type="number" min="0" step="0.5" v-model.number="props.params[activeLevel].space_after_value"
+                      class="w-[48px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
+                    <DropdownSelect v-model="props.params[activeLevel].space_after_unit" :options="spacingUnits" width-class="w-[65px]" />
                 </div>
               </div>
             </div>
@@ -224,19 +299,19 @@ const ruleNames = ['第1章', '1.1', '1.1.1', '1.1.1.1']
               <div class="flex flex-wrap items-center gap-[6px]">
                 <div class="flex items-center gap-1">
                   <span class="text-[12px] text-brown shrink-0">左</span>
-                  <input type="number" step="0.1" v-model.number="props.params[activeLevel].left_indent_value"
+                  <input type="number" min="0" step="0.1" v-model.number="props.params[activeLevel].left_indent_value"
                     class="w-[50px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
-                  <DropdownSelect v-model="props.params[activeLevel].left_indent_unit" :options="indentUnits" width-class="w-[60px]" />
-                </div>
-                <div class="flex items-center gap-1">
-                  <span class="text-[12px] text-brown shrink-0">右</span>
-                  <input type="number" step="0.1" v-model.number="props.params[activeLevel].right_indent_value"
-                    class="w-[50px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
-                  <DropdownSelect v-model="props.params[activeLevel].right_indent_unit" :options="indentUnits" width-class="w-[60px]" />
+                    <DropdownSelect v-model="props.params[activeLevel].left_indent_unit" :options="indentUnits" width-class="w-[65px]" />
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <span class="text-[12px] text-brown shrink-0">右</span>
+                    <input type="number" min="0" step="0.1" v-model.number="props.params[activeLevel].right_indent_value"
+                      class="w-[50px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
+                    <DropdownSelect v-model="props.params[activeLevel].right_indent_unit" :options="indentUnits" width-class="w-[65px]" />
                 </div>
                 <div class="flex items-center gap-1">
                   <span class="text-[12px] text-brown shrink-0">首行</span>
-                  <input type="number" step="0.1" v-model.number="props.params[activeLevel].first_line_indent_chars"
+                  <input type="number" min="0" step="0.1" v-model.number="props.params[activeLevel].first_line_indent_chars"
                     class="w-[50px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
                   <span class="text-[12px] text-brown shrink-0">字符</span>
                 </div>
