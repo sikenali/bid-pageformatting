@@ -27,9 +27,9 @@ const spacingUnits = [
 <template>
   <div class="bg-cream border-b border-tan-border h-full px-5 py-3">
     <div class="grid grid-cols-2 gap-4">
-      <div class="bg-cream-dark border border-tan-border rounded-2xl p-5 flex flex-col gap-3">
+      <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-[8px]">
           <div class="w-[5px] h-[18px] rounded-[2px] bg-cinnabar"></div>
           <span class="text-[15px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">字体</span>
         </div>
@@ -73,9 +73,9 @@ const spacingUnits = [
         </div>
       </div>
 
-      <div class="bg-cream-dark border border-tan-border rounded-2xl p-5 flex flex-col gap-3">
+      <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-[8px]">
           <div class="w-[5px] h-[18px] rounded-[2px] bg-gold-dark"></div>
           <span class="text-[15px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">行距与段落间距</span>
         </div>
@@ -105,9 +105,9 @@ const spacingUnits = [
         </div>
       </div>
 
-      <div class="bg-cream-dark border border-tan-border rounded-2xl p-5 flex flex-col gap-3">
+      <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-[8px]">
           <div class="w-[5px] h-[18px] rounded-[2px] bg-cloud-blue"></div>
           <span class="text-[15px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">缩进</span>
         </div>
@@ -134,9 +134,9 @@ const spacingUnits = [
         </div>
       </div>
 
-      <div class="bg-cream-dark border border-tan-border rounded-2xl p-5 flex flex-col gap-3">
+      <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-[8px]">
           <div class="w-[5px] h-[18px] rounded-[2px] bg-jade-light"></div>
           <span class="text-[15px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">对齐与空格</span>
         </div>
