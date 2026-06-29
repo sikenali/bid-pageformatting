@@ -46,58 +46,67 @@ const pageNumberTypes = [
           </div>
           <span class="text-[12px] text-brown shrink-0">启用</span>
         </div>
-        <div :class="params.enable_header ? '' : 'pointer-events-none opacity-60'">
-          <div class="flex items-center gap-1 mb-[6px]">
-            <span class="text-[12px] text-brown shrink-0">页眉标题</span>
-            <input type="text" v-model="params.header_text"
-              class="w-[100px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
+        <div :class="params.enable_header ? '' : 'pointer-events-none opacity-60'" class="flex flex-col gap-3">
+          <div>
+            <div class="flex items-center gap-1">
+              <span class="text-[12px] text-brown shrink-0">页眉标题</span>
+              <input type="text" v-model="params.header_text"
+                class="w-[200px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
+            </div>
+            <div class="text-[11px] text-brown-muted/70 mt-1">墨墨梧文-智能化排版工具</div>
           </div>
           <div class="w-full h-[1px] bg-tan-border"></div>
-          <div class="flex flex-wrap items-center gap-[6px] mt-[6px]">
-            <div class="flex items-center gap-1">
-              <span class="text-[12px] text-brown shrink-0">中文字体</span>
-              <DropdownSelect v-model="params.header_cn_font" :options="cnFonts" width-class="auto" />
-            </div>
-            <div class="flex items-center gap-1">
-              <span class="text-[12px] text-brown shrink-0">英文字体</span>
-              <DropdownSelect v-model="params.header_en_font" :options="enFonts" width-class="auto" />
-            </div>
-            <div class="flex items-center gap-1">
-              <span class="text-[12px] text-brown shrink-0">字号</span>
-              <DropdownSelect v-model="params.header_size_cn" :options="sizeCN" width-class="auto" />
-            </div>
-            <div class="flex items-center gap-1">
-              <span class="text-[12px] text-brown shrink-0">对齐</span>
-              <DropdownSelect v-model="params.header_align" :options="alignOptions" width-class="auto" />
+          <div>
+            <div class="flex flex-wrap items-center gap-[6px]">
+              <div class="flex items-center gap-1">
+                <span class="text-[12px] text-brown shrink-0">中文字体</span>
+                <DropdownSelect v-model="params.header_cn_font" :options="cnFonts" width-class="auto" />
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="text-[12px] text-brown shrink-0">英文字体</span>
+                <DropdownSelect v-model="params.header_en_font" :options="enFonts" width-class="auto" />
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="text-[12px] text-brown shrink-0">字号</span>
+                <DropdownSelect v-model="params.header_size_cn" :options="sizeCN" width-class="auto" />
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="text-[12px] text-brown shrink-0">对齐</span>
+                <DropdownSelect v-model="params.header_align" :options="alignOptions" width-class="auto" />
+              </div>
             </div>
           </div>
-          <div class="w-full h-[1px] bg-tan-border mt-[6px]"></div>
-          <div class="flex flex-wrap items-center gap-[6px] mt-[6px]">
-            <div class="flex items-center gap-[3px] cursor-pointer" @click="params.header_bold = !params.header_bold">
-              <div class="w-[16px] h-[16px] rounded-[3px] flex items-center justify-center transition-colors shrink-0"
-                :class="params.header_bold ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
-                <RiCheckLine v-if="params.header_bold" size="10" class="text-white" />
+          <div class="w-full h-[1px] bg-tan-border"></div>
+          <div>
+            <div class="flex flex-wrap items-center gap-[6px]">
+              <div class="flex items-center gap-[3px] cursor-pointer" @click="params.header_bold = !params.header_bold">
+                <div class="w-[16px] h-[16px] rounded-[3px] flex items-center justify-center transition-colors shrink-0"
+                  :class="params.header_bold ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
+                  <RiCheckLine v-if="params.header_bold" size="10" class="text-white" />
+                </div>
+                <span class="text-[12px] text-brown shrink-0">粗体</span>
               </div>
-              <span class="text-[12px] text-brown shrink-0">粗体</span>
-            </div>
-            <div class="flex items-center gap-[3px] cursor-pointer" @click="params.header_italic = !params.header_italic">
-              <div class="w-[16px] h-[16px] rounded-[3px] flex items-center justify-center transition-colors shrink-0"
-                :class="params.header_italic ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
-                <RiCheckLine v-if="params.header_italic" size="10" class="text-white" />
+              <div class="flex items-center gap-[3px] cursor-pointer" @click="params.header_italic = !params.header_italic">
+                <div class="w-[16px] h-[16px] rounded-[3px] flex items-center justify-center transition-colors shrink-0"
+                  :class="params.header_italic ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
+                  <RiCheckLine v-if="params.header_italic" size="10" class="text-white" />
+                </div>
+                <span class="text-[12px] text-brown shrink-0">斜体</span>
               </div>
-              <span class="text-[12px] text-brown shrink-0">斜体</span>
-            </div>
-            <div class="flex items-center gap-1">
-              <span class="text-[12px] text-brown shrink-0">下划线</span>
-              <DropdownSelect v-model="params.header_underline_type" :options="headerUnderlineTypes" width-class="auto" compact />
+              <div class="flex items-center gap-1">
+                <span class="text-[12px] text-brown shrink-0">下划线</span>
+                <DropdownSelect v-model="params.header_underline_type" :options="headerUnderlineTypes" width-class="auto" compact />
+              </div>
             </div>
           </div>
-          <div class="w-full h-[1px] bg-tan-border mt-[6px]"></div>
-          <div class="flex items-center gap-1 mt-[6px]">
-            <span class="text-[12px] text-brown whitespace-nowrap">页眉顶端距离</span>
-            <input type="number" v-model.number="params.header_top_cm" min="0" step="0.1"
-              class="w-[56px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
-            <span class="text-[12px] text-brown">厘米</span>
+          <div class="w-full h-[1px] bg-tan-border"></div>
+          <div>
+            <div class="flex items-center gap-1">
+              <span class="text-[12px] text-brown whitespace-nowrap">页眉顶端距离</span>
+              <input type="number" v-model.number="params.header_top_cm" min="0" step="0.1"
+                class="w-[56px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
+              <span class="text-[12px] text-brown">厘米</span>
+            </div>
           </div>
         </div>
       </div>
@@ -123,7 +132,7 @@ const pageNumberTypes = [
                 :class="params.clear_footer ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
                 <RiCheckLine v-if="params.clear_footer" size="10" class="text-white" />
               </div>
-              <span class="text-[12px] text-brown shrink-0">清除页码</span>
+              <span class="text-[12px] text-brown shrink-0">清除页码后插入</span>
             </div>
             <div class="w-[1px] h-[16px] bg-tan-border shrink-0"></div>
             <div class="flex items-center gap-[3px] cursor-pointer" @click="params.page_number_from_body = !params.page_number_from_body">
