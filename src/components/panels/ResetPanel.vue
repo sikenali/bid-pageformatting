@@ -36,7 +36,7 @@ const objectFields = [
 <template>
   <div class="bg-cream border-b border-tan-border h-full px-5 py-3">
     <div class="grid grid-cols-2 gap-4">
-      <div class="bg-cream-dark border border-tan-border rounded-2xl p-5 flex flex-col gap-3">
+      <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
         <div class="flex items-center gap-[8px]">
           <div class="w-[5px] h-[18px] rounded-[2px] bg-cinnabar shrink-0"></div>
@@ -55,7 +55,7 @@ const objectFields = [
         </div>
       </div>
 
-      <div class="bg-cream-dark border border-tan-border rounded-2xl p-5 flex flex-col gap-3">
+      <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
         <div class="flex items-center gap-[8px]">
           <div class="w-[5px] h-[18px] rounded-[2px] bg-gold shrink-0"></div>
@@ -74,7 +74,7 @@ const objectFields = [
         </div>
       </div>
 
-      <div class="bg-cream-dark border border-tan-border rounded-2xl p-5 flex flex-col gap-3">
+      <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
         <div class="flex items-center gap-[8px]">
           <div class="w-[5px] h-[18px] rounded-[2px] bg-cloud-blue shrink-0"></div>
@@ -98,7 +98,7 @@ const objectFields = [
         </div>
       </div>
 
-      <div class="bg-cream-dark border border-tan-border rounded-2xl p-5 flex flex-col gap-3">
+      <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
         <div class="flex items-center gap-[8px]">
           <div class="w-[5px] h-[18px] rounded-[2px] bg-jade shrink-0"></div>
