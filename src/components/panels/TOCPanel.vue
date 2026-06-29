@@ -109,8 +109,9 @@ function leaderPreview(value) {
   <div class="bg-cream border-b border-tan-border h-full px-5 py-3">
     <div class="flex gap-5 h-full overflow-hidden">
       <!-- 目录标题 -->
-      <div class="flex-1 min-w-0 bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4 overflow-hidden">
+      <div class="flex-1 min-w-0 bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col overflow-hidden">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
+        <div class="flex-1 overflow-y-auto flex flex-col gap-3">
         <div class="flex items-center gap-[8px]">
           <div class="w-[5px] h-[18px] rounded-[2px] bg-cinnabar shrink-0"></div>
           <span class="text-[14px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">目录标题</span>
@@ -148,8 +149,9 @@ function leaderPreview(value) {
       </div>
 
       <!-- 目录层级样式 -->
-      <div class="flex-1 min-w-0 bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4 overflow-hidden">
+      <div class="flex-1 min-w-0 bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col overflow-hidden">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
+        <div class="flex-1 overflow-y-auto flex flex-col gap-3">
           <div class="flex items-center gap-[8px]">
             <div class="w-[5px] h-[18px] rounded-[2px] bg-gold-dark shrink-0"></div>
             <span class="text-[14px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">目录层级样式</span>
@@ -295,7 +297,7 @@ function leaderPreview(value) {
               </div>
             </div>
           </Transition>
-          </div>
+        </div>
       </div>
     </div>
   </div>

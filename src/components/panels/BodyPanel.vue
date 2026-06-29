@@ -26,8 +26,8 @@ const spacingUnits = [
 
 <template>
   <div class="bg-cream border-b border-tan-border h-full px-5 py-3">
-    <div class="flex gap-5 h-full overflow-hidden">
-      <div class="flex-1 min-w-0 bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4 overflow-hidden">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
         <div class="flex items-center gap-[8px]">
           <div class="w-[5px] h-[18px] rounded-[2px] bg-cinnabar"></div>
@@ -73,7 +73,7 @@ const spacingUnits = [
         </div>
       </div>
 
-      <div class="flex-1 min-w-0 bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4 overflow-hidden">
+      <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
         <div class="flex items-center gap-[8px]">
           <div class="w-[5px] h-[18px] rounded-[2px] bg-gold-dark"></div>
@@ -105,7 +105,7 @@ const spacingUnits = [
         </div>
       </div>
 
-      <div class="flex-1 min-w-0 bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4 overflow-hidden">
+      <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
         <div class="flex items-center gap-[8px]">
           <div class="w-[5px] h-[18px] rounded-[2px] bg-cloud-blue"></div>
@@ -134,7 +134,7 @@ const spacingUnits = [
         </div>
       </div>
 
-      <div class="flex-1 min-w-0 bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4 overflow-hidden">
+      <div class="bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
         <div class="flex items-center gap-[8px]">
           <div class="w-[5px] h-[18px] rounded-[2px] bg-jade-light"></div>
