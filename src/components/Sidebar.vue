@@ -33,6 +33,7 @@ const selectTab = (tabId) => {
 
 const tabContainerRef = ref(null)
 const indicatorStyle = ref({ top: '0px', height: '0px' })
+const isInitialized = ref(false) // 首次加载完成后标记
 
 function positionIndicator() {
   const container = tabContainerRef.value
@@ -55,7 +56,14 @@ function positionIndicator() {
   }
 }
 
-onMounted(() => { nextTick(positionIndicator) })
+onMounted(() => {
+  // 延迟确保 DOM 完全渲染
+  setTimeout(() => {
+    positionIndicator()
+    // 首次加载完成后启用动效
+    isInitialized.value = true
+  }, 100)
+})
 </script>
 
 <template>
@@ -67,8 +75,8 @@ onMounted(() => { nextTick(positionIndicator) })
     </div>
 
     <div ref="tabContainerRef" class="flex-1 overflow-y-auto px-4 pb-3 space-y-2 relative bg-cream-darker rounded-xl mx-4">
-      <div class="absolute left-4 right-4 rounded-xl shadow-sm transition-all duration-300 ease-out pointer-events-none z-0"
-        :class="activeTab === 'reset' ? 'bg-[#C8A45C]' : 'bg-cinnabar'"
+      <div class="absolute left-4 right-4 rounded-xl shadow-sm pointer-events-none z-0"
+        :class="[activeTab === 'reset' ? 'bg-[#C8A45C]' : 'bg-cinnabar', isInitialized ? 'transition-all duration-300 ease-out' : '']"
         :style="indicatorStyle">
       </div>
       <button
