@@ -213,10 +213,10 @@ const formatParams = reactive({
     title_en_font: 'Times New Roman',
     title_size_cn: '三号',
     level_styles: [
-      { cn_font: '宋体', en_font: 'Arial', size_cn: '小五', bold: true, italic: false, color_rgb: [0, 0, 0], line_spacing_mode: 'EXACT', line_spacing_value: 1, space_before_value: 0, space_before_unit: 'line', space_after_value: 0, space_after_unit: 'line', left_indent_value: 0, left_indent_unit: 'char', right_indent_value: 0, right_indent_unit: 'char', first_line_indent_chars: 0, tab_leader: 'DOT' },
-      { cn_font: '宋体', en_font: 'Arial', size_cn: '小五', bold: false, italic: false, color_rgb: [0, 0, 0], line_spacing_mode: 'EXACT', line_spacing_value: 1, space_before_value: 0, space_before_unit: 'line', space_after_value: 0, space_after_unit: 'line', left_indent_value: 1, left_indent_unit: 'char', right_indent_value: 0, right_indent_unit: 'char', first_line_indent_chars: 0, tab_leader: 'DOT' },
-      { cn_font: '宋体', en_font: 'Arial', size_cn: '小五', bold: false, italic: false, color_rgb: [0, 0, 0], line_spacing_mode: 'EXACT', line_spacing_value: 1, space_before_value: 0, space_before_unit: 'line', space_after_value: 0, space_after_unit: 'line', left_indent_value: 2, left_indent_unit: 'char', right_indent_value: 0, right_indent_unit: 'char', first_line_indent_chars: 0, tab_leader: 'DOT' },
-      { cn_font: '宋体', en_font: 'Arial', size_cn: '小五', bold: false, italic: false, color_rgb: [0, 0, 0], line_spacing_mode: 'EXACT', line_spacing_value: 1, space_before_value: 0, space_before_unit: 'line', space_after_value: 0, space_after_unit: 'line', left_indent_value: 3, left_indent_unit: 'char', right_indent_value: 0, right_indent_unit: 'char', first_line_indent_chars: 0, tab_leader: 'DOT' },
+      { cn_font: '宋体', en_font: 'Arial', size_cn: '小五', bold: true, italic: false, color_rgb: [0, 0, 0], line_spacing_mode: 'SINGLE', line_spacing_value: 1, space_before_value: 0, space_before_unit: 'line', space_after_value: 0, space_after_unit: 'line', left_indent_value: 0, left_indent_unit: 'char', right_indent_value: 0, right_indent_unit: 'char', first_line_indent_chars: 0, tab_leader: 'DOT' },
+      { cn_font: '宋体', en_font: 'Arial', size_cn: '小五', bold: false, italic: false, color_rgb: [0, 0, 0], line_spacing_mode: 'SINGLE', line_spacing_value: 1, space_before_value: 0, space_before_unit: 'line', space_after_value: 0, space_after_unit: 'line', left_indent_value: 1, left_indent_unit: 'char', right_indent_value: 0, right_indent_unit: 'char', first_line_indent_chars: 0, tab_leader: 'DOT' },
+      { cn_font: '宋体', en_font: 'Arial', size_cn: '小五', bold: false, italic: false, color_rgb: [0, 0, 0], line_spacing_mode: 'SINGLE', line_spacing_value: 1, space_before_value: 0, space_before_unit: 'line', space_after_value: 0, space_after_unit: 'line', left_indent_value: 2, left_indent_unit: 'char', right_indent_value: 0, right_indent_unit: 'char', first_line_indent_chars: 0, tab_leader: 'DOT' },
+      { cn_font: '宋体', en_font: 'Arial', size_cn: '小五', bold: false, italic: false, color_rgb: [0, 0, 0], line_spacing_mode: 'SINGLE', line_spacing_value: 1, space_before_value: 0, space_before_unit: 'line', space_after_value: 0, space_after_unit: 'line', left_indent_value: 3, left_indent_unit: 'char', right_indent_value: 0, right_indent_unit: 'char', first_line_indent_chars: 0, tab_leader: 'DOT' },
     ],
   },
 
@@ -234,7 +234,7 @@ const formatParams = reactive({
     header_top_cm: 1.50,
     footer_bottom_cm: 1.50,
     page_number_from_body: false,
-    clear_footer: false,
+    clear_footer: true,
     footer_cn_font: '宋体',
     footer_en_font: 'Times New Roman',
     footer_size_cn: '五号',

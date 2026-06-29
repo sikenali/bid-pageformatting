@@ -242,7 +242,7 @@ function leaderPreview(value) {
                   </div>
                   <div class="flex items-center gap-1">
                     <span class="text-[12px] text-brown shrink-0">段后间距</span>
-                    <input type="number" step="0.1" v-model.number="params.level_styles[activeLevel].space_after_value"
+                    <input type="number" min="0" step="0.1" v-model.number="params.level_styles[activeLevel].space_after_value"
                       class="w-[60px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
                     <DropdownSelect v-model="params.level_styles[activeLevel].space_after_unit" :options="spacingUnits" width-class="w-[60px]" />
                   </div>

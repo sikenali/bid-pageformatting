@@ -14,7 +14,6 @@ import {
 const emit = defineEmits(['tab-change', 'cancel', 'apply'])
 const activeTab = ref('page')
 const props = defineProps({
-  isProcessing: { type: Boolean, default: false },
 })
 
 const tabs = [

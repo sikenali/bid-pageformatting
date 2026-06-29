@@ -25,7 +25,8 @@ import {
   RiZoomOutLine, RiZoomInLine, RiPagesLine, RiTextSnippet, RiHeading,
   RiBarChart2Line, RiListCheck2, RiLayoutTop2Line, RiRefreshLine,
   RiFootprintLine, RiDoubleQuotesL, RiFileTextLine, RiFileEditLine,
-  RiSideBarLine, RiCheckLine, RiEdit2Line, RiEyeLine, RiLoader2Line
+  RiSideBarLine, RiCheckLine, RiEdit2Line, RiEyeLine, RiLoader2Line,
+  RiSaveLine, RiSparklingLine
 } from '@remixicon/vue'
 
 const router = useRouter()
@@ -212,10 +213,9 @@ const showEditor = computed(() => isDocx.value && isEditMode.value)
   <main class="pt-16 bg-parchment">
     <div class="h-[calc(100vh-4rem)] flex">
       <Sidebar
-        :is-processing="isProcessing"
         @tab-change="activeTab = $event"
-        @save-template="handleSaveTemplate"
-        @one-click-modify="handleOneClickModify"
+        @cancel="handleReset"
+        @apply="handleSave"
       />
 
       <div class="flex-1 flex flex-col min-w-0">
@@ -296,18 +296,21 @@ const showEditor = computed(() => isDocx.value && isEditMode.value)
 
         <div class="bg-cream border-t border-tan-border flex items-center justify-end px-8 py-5 shrink-0">
           <button
-            @click="handleReset"
-            class="px-6 py-3 bg-cream-dark border border-tan-border rounded-xl text-[14px] font-medium text-brown transition-colors hover:bg-cream-darker"
+            @click="handleSaveTemplate"
+            class="flex items-center gap-2 px-6 py-3 bg-cream-dark border border-gold-dark/50 rounded-xl text-[14px] font-semibold text-brown transition-all hover:bg-cream-darker"
           >
-            取消
+            <RiSaveLine size="18" color="#C8A45C" />
+            <span>保存到模板</span>
           </button>
           <div class="w-3"></div>
           <button
-            @click="handleSave"
-            class="flex items-center gap-2 px-6 py-3 bg-cinnabar text-white rounded-xl text-[14px] font-semibold transition-colors hover:bg-cinnabar-dark"
+            @click="handleOneClickModify"
+            class="flex items-center gap-2 px-6 py-3 bg-cinnabar text-white rounded-xl text-[14px] font-semibold transition-all hover:bg-cinnabar-dark disabled:opacity-60 disabled:cursor-not-allowed"
+            :disabled="isProcessing"
           >
-            <RiCheckLine size="18" />
-            <span>应用设置</span>
+            <RiLoader2Line v-if="isProcessing" size="18" color="white" class="animate-spin" />
+            <RiSparklingLine v-else size="18" color="white" />
+            <span>{{ isProcessing ? '文档智能化排版处理中...' : '一键修改' }}</span>
           </button>
         </div>
       </div>
