@@ -354,7 +354,7 @@ const wrappers = [
                     :class="props.params[activeLevel].add_space ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
                     <RiCheckLine v-if="props.params[activeLevel].add_space" size="10" class="text-white" />
                   </div>
-                  <span class="text-[12px] text-brown shrink-0">中英文空格</span>
+                  <span class="text-[12px] text-brown shrink-0">标题编号后添加空格</span>
                 </div>
                 <div v-if="props.params[activeLevel].add_space" class="flex items-center gap-1">
                   <span class="text-[12px] text-brown shrink-0">空格数</span>
