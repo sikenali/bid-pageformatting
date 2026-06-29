@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTemplates } from '../composables/useTemplates'
 import { useFormatState } from '../composables/useFormatState'
@@ -20,6 +20,45 @@ const categoryIcons = {
   business: RiBarChart2Line,
   creative: RiPaintBrushLine,
 }
+
+// 滑动指示器动效
+const categoryContainerRef = ref(null)
+const indicatorStyle = ref({ top: '0px', height: '0px' })
+const isInitialized = ref(false) // 首次加载完成后标记
+
+function positionIndicator() {
+  const container = categoryContainerRef.value
+  if (!container) return
+  const btns = container.querySelectorAll('button')
+  let targetBtn = null
+  for (const btn of btns) {
+    if (btn.dataset.categoryId === activeCategory.value) {
+      targetBtn = btn
+      break
+    }
+  }
+  if (!targetBtn) return
+  const containerRect = container.getBoundingClientRect()
+  const btnRect = targetBtn.getBoundingClientRect()
+  indicatorStyle.value = {
+    top: `${btnRect.top - containerRect.top}px`,
+    height: `${btnRect.height}px`,
+  }
+}
+
+function selectCategory(id) {
+  activeCategory.value = id
+  nextTick(positionIndicator)
+}
+
+onMounted(() => {
+  // 延迟确保 DOM 完全渲染
+  setTimeout(() => {
+    positionIndicator()
+    // 首次加载完成后启用动效
+    isInitialized.value = true
+  }, 100)
+})
 
 const filteredTemplates = computed(() => {
   if (activeCategory.value === 'all') return templates.value
@@ -62,25 +101,27 @@ const applyTemplates = () => {
         <p class="text-xs text-brown-muted mt-2">选择或管理您的排版模板</p>
       </div>
 
-      <div class="flex-1 px-4 pb-4 space-y-2">
+      <div ref="categoryContainerRef" class="flex-1 px-4 pb-4 space-y-2 relative">
+        <div class="absolute left-4 right-4 rounded-xl shadow-sm pointer-events-none z-0 bg-cinnabar"
+          :class="isInitialized ? 'transition-all duration-300 ease-out' : ''"
+          :style="indicatorStyle">
+        </div>
         <button
           v-for="cat in categories"
           :key="cat"
-          @click="activeCategory = cat"
-          class="w-full rounded-xl p-3 transition-all text-left"
-          :class="activeCategory === cat ? 'bg-cinnabar text-white' : 'bg-cream-dark hover:bg-cream-darker'"
+          :data-category-id="cat"
+          @click="selectCategory(cat)"
+          class="relative z-10 w-full rounded-xl py-3 px-4 flex items-center gap-3 transition-colors text-left"
+          :class="activeCategory === cat ? 'text-white' : 'text-brown-dark hover:text-brown-dark'"
         >
-          <div class="flex items-center gap-3">
-            <component :is="categoryIcons[cat]" :size="20" :color="activeCategory === cat ? 'white' : '#5C4033'" />
-            <div class="flex-1">
-              <div class="text-[15px]" :class="activeCategory === cat ? 'font-semibold text-white' : 'font-medium text-brown-dark'">
-                {{ categoryLabels[cat] }}
-              </div>
-              <div class="text-[11px]" :class="activeCategory === cat ? 'text-white/75' : 'text-brown-muted'">
-                {{ cat === 'all' ? 'All' : cat.charAt(0).toUpperCase() + cat.slice(1) }}
-              </div>
+          <component :is="categoryIcons[cat]" :size="20" :color="activeCategory === cat ? 'white' : '#5C4033'" />
+          <div class="flex-1">
+            <div class="text-[15px]" :class="activeCategory === cat ? 'font-semibold text-white' : 'font-medium text-brown-dark'">
+              {{ categoryLabels[cat] }}
             </div>
-            <div v-if="activeCategory === cat" class="w-[9px] h-[8px] bg-white rounded-[4px]"></div>
+            <div class="text-[11px]" :class="activeCategory === cat ? 'text-white/75' : 'text-brown-muted'">
+              {{ cat === 'all' ? 'All' : cat.charAt(0).toUpperCase() + cat.slice(1) }}
+            </div>
           </div>
         </button>
       </div>
