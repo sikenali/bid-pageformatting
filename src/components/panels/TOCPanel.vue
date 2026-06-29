@@ -112,37 +112,38 @@ function leaderPreview(value) {
       <div class="flex-1 min-w-0 bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col overflow-hidden">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
         <div class="flex-1 overflow-y-auto flex flex-col gap-3">
-        <div class="flex items-center gap-[8px]">
-          <div class="w-[5px] h-[18px] rounded-[2px] bg-cinnabar shrink-0"></div>
-          <span class="text-[14px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">目录标题</span>
-          <div class="flex-1"></div>
-          <div class="flex items-center gap-[3px] cursor-pointer shrink-0" @click="params.enable = !params.enable">
-            <span class="text-[12px] text-brown shrink-0">启用</span>
-            <div class="w-[16px] h-[16px] rounded-[3px] flex items-center justify-center transition-colors shrink-0"
-              :class="params.enable ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
-              <RiCheckLine v-if="params.enable" size="10" class="text-white" />
+          <div class="flex items-center gap-[8px]">
+            <div class="w-[5px] h-[18px] rounded-[2px] bg-cinnabar shrink-0"></div>
+            <span class="text-[14px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">目录标题</span>
+            <div class="flex-1"></div>
+            <div class="flex items-center gap-[3px] cursor-pointer shrink-0" @click="params.enable = !params.enable">
+              <span class="text-[12px] text-brown shrink-0">启用</span>
+              <div class="w-[16px] h-[16px] rounded-[3px] flex items-center justify-center transition-colors shrink-0"
+                :class="params.enable ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
+                <RiCheckLine v-if="params.enable" size="10" class="text-white" />
+              </div>
             </div>
           </div>
-        </div>
-        <div class="flex items-center gap-1">
-          <span class="text-[12px] text-brown shrink-0">标题文字</span>
-          <input type="text" v-model="params.title_text"
-            class="flex-1 max-w-[240px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
-        </div>
-        <div :class="params.enable ? '' : 'pointer-events-none opacity-60'" class="flex flex-col gap-3">
-          <div class="w-full h-[1px] bg-tan-border"></div>
-          <div class="flex flex-wrap items-center gap-[6px]">
-            <div class="flex items-center gap-1">
-              <span class="text-[12px] text-brown shrink-0">中文字体</span>
-              <DropdownSelect v-model="params.title_cn_font" :options="cnFonts" width-class="auto" />
-            </div>
-            <div class="flex items-center gap-1">
-              <span class="text-[12px] text-brown shrink-0">英文字体</span>
-              <DropdownSelect v-model="params.title_en_font" :options="enFonts" width-class="auto" />
-            </div>
-            <div class="flex items-center gap-1">
-              <span class="text-[12px] text-brown shrink-0">字号</span>
-              <DropdownSelect v-model="params.title_size_cn" :options="sizeCN" width-class="auto" />
+          <div class="flex items-center gap-1">
+            <span class="text-[12px] text-brown shrink-0">标题文字</span>
+            <input type="text" v-model="params.title_text"
+              class="flex-1 max-w-[240px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
+          </div>
+          <div :class="params.enable ? '' : 'pointer-events-none opacity-60'" class="flex flex-col gap-3">
+            <div class="w-full h-[1px] bg-tan-border"></div>
+            <div class="flex flex-wrap items-center gap-[6px]">
+              <div class="flex items-center gap-1">
+                <span class="text-[12px] text-brown shrink-0">中文字体</span>
+                <DropdownSelect v-model="params.title_cn_font" :options="cnFonts" width-class="auto" />
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="text-[12px] text-brown shrink-0">英文字体</span>
+                <DropdownSelect v-model="params.title_en_font" :options="enFonts" width-class="auto" />
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="text-[12px] text-brown shrink-0">字号</span>
+                <DropdownSelect v-model="params.title_size_cn" :options="sizeCN" width-class="auto" />
+              </div>
             </div>
           </div>
         </div>
