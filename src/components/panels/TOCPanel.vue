@@ -109,21 +109,21 @@ function leaderPreview(value) {
   <div class="bg-cream border-b border-tan-border h-full px-5 py-3">
     <div class="flex gap-5 h-full overflow-hidden">
       <!-- 目录标题 -->
-      <div class="flex-1 min-w-0 bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col overflow-hidden">
+      <div class="flex-1 min-w-0 bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4 overflow-hidden">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
-        <div class="flex-1 overflow-y-auto flex flex-col gap-3">
-          <div class="flex items-center gap-[8px]">
-            <div class="w-[5px] h-[18px] rounded-[2px] bg-cinnabar shrink-0"></div>
-            <span class="text-[14px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">目录标题</span>
-            <div class="flex-1"></div>
-            <div class="flex items-center gap-[3px] cursor-pointer shrink-0" @click="params.enable = !params.enable">
-              <span class="text-[12px] text-brown shrink-0">启用</span>
-              <div class="w-[16px] h-[16px] rounded-[3px] flex items-center justify-center transition-colors shrink-0"
-                :class="params.enable ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
-                <RiCheckLine v-if="params.enable" size="10" class="text-white" />
-              </div>
+        <div class="flex items-center gap-[8px]">
+          <div class="w-[5px] h-[18px] rounded-[2px] bg-cinnabar shrink-0"></div>
+          <span class="text-[15px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">目录标题</span>
+          <div class="flex-1"></div>
+          <div class="flex items-center gap-[3px] cursor-pointer shrink-0" @click="params.enable = !params.enable">
+            <span class="text-[12px] text-brown shrink-0">启用</span>
+            <div class="w-[16px] h-[16px] rounded-[3px] flex items-center justify-center transition-colors shrink-0"
+              :class="params.enable ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
+              <RiCheckLine v-if="params.enable" size="10" class="text-white" />
             </div>
           </div>
+        </div>
+        <div class="flex-1 overflow-y-auto flex flex-col gap-3">
           <div class="flex items-center gap-1">
             <span class="text-[12px] text-brown shrink-0">标题文字</span>
             <input type="text" v-model="params.title_text"
@@ -150,33 +150,22 @@ function leaderPreview(value) {
       </div>
 
       <!-- 目录层级样式 -->
-      <div class="flex-1 min-w-0 bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col overflow-hidden">
+      <div class="flex-1 min-w-0 bg-cream-dark border border-tan-border rounded-2xl p-6 flex flex-col gap-4 overflow-hidden">
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
-        <div class="flex-1 overflow-y-auto flex flex-col gap-3">
-          <div class="flex items-center gap-[8px]">
-            <div class="w-[5px] h-[18px] rounded-[2px] bg-gold-dark shrink-0"></div>
-            <span class="text-[14px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">目录层级样式</span>
-            <div class="flex-1"></div>
-            <div class="flex items-center gap-[3px] cursor-pointer shrink-0" @click="params.enable_level_styles = !params.enable_level_styles">
-              <span class="text-[12px] text-brown shrink-0">启用</span>
-              <div class="w-[16px] h-[16px] rounded-[3px] flex items-center justify-center transition-colors shrink-0"
-                :class="params.enable_level_styles ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
-                <RiCheckLine v-if="params.enable_level_styles" size="10" class="text-white" />
-              </div>
-            </div>
-            <div class="flex items-center gap-1">
-              <button @click="addLevel"
-                class="w-7 h-6 rounded-[3px] flex items-center justify-center transition-colors duration-200 text-brown-muted hover:text-cinnabar hover:bg-cream-darker" title="新增层级">
-                <RiAddLine size="14" />
-              </button>
-              <button @click="removeLevel" :disabled="props.params.level_styles.length <= 1"
-                class="w-7 h-6 rounded-[3px] flex items-center justify-center transition-colors duration-200 text-brown-muted hover:text-cinnabar hover:bg-cream-darker disabled:opacity-30 disabled:cursor-not-allowed" title="删除最末层级">
-                <RiSubtractLine size="14" />
-              </button>
+        <div class="flex items-center gap-[8px]">
+          <div class="w-[5px] h-[18px] rounded-[2px] bg-gold-dark shrink-0"></div>
+          <span class="text-[15px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">目录层级样式</span>
+          <div class="flex-1"></div>
+          <div class="flex items-center gap-[3px] cursor-pointer shrink-0" @click="params.enable_level_styles = !params.enable_level_styles">
+            <span class="text-[12px] text-brown shrink-0">启用</span>
+            <div class="w-[16px] h-[16px] rounded-[3px] flex items-center justify-center transition-colors shrink-0"
+              :class="params.enable_level_styles ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
+              <RiCheckLine v-if="params.enable_level_styles" size="10" class="text-white" />
             </div>
           </div>
-          <div :class="params.enable_level_styles ? '' : 'pointer-events-none opacity-60'" class="flex flex-col gap-3">
-            <div ref="levelBarRef" class="bg-cream-darker rounded-lg p-[3px] flex items-center gap-[3px] relative">
+        </div>
+        <div class="flex-1 overflow-y-auto flex flex-col gap-3">
+          <div ref="levelBarRef" class="bg-cream-darker rounded-lg p-[3px] flex items-center gap-[3px] relative">
             <div class="absolute top-[3px] bottom-[3px] bg-white rounded-lg shadow-sm transition-all duration-300 ease-out pointer-events-none"
               :style="indicatorStyle">
             </div>
@@ -186,7 +175,18 @@ function leaderPreview(value) {
               :class="activeLevel === idx ? 'text-cinnabar font-semibold' : 'text-brown hover:text-brown-dark'"
             >第{{ idx + 1 }}层</button>
           </div>
+          <div class="flex items-center gap-1">
+            <button @click="addLevel"
+              class="w-7 h-6 rounded-[3px] flex items-center justify-center transition-colors duration-200 text-brown-muted hover:text-cinnabar hover:bg-cream-darker" title="新增层级">
+              <RiAddLine size="14" />
+            </button>
+            <button @click="removeLevel" :disabled="props.params.level_styles.length <= 1"
+              class="w-7 h-6 rounded-[3px] flex items-center justify-center transition-colors duration-200 text-brown-muted hover:text-cinnabar hover:bg-cream-darker disabled:opacity-30 disabled:cursor-not-allowed" title="删除最末层级">
+              <RiSubtractLine size="14" />
+            </button>
+          </div>
         </div>
+        <div :class="params.enable_level_styles ? '' : 'pointer-events-none opacity-60'" class="flex flex-col gap-3">
           <Transition name="fade-slide" mode="out-in">
             <div :key="activeLevel" class="flex flex-col gap-3">
               <!-- 字体 -->
