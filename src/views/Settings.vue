@@ -10,6 +10,7 @@ const { theme: currentTheme, template: currentTemplate, annotationEnabled, highl
 const activeSection = ref('theme')
 const sectionContainerRef = ref(null)
 const indicatorStyle = ref({ top: '0px', height: '0px' })
+const isInitialized = ref(false) // 首次加载完成后标记
 const sectionTabs = [
   { id: 'theme', label: '主题设置', sublabel: 'Theme', icon: RiPaletteLine, activeBg: 'bg-cinnabar' },
   { id: 'template', label: '标准模板', sublabel: 'Standards', icon: RiBookmark3Line, activeBg: 'bg-gold-dark' },
@@ -18,7 +19,15 @@ const sectionTabs = [
 
 function selectSection(id) {
   activeSection.value = id
-  nextTick(positionIndicator)
+  nextTick(() => {
+    positionIndicator()
+    // 切换到对应 section 时计算卡片指示器位置
+    if (id === 'theme') {
+      setTimeout(positionThemeIndicator, 50)
+    } else if (id === 'template') {
+      setTimeout(positionTemplateIndicator, 50)
+    }
+  })
 }
 
 function positionIndicator() {
@@ -41,7 +50,70 @@ function positionIndicator() {
   }
 }
 
-onMounted(() => { nextTick(positionIndicator) })
+onMounted(() => {
+  nextTick(() => {
+    positionIndicator()
+    setTimeout(positionThemeIndicator, 100)
+    // 首次加载完成后启用动效
+    setTimeout(() => { isInitialized.value = true }, 150)
+  })
+})
+
+// 主题卡片选择器
+const themeContainerRef = ref(null)
+const themeIndicatorStyle = ref({ left: '0px', width: '0px' })
+
+function positionThemeIndicator() {
+  const container = themeContainerRef.value
+  if (!container) return
+  const cards = container.querySelectorAll('[data-theme-id]')
+  let targetCard = null
+  for (const card of cards) {
+    if (card.dataset.themeId === currentTheme.value) {
+      targetCard = card
+      break
+    }
+  }
+  if (!targetCard) return
+  const containerRect = container.getBoundingClientRect()
+  const cardRect = targetCard.getBoundingClientRect()
+  themeIndicatorStyle.value = {
+    left: `${cardRect.left - containerRect.left - 4}px`,
+    width: `${cardRect.width + 8}px`,
+  }
+}
+
+// 标准模板卡片选择器
+const templateContainerRef = ref(null)
+const templateIndicatorStyle = ref({ left: '0px', width: '0px' })
+
+function positionTemplateIndicator() {
+  const container = templateContainerRef.value
+  if (!container) return
+  const cards = container.querySelectorAll('[data-template-id]')
+  let targetCard = null
+  for (const card of cards) {
+    if (card.dataset.templateId === currentTemplate.value) {
+      targetCard = card
+      break
+    }
+  }
+  if (!targetCard) return
+  const containerRect = container.getBoundingClientRect()
+  const cardRect = targetCard.getBoundingClientRect()
+  templateIndicatorStyle.value = {
+    left: `${cardRect.left - containerRect.left - 4}px`,
+    width: `${cardRect.width + 8}px`,
+  }
+}
+
+onMounted(() => {
+  nextTick(() => {
+    positionIndicator()
+    // 首次加载时，主题是默认显示的，延迟计算确保 DOM 完全渲染
+    setTimeout(positionThemeIndicator, 100)
+  })
+})
 
 const themes = [
   { id: 'light', name: '浅色主题', desc: '经典羊皮纸底色', previewBg: '#FDF6E3' },
@@ -72,8 +144,8 @@ const displayOptions = [
       </div>
 
       <div ref="sectionContainerRef" class="flex-1 px-4 pb-4 relative">
-        <div class="absolute left-4 right-4 rounded-xl shadow-sm transition-all duration-300 ease-out pointer-events-none z-0"
-          :class="sectionTabs.find(t => t.id === activeSection)?.activeBg || 'bg-cinnabar'"
+        <div class="absolute left-4 right-4 rounded-xl shadow-sm pointer-events-none z-0"
+          :class="[sectionTabs.find(t => t.id === activeSection)?.activeBg || 'bg-cinnabar', isInitialized ? 'transition-all duration-300 ease-out' : '']"
           :style="indicatorStyle">
         </div>
         <div class="space-y-[2px] relative">
@@ -132,54 +204,66 @@ const displayOptions = [
         <div class="bg-cream-dark border border-tan-light rounded-2xl p-8">
           <div class="w-full h-[6px] bg-tan-dark rounded-[3px] mb-6"></div>
 
-          <div v-if="activeSection === 'theme'" class="grid grid-cols-3 gap-4">
-            <div
-              v-for="theme in themes"
-              :key="theme.id"
-              @click="setTheme(theme.id)"
-              class="bg-white rounded-xl p-8 text-center transition-all cursor-pointer"
-              :class="currentTheme === theme.id ? 'ring-2 ring-cinnabar shadow-lg shadow-cinnabar/18' : 'hover:shadow-md'"
-            >
+          <div v-if="activeSection === 'theme'" class="relative">
+            <div class="absolute -top-3 -bottom-3 rounded-2xl ring-2 ring-cinnabar ring-offset-2 ring-offset-cream-dark pointer-events-none bg-transparent"
+              :class="isInitialized ? 'transition-all duration-300 ease-out' : ''"
+              :style="themeIndicatorStyle">
+            </div>
+            <div ref="themeContainerRef" class="grid grid-cols-3 gap-4">
               <div
-                class="w-[150px] h-[100px] rounded-lg border border-[#E0D5C0] mx-auto mb-4"
-                :style="{ backgroundColor: theme.previewBg }"
-              ></div>
-              <h4
-                class="text-[16px] font-bold mb-1"
-              :class="currentTheme === theme.id ? 'text-cinnabar' : 'text-brown-dark'"
-            >{{ theme.name }}</h4>
-            <p class="text-[12px] text-brown-muted mb-3">{{ theme.desc }}</p>
-            <div
-              class="w-[26px] h-[26px] rounded-full mx-auto flex items-center justify-center"
-              :class="currentTheme === theme.id ? 'bg-cinnabar' : 'bg-tan-dark'"
-            >
-              <RiCheckLine v-if="currentTheme === theme.id" size="14" color="white" />
+                v-for="theme in themes" :key="theme.id"
+                :data-theme-id="theme.id"
+                @click="setTheme(theme.id); nextTick(positionThemeIndicator)"
+                class="bg-white rounded-xl p-8 text-center transition-all cursor-pointer relative"
+                :class="currentTheme === theme.id ? 'shadow-lg shadow-cinnabar/18' : 'hover:shadow-md'"
+              >
+                <div
+                  class="w-[150px] h-[100px] rounded-lg border border-[#E0D5C0] mx-auto mb-4"
+                  :style="{ backgroundColor: theme.previewBg }"
+                ></div>
+                <h4
+                  class="text-[16px] font-bold mb-1"
+                  :class="currentTheme === theme.id ? 'text-cinnabar' : 'text-brown-dark'"
+                >{{ theme.name }}</h4>
+                <p class="text-[12px] text-brown-muted mb-3">{{ theme.desc }}</p>
+                <div
+                  class="w-[26px] h-[26px] rounded-full mx-auto flex items-center justify-center"
+                  :class="currentTheme === theme.id ? 'bg-cinnabar' : 'bg-tan-dark'"
+                >
+                  <RiCheckLine v-if="currentTheme === theme.id" size="14" color="white" />
+                </div>
               </div>
             </div>
           </div>
 
-          <div v-else-if="activeSection === 'template'" class="grid grid-cols-4 gap-4">
-            <div
-              v-for="tpl in templates"
-              :key="tpl.id"
-              @click="setTemplate(tpl.id)"
-              class="bg-white rounded-xl p-6 text-center transition-all cursor-pointer"
-              :class="currentTemplate === tpl.id ? 'ring-2 ring-gold-dark shadow-lg shadow-gold-dark/18' : 'hover:shadow-md'"
-            >
+          <div v-else-if="activeSection === 'template'" class="relative">
+            <div class="absolute -top-3 -bottom-3 rounded-2xl ring-2 ring-gold-dark ring-offset-2 ring-offset-cream-dark pointer-events-none bg-transparent"
+              :class="isInitialized ? 'transition-all duration-300 ease-out' : ''"
+              :style="templateIndicatorStyle">
+            </div>
+            <div ref="templateContainerRef" class="grid grid-cols-4 gap-4">
               <div
-                class="w-[56px] h-[56px] rounded-full mx-auto mb-3 flex items-center justify-center"
-                :class="currentTemplate === tpl.id ? 'bg-gold-dark/10' : 'bg-cream-darker'"
+                v-for="tpl in templates" :key="tpl.id"
+                :data-template-id="tpl.id"
+                @click="setTemplate(tpl.id); nextTick(positionTemplateIndicator)"
+                class="bg-white rounded-xl p-6 text-center transition-all cursor-pointer relative"
+                :class="currentTemplate === tpl.id ? 'shadow-lg shadow-gold-dark/18' : 'hover:shadow-md'"
               >
-                <component :is="tpl.icon" size="28" :color="tpl.iconColor" />
-              </div>
-              <h4 class="text-[15px] font-semibold text-brown-dark mb-1">{{ tpl.name }}</h4>
-              <p class="text-[11px] text-brown-muted">{{ tpl.sub }}</p>
-              <p class="text-[12px] text-brown-muted mt-1">{{ tpl.desc }}</p>
-              <div
-                class="w-[26px] h-[26px] rounded-full mx-auto mt-3 flex items-center justify-center"
-                :class="currentTemplate === tpl.id ? 'bg-gold-dark' : 'bg-tan-dark'"
-              >
-                <RiCheckLine v-if="currentTemplate === tpl.id" size="14" color="white" />
+                <div
+                  class="w-[56px] h-[56px] rounded-full mx-auto mb-3 flex items-center justify-center"
+                  :class="currentTemplate === tpl.id ? 'bg-gold-dark/10' : 'bg-cream-darker'"
+                >
+                  <component :is="tpl.icon" size="28" :color="tpl.iconColor" />
+                </div>
+                <h4 class="text-[15px] font-semibold text-brown-dark mb-1">{{ tpl.name }}</h4>
+                <p class="text-[11px] text-brown-muted">{{ tpl.sub }}</p>
+                <p class="text-[12px] text-brown-muted mt-1">{{ tpl.desc }}</p>
+                <div
+                  class="w-[26px] h-[26px] rounded-full mx-auto mt-3 flex items-center justify-center"
+                  :class="currentTemplate === tpl.id ? 'bg-gold-dark' : 'bg-tan-dark'"
+                >
+                  <RiCheckLine v-if="currentTemplate === tpl.id" size="14" color="white" />
+                </div>
               </div>
             </div>
           </div>
