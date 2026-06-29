@@ -26,14 +26,14 @@ import {
   RiBarChart2Line, RiListCheck2, RiLayoutTop2Line, RiBrushLine,
   RiFootprintLine, RiDoubleQuotesL, RiFileTextLine, RiFileEditLine,
   RiSideBarLine, RiCheckLine, RiEdit2Line, RiEyeLine, RiLoader2Line,
-  RiSaveLine, RiSparklingLine
+  RiSaveLine, RiSparklingLine, RiBook2Line
 } from '@remixicon/vue'
 
 const router = useRouter()
 const { getFile } = useDocument()
 const currentFile = computed(() => getFile())
 const { formatParams, applyFormatting, takeBeforeSnapshot } = useFormatState()
-const { saveTemplate } = useTemplates()
+const { saveTemplate, templates } = useTemplates()
 
 const activeTab = ref('page')
 const showSaveModal = ref(false)
@@ -184,6 +184,16 @@ const handleReset = () => {
   router.push('/')
 }
 
+const handleLoadTemplate = () => {
+  const selected = templates.value.find(t => t.selected)
+  if (selected && selected.formatParams) {
+    Object.assign(formatParams, JSON.parse(JSON.stringify(selected.formatParams)))
+    alert(`已载入模板：${selected.name}`)
+  } else {
+    alert('请先在模板页面选择一个模板')
+  }
+}
+
 const onTemplateSaved = ({ name, category }) => {
   saveTemplate(name, category, formatParams)
   showSaveModal.value = false
@@ -286,13 +296,21 @@ const showEditor = computed(() => isDocx.value && isEditMode.value)
           </button>
           <div class="w-3"></div>
           <button
+            @click="handleLoadTemplate"
+            class="flex items-center gap-1 py-2 bg-[#5B8C5A]/10 border border-[#5B8C5A] rounded-lg text-[13px] font-medium text-[#5B8C5A] transition-colors hover:bg-[#5B8C5A]/20"
+          >
+            <RiBook2Line size="14" />
+            <span>载入模板</span>
+          </button>
+          <div class="w-2"></div>
+          <button
             @click="handleOneClickModify"
-            class="flex items-center gap-2 px-6 py-3 bg-cinnabar text-white rounded-xl text-[14px] font-semibold transition-all hover:bg-cinnabar-dark disabled:opacity-60 disabled:cursor-not-allowed"
+            class="flex items-center gap-1 py-2 bg-cinnabar text-white rounded-lg text-[13px] font-semibold transition-all hover:bg-cinnabar-dark disabled:opacity-60 disabled:cursor-not-allowed"
             :disabled="isProcessing"
           >
-            <RiLoader2Line v-if="isProcessing" size="18" color="white" class="animate-spin" />
-            <RiSparklingLine v-else size="18" color="white" />
-            <span>{{ isProcessing ? '文档智能化排版处理中...' : '一键修改' }}</span>
+            <RiLoader2Line v-if="isProcessing" size="14" color="white" class="animate-spin" />
+            <RiSparklingLine v-else size="14" color="white" />
+            <span>{{ isProcessing ? '排版中...' : '一键排版' }}</span>
           </button>
         </div>
       </div>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, watch } from 'vue'
 import { RiCheckLine, RiAddLine, RiSubtractLine } from '@remixicon/vue'
 import DropdownSelect from '../DropdownSelect.vue'
 
@@ -8,6 +8,11 @@ const props = defineProps({
 })
 
 const activeLevel = ref(0)
+
+// 同步目录标题启用状态到目录层级样式启用状态
+watch(() => props.params.enable, (val) => {
+  props.params.enable_level_styles = val
+}, { immediate: true })
 const levelBarRef = ref(null)
 const indicatorStyle = ref({ left: '4px', width: '56px' })
 
