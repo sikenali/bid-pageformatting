@@ -93,7 +93,7 @@ const tabSubtitles = {
   chart: '配置图表样式与位置',
   toc: '设置目录层级与格式',
   header: '配置页眉页脚内容、位置与样式',
-  reset: '重置排版参数',
+  reset: '在一键排版之前，对上传的文件进行初始化操作',
 }
 
 watch(currentPage, (page) => {
