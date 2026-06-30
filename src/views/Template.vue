@@ -114,7 +114,7 @@ const applyTemplates = () => {
           class="relative z-10 w-full rounded-xl py-3 px-4 flex items-center gap-3 transition-colors text-left"
           :class="activeCategory === cat ? 'text-white' : 'text-brown-dark hover:text-brown-dark'"
         >
-          <component :is="categoryIcons[cat]" :size="20" :color="activeCategory === cat ? 'white' : '#5C4033'" />
+          <component :is="categoryIcons[cat]" :size="'20'" :color="activeCategory === cat ? 'white' : '#5C4033'" />
           <div class="flex-1">
             <div class="text-[15px]" :class="activeCategory === cat ? 'font-semibold text-white' : 'font-medium text-brown-dark'">
               {{ categoryLabels[cat] }}
