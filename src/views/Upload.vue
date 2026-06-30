@@ -76,7 +76,7 @@ const handleFileChange = (e) => {
         </div>
 
         <p v-if="!uploading" class="text-xl font-semibold text-brown-dark mb-2">
-          {{ selectedFile ? `已选择: ${selectedFile.name}` : '拖拽文件到此处，或点击上传' }}
+          {{ selectedFile ? `已选择: ${selectedFile.name}` : '          各位爱卿，将奏折呈上来~~' }}
         </p>
         <p v-else class="text-xl font-semibold text-brown-dark mb-2">
           正在上传: {{ selectedFile?.name }}
@@ -92,7 +92,7 @@ const handleFileChange = (e) => {
           <p class="text-sm text-brown-muted mt-2">{{ Math.round(uploadProgress) }}%</p>
         </div>
 
-        <p v-if="!uploading" class="text-sm text-brown-muted mb-6">支持 .docx / .xlsx / .pptx / .pdf 格式，单文件最大 50MB</p>
+        <p v-if="!uploading" class="text-sm text-brown-muted mb-6">        支持竹简、文牒等格式，最大支持100MB+</p>
 
         <input
           type="file"
