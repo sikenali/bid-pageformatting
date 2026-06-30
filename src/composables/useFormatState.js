@@ -1,4 +1,14 @@
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
+
+function loadSettings() {
+  try {
+    const saved = localStorage.getItem('bid-page-settings')
+    if (saved) return JSON.parse(saved)
+  } catch {}
+  return null
+}
+
+const settings = loadSettings() || {}
 
 const formatParams = reactive({
   apply_page: true,
@@ -272,7 +282,7 @@ const formatParams = reactive({
       remove_extra_blank_lines: false,
     },
     style_cleanup: {
-      clear_all_styles: true,
+      clear_all_styles: settings.clearStylesEnabled === true,
       clear_paragraph_indent: false,
       clear_heading_indent: false,
       clear_heading_left_indent: false,
@@ -315,10 +325,37 @@ function takeBeforeSnapshot() {
   beforeSnapshot.value = JSON.parse(JSON.stringify(formatParams))
 }
 
+function flatten(obj, prefix = '', out = {}) {
+  if (obj == null) return out
+  for (const [k, v] of Object.entries(obj)) {
+    const key = prefix ? `${prefix}.${k}` : k
+    if (v != null && typeof v === 'object' && !Array.isArray(v)) {
+      flatten(v, key, out)
+    } else {
+      out[key] = v
+    }
+  }
+  return out
+}
+
+function computeDiffs(before, after) {
+  if (!before || !after) return []
+  const a = flatten(before)
+  const b = flatten(after)
+  const allKeys = new Set([...Object.keys(a), ...Object.keys(b)])
+  const result = []
+  for (const k of allKeys) {
+    if (JSON.stringify(a[k]) !== JSON.stringify(b[k])) {
+      result.push({ path: k, before: a[k], after: b[k] })
+    }
+  }
+  return result
+}
+
 function applyFormatting() {
   if (!beforeSnapshot.value) takeBeforeSnapshot()
   afterSnapshot.value = JSON.parse(JSON.stringify(formatParams))
-  diffs.value = []
+  diffs.value = computeDiffs(beforeSnapshot.value, afterSnapshot.value)
 }
 
 function loadFormatParams(params) {
