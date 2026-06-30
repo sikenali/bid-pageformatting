@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDocument } from '../composables/useDocument'
-import { RiFileWordLine, RiFilePdfLine, RiFileExcelLine, RiFilePptLine, RiUploadCloud2Line, RiBook2Line } from '@remixicon/vue'
+import { RiFileWordLine, RiFilePdfLine, RiFileExcelLine, RiFilePptLine, RiUploadCloud2Line, RiBook2Line, RiQuillPenFill } from '@remixicon/vue'
 
 const router = useRouter()
 const { setFile } = useDocument()
@@ -108,7 +108,7 @@ const handleFileChange = (e) => {
           for="file-input"
           class="inline-flex items-center gap-2 px-6 py-3 bg-cinnabar text-white rounded-lg cursor-pointer hover:bg-cinnabar-dark transition-colors font-medium"
         >
-          <RiScrollFill size="18" color="white" />
+          <RiQuillPenFill size="18" color="white" />
           <span>御赐墨宝</span>
         </label>
       </div>
