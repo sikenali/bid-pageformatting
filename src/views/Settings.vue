@@ -267,28 +267,28 @@ const previewCurrentTemplate = () => {
         <div class="bg-cream-dark border border-tan-light rounded-2xl p-8">
 
           <div v-if="activeSection === 'theme'" class="relative">
-            <div class="grid grid-cols-3 gap-4">
+            <div class="grid grid-cols-4 gap-3">
               <div
                 v-for="theme in themes" :key="theme.id"
                 :data-theme-id="theme.id"
                 @click="setTheme(theme.id)"
-                class="bg-white rounded-xl p-5 text-center transition-all cursor-pointer relative"
+                class="bg-white rounded-xl p-4 text-center transition-all cursor-pointer relative aspect-square flex flex-col items-center justify-center"
                 :class="currentTheme === theme.id ? 'shadow-lg shadow-cinnabar/18' : 'hover:shadow-md'"
               >
                 <div
-                  class="w-[90px] h-[60px] rounded-lg border border-[#E0D5C0] mx-auto mb-2"
+                  class="w-[60px] h-[60px] rounded-lg border border-[#E0D5C0] mx-auto mb-2"
                   :style="{ backgroundColor: theme.previewBg }"
                 ></div>
                 <h4
-                  class="text-[14px] font-bold mb-0.5"
+                  class="text-[13px] font-bold mb-0.5"
                   :class="currentTheme === theme.id ? 'text-cinnabar' : 'text-brown-dark'"
                 >{{ theme.name }}</h4>
-                <p class="text-[11px] text-brown-muted mb-1.5">{{ theme.desc }}</p>
+                <p class="text-[10px] text-brown-muted mb-1.5">{{ theme.desc }}</p>
                 <div
-                  class="w-[18px] h-[18px] rounded-full mx-auto flex items-center justify-center"
+                  class="w-[16px] h-[16px] rounded-full mx-auto flex items-center justify-center"
                   :class="currentTheme === theme.id ? 'bg-cinnabar' : 'bg-tan-dark'"
                 >
-                  <RiCheckLine v-if="currentTheme === theme.id" size="10" color="white" />
+                  <RiCheckLine v-if="currentTheme === theme.id" size="9" color="white" />
                 </div>
               </div>
             </div>
