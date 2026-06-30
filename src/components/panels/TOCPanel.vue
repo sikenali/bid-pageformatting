@@ -236,7 +236,7 @@ function leaderPreview(value) {
                 <div class="flex flex-wrap items-center gap-[6px]">
                   <div class="flex items-center gap-1">
                     <span class="text-[12px] text-brown shrink-0">行距模式</span>
-                    <DropdownSelect v-model="params.level_styles[activeLevel].line_spacing_mode" :options="lineSpacingModes" width-class="w-[110px]" />
+                    <DropdownSelect v-model="params.level_styles[activeLevel].line_spacing_mode" :options="lineSpacingModes" width-class="auto" />
                   </div>
                   <div class="flex items-center gap-1">
                     <span class="text-[12px] text-brown shrink-0">行距数值</span>
@@ -250,13 +250,13 @@ function leaderPreview(value) {
                     <span class="text-[12px] text-brown shrink-0">段前间距</span>
                     <input type="number" min="0" step="0.1" v-model.number="params.level_styles[activeLevel].space_before_value"
                       class="w-[60px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
-                    <DropdownSelect v-model="params.level_styles[activeLevel].space_before_unit" :options="spacingUnits" width-class="w-[60px]" />
+                    <DropdownSelect v-model="params.level_styles[activeLevel].space_before_unit" :options="spacingUnits" width-class="auto" />
                   </div>
                   <div class="flex items-center gap-1">
                     <span class="text-[12px] text-brown shrink-0">段后间距</span>
                     <input type="number" min="0" step="0.1" v-model.number="params.level_styles[activeLevel].space_after_value"
                       class="w-[60px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
-                    <DropdownSelect v-model="params.level_styles[activeLevel].space_after_unit" :options="spacingUnits" width-class="w-[60px]" />
+                    <DropdownSelect v-model="params.level_styles[activeLevel].space_after_unit" :options="spacingUnits" width-class="auto" />
                   </div>
                 </div>
               </div>
