@@ -69,6 +69,9 @@ func Preprocess(doc *document.Document, cfg *Config) error {
 		}},
 		{"中英文空格", func(d *document.Document, c *Config) error {
 			if c.PreprocessSpaces {
+				if c.Body.AddSpace {
+					return InsertCJKEUSpacingWith(d, c.Body.SpaceCount)
+				}
 				return InsertCJKEUSpacing(d)
 			}
 			return nil
@@ -104,6 +107,19 @@ func Preprocess(doc *document.Document, cfg *Config) error {
 			return nil
 		}},
 		{"图题间距", AdjustCaptionSpacing},
+		{"表格单元格", func(d *document.Document, c *Config) error {
+			if c.PreprocessTableCellEnable {
+				return ApplyPreprocessTableCells(d,
+					c.PreprocessTableCellFont,
+					c.PreprocessTableCellSize,
+					c.PreprocessTableCellLineSpacing,
+					c.PreprocessTableCellAlign,
+					c.PreprocessTableCellBorder,
+					c.PreprocessTableCellMinHeight,
+					c.PreprocessTableAutoWidth)
+			}
+			return nil
+		}},
 	}
 
 	for _, step := range steps {
