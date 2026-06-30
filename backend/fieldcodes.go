@@ -10,28 +10,48 @@ import (
 )
 
 func InjectTOC(doc *document.Document, tocCfg *TOCConfig) error {
-	if !tocCfg.Enable {
+	if tocCfg == nil || !tocCfg.Enable {
 		return nil
 	}
 
 	for _, p := range doc.Paragraphs() {
 		text := paragraphText(p)
 		if strings.TrimSpace(text) == tocCfg.TitleText {
-			return injectTOCFieldCode(doc, tocCfg)
+			return injectTOCFieldCode(doc, tocCfg, true)
 		}
 	}
 
-	return injectTOCAtEnd(doc, tocCfg)
+	return injectTOCFieldCode(doc, tocCfg, false)
 }
 
-func injectTOCFieldCode(doc *document.Document, tocCfg *TOCConfig) error {
+func tabLeaderValue(leader string) string {
+	switch strings.ToUpper(leader) {
+	case "DOT", "点", "点号":
+		return "dot"
+	case "HYPHEN", "连字符":
+		return "hyphen"
+	case "UNDERSCORE", "下划线":
+		return "underscore"
+	case "NONE", "无":
+		return "none"
+	}
+	return ""
+}
+
+func injectTOCFieldCode(doc *document.Document, tocCfg *TOCConfig, insertAfterTitle bool) error {
 	levels := len(tocCfg.LevelStyles)
 	if levels < 1 {
 		levels = 4
 	}
 
-	p := doc.AddParagraph()
-	p.SetStyle("TOCHeading")
+	var p document.Paragraph
+	if insertAfterTitle {
+		p = doc.AddParagraph()
+		p.SetStyle("TOCHeading")
+	} else {
+		p = doc.AddParagraph()
+		p.SetStyle("TOCHeading")
+	}
 
 	titleRun := p.AddRun()
 	if tocCfg.TitleENFont != "" || tocCfg.TitleCNFont != "" {
@@ -41,17 +61,21 @@ func injectTOCFieldCode(doc *document.Document, tocCfg *TOCConfig) error {
 		}
 		titleRun.Properties().SetFontFamily(font)
 		if tocCfg.TitleCNFont != "" && tocCfg.TitleCNFont != tocCfg.TitleENFont {
-			titleRun.Properties().X().RFonts.EastAsiaAttr = &tocCfg.TitleCNFont
+			cf := tocCfg.TitleCNFont
+			titleRun.Properties().X().RFonts.EastAsiaAttr = &cf
 		}
 	}
-	titleRun.Properties().SetSize(cnSizeToHalfPoints(tocCfg.TitleSizeCN) * measurement.HalfPoint)
+	if tocCfg.TitleSizeCN != "" {
+		titleRun.Properties().SetSize(cnSizeToHalfPoints(tocCfg.TitleSizeCN) * measurement.HalfPoint)
+	}
 	titleRun.AddText(tocCfg.TitleText)
 
 	tocRun := p.AddRun()
-	tocRun.AddTOC(&document.TOCOptions{
+	tocOpts := &document.TOCOptions{
 		UseHyperlinks: true,
 		HeadingLevel:  fmt.Sprintf("1-%d", levels),
-	})
+	}
+	tocRun.AddTOC(tocOpts)
 
 	tocRun.AddText("（打开文档后按 F9 刷新目录）")
 
@@ -59,7 +83,7 @@ func injectTOCFieldCode(doc *document.Document, tocCfg *TOCConfig) error {
 }
 
 func injectTOCAtEnd(doc *document.Document, tocCfg *TOCConfig) error {
-	return injectTOCFieldCode(doc, tocCfg)
+	return injectTOCFieldCode(doc, tocCfg, false)
 }
 
 func paragraphText(p document.Paragraph) string {
