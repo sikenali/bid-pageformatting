@@ -7,6 +7,7 @@ const props = defineProps({
   figCaption: { type: Object, required: true },
   tblCaption: { type: Object, required: true },
   table: { type: Object, required: true },
+  tableSettings: { type: Object, required: true },
   activeSubTab: { type: String, default: 'fig' },
 })
 
@@ -55,19 +56,6 @@ onMounted(() => { nextTick(positionIndicator) })
 
 // 获取当前层级的参数
 const currentParams = () => activeLevel.value === 0 ? props.figCaption : props.tblCaption
-
-// 表格单元格参数
-const tocTitleParams = ref({
-  enable: false,
-  cn_font: '宋体',
-  en_font: 'Times New Roman',
-  size_cn: '四号',
-  line_spacing_value: 20,
-  min_line_height: 15,
-  align: 'CENTER',
-  border_style: 'single',
-  auto_width: true,
-})
 </script>
 
 <template>
@@ -147,7 +135,7 @@ const tocTitleParams = ref({
               <div class="flex flex-wrap items-center gap-[6px]">
                 <div class="flex items-center gap-1">
                   <span class="text-[12px] text-brown shrink-0">行距</span>
-                  <DropdownSelect v-model="currentParams().line_spacing_mode" :options="lineSpacingModes" width-class="w-[80px]" />
+                  <DropdownSelect v-model="currentParams().line_spacing_mode" :options="lineSpacingModes" width-class="auto" />
                 </div>
                 <div class="flex items-center gap-1">
                   <span class="text-[12px] text-brown shrink-0">值</span>
@@ -178,13 +166,13 @@ const tocTitleParams = ref({
                   <span class="text-[12px] text-brown shrink-0">左边距</span>
                   <input type="number" min="0" step="0.1" v-model.number="currentParams().left_indent_value"
                     class="w-[50px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
-                  <DropdownSelect v-model="currentParams().left_indent_unit" :options="indentUnits" width-class="w-[65px]" />
+                  <DropdownSelect v-model="currentParams().left_indent_unit" :options="indentUnits" width-class="auto" />
                 </div>
                 <div class="flex items-center gap-1">
                   <span class="text-[12px] text-brown shrink-0">右边距</span>
                   <input type="number" min="0" step="0.1" v-model.number="currentParams().right_indent_value"
                     class="w-[50px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
-                  <DropdownSelect v-model="currentParams().right_indent_unit" :options="indentUnits" width-class="w-[65px]" />
+                  <DropdownSelect v-model="currentParams().right_indent_unit" :options="indentUnits" width-class="auto" />
                 </div>
               </div>
             </div>
@@ -243,31 +231,31 @@ const tocTitleParams = ref({
           <div class="w-[5px] h-[18px] rounded-[2px] bg-cloud-blue shrink-0"></div>
           <span class="text-[15px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">表格单元格</span>
           <div class="flex-1"></div>
-          <div class="flex items-center gap-[3px] cursor-pointer shrink-0" @click="tocTitleParams.enable = !tocTitleParams.enable">
+          <div class="flex items-center gap-[3px] cursor-pointer shrink-0" @click="props.tableSettings.enable = !props.tableSettings.enable">
             <span class="text-[12px] text-brown shrink-0">启用</span>
             <div class="w-[16px] h-[16px] rounded-[3px] flex items-center justify-center transition-colors shrink-0"
-              :class="tocTitleParams.enable ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
-              <RiCheckLine v-if="tocTitleParams.enable" size="10" class="text-white" />
+              :class="props.tableSettings.enable ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
+              <RiCheckLine v-if="props.tableSettings.enable" size="10" class="text-white" />
             </div>
           </div>
         </div>
 
-        <div :class="tocTitleParams.enable ? '' : 'pointer-events-none opacity-60'" class="flex flex-col gap-3">
+        <div :class="props.tableSettings.enable ? '' : 'pointer-events-none opacity-60'" class="flex flex-col gap-3">
           <!-- 字体设置 -->
           <div>
             <span class="text-[12px] font-semibold text-brown-muted block mb-[6px]">字体</span>
             <div class="flex flex-wrap items-center gap-[6px]">
               <div class="flex items-center gap-1">
                 <span class="text-[12px] text-brown shrink-0">中文</span>
-                <DropdownSelect v-model="tocTitleParams.cn_font" :options="cnFonts" width-class="auto" />
+                <DropdownSelect v-model="props.tableSettings.cn_font" :options="cnFonts" width-class="auto" />
               </div>
               <div class="flex items-center gap-1">
                 <span class="text-[12px] text-brown shrink-0">英文</span>
-                <DropdownSelect v-model="tocTitleParams.en_font" :options="enFonts" width-class="auto" />
+                <DropdownSelect v-model="props.tableSettings.en_font" :options="enFonts" width-class="auto" />
               </div>
               <div class="flex items-center gap-1">
                 <span class="text-[12px] text-brown shrink-0">字号</span>
-                <DropdownSelect v-model="tocTitleParams.size_cn" :options="sizeCN" width-class="auto" />
+                <DropdownSelect v-model="props.tableSettings.size_cn" :options="sizeCN" width-class="auto" />
               </div>
             </div>
           </div>
@@ -280,13 +268,13 @@ const tocTitleParams = ref({
             <div class="flex flex-wrap items-center gap-[6px]">
               <div class="flex items-center gap-1">
                 <span class="text-[12px] text-brown shrink-0">行距数值</span>
-                <input type="number" min="0" step="0.5" v-model.number="tocTitleParams.line_spacing_value"
+                <input type="number" min="0" step="0.5" v-model.number="props.tableSettings.line_spacing_value"
                   class="w-[50px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
                 <span class="text-[12px] text-brown shrink-0">磅</span>
               </div>
               <div class="flex items-center gap-1">
                 <span class="text-[12px] text-brown shrink-0">最小行高</span>
-                <input type="number" min="0" step="0.5" v-model.number="tocTitleParams.min_line_height"
+                <input type="number" min="0" step="0.5" v-model.number="props.tableSettings.min_line_height"
                   class="w-[50px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
                 <span class="text-[12px] text-brown shrink-0">磅</span>
               </div>
@@ -301,21 +289,21 @@ const tocTitleParams = ref({
             <div class="flex flex-wrap items-center gap-[6px]">
               <div class="bg-cream rounded-lg p-[3px] flex items-center relative">
                 <div class="absolute top-[3px] bottom-[3px] w-7 bg-white rounded-[3px] shadow-sm transition-all duration-300 ease-out pointer-events-none"
-                  :style="{ left: `${3 + ['LEFT', 'CENTER', 'RIGHT'].indexOf(tocTitleParams.align) * 28}px` }">
+                  :style="{ left: `${3 + ['LEFT', 'CENTER', 'RIGHT'].indexOf(props.tableSettings.align) * 28}px` }">
                 </div>
-                <button @click="tocTitleParams.align = 'LEFT'"
+                <button @click="props.tableSettings.align = 'LEFT'"
                   class="relative z-10 w-7 h-6 rounded-[3px] flex items-center justify-center transition-colors duration-200"
-                  :class="tocTitleParams.align === 'LEFT' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
+                  :class="props.tableSettings.align === 'LEFT' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
                   <RiAlignLeft size="13" />
                 </button>
-                <button @click="tocTitleParams.align = 'CENTER'"
+                <button @click="props.tableSettings.align = 'CENTER'"
                   class="relative z-10 w-7 h-6 rounded-[3px] flex items-center justify-center transition-colors duration-200"
-                  :class="tocTitleParams.align === 'CENTER' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
+                  :class="props.tableSettings.align === 'CENTER' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
                   <RiAlignCenter size="13" />
                 </button>
-                <button @click="tocTitleParams.align = 'RIGHT'"
+                <button @click="props.tableSettings.align = 'RIGHT'"
                   class="relative z-10 w-7 h-6 rounded-[3px] flex items-center justify-center transition-colors duration-200"
-                  :class="tocTitleParams.align === 'RIGHT' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
+                  :class="props.tableSettings.align === 'RIGHT' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
                   <RiAlignRight size="13" />
                 </button>
               </div>
@@ -330,12 +318,12 @@ const tocTitleParams = ref({
             <div class="flex flex-wrap items-center gap-[6px]">
               <div class="flex items-center gap-1">
                 <span class="text-[12px] text-brown shrink-0">边框</span>
-                <DropdownSelect v-model="tocTitleParams.border_style" :options="borderStyles" width-class="w-[100px]" />
+                <DropdownSelect v-model="props.tableSettings.border_style" :options="borderStyles" width-class="auto" />
               </div>
-              <div class="flex items-center gap-[3px] cursor-pointer" @click="tocTitleParams.auto_width = !tocTitleParams.auto_width">
+              <div class="flex items-center gap-[3px] cursor-pointer" @click="props.tableSettings.auto_width = !props.tableSettings.auto_width">
                 <div class="w-[16px] h-[16px] rounded-[3px] flex items-center justify-center transition-colors shrink-0"
-                  :class="tocTitleParams.auto_width ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
-                  <RiCheckLine v-if="tocTitleParams.auto_width" size="10" class="text-white" />
+                  :class="props.tableSettings.auto_width ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
+                  <RiCheckLine v-if="props.tableSettings.auto_width" size="10" class="text-white" />
                 </div>
                 <span class="text-[12px] text-brown shrink-0">表格宽度根据窗口自动调整</span>
               </div>
