@@ -1,6 +1,6 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import { RiBookmark3Line, RiSettings3Line } from '@remixicon/vue'
+import { RiSettings3Line } from '@remixicon/vue'
 
 const router = useRouter()
 
@@ -24,16 +24,6 @@ const handleGoEditor = () => {
     </div>
 
     <div class="flex items-center gap-4">
-      <button
-        @click="router.push('/template')"
-        class="group flex items-center gap-2 w-10 hover:w-[90px] h-10 bg-cream-dark hover:bg-cinnabar border border-tan-border hover:border-transparent rounded-lg transition-all duration-200 overflow-hidden"
-      >
-        <div class="flex items-center justify-center w-10 h-10 shrink-0">
-          <RiBookmark3Line size="18" class="text-brown-muted group-hover:text-white" />
-        </div>
-        <span class="text-[14px] font-medium text-brown group-hover:text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200">模板</span>
-      </button>
-
       <button
         @click="handleGoEditor"
         class="group flex items-center gap-2 w-10 hover:w-[90px] h-10 bg-cream-dark hover:bg-cinnabar border border-tan-border hover:border-transparent rounded-lg transition-all duration-200 overflow-hidden"
