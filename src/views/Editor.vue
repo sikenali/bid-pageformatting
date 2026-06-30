@@ -4,7 +4,8 @@ import { useRouter } from 'vue-router'
 import { useDocument } from '../composables/useDocument'
 import { useTemplates } from '../composables/useTemplates'
 import { useFormatState } from '../composables/useFormatState'
-import { formatDocument } from '../api/format'
+import { formatDocument, healthCheck } from '../api/format'
+import { readDocxParams } from '../utils/docxReader'
 import Sidebar from '../components/Sidebar.vue'
 import SaveTemplateModal from '../components/SaveTemplateModal.vue'
 import LoadTemplateModal from '../components/LoadTemplateModal.vue'
@@ -33,7 +34,7 @@ import {
 const router = useRouter()
 const { getFile } = useDocument()
 const currentFile = computed(() => getFile())
-const { formatParams, applyFormatting, takeBeforeSnapshot } = useFormatState()
+const { formatParams, beforeSnapshot, afterSnapshot, applyFormatting, takeBeforeSnapshot, loadFormatParams } = useFormatState()
 const { saveTemplate, templates } = useTemplates()
 
 const activeTab = ref('reset')
@@ -122,12 +123,21 @@ watch(currentFile, async (file) => {
     vueOfficeBuffer.value = null
     return
   }
-  takeBeforeSnapshot()
   try {
     const mammoth = await import('mammoth')
     const buf = await file.arrayBuffer()
     documentBuffer.value = buf
     vueOfficeBuffer.value = buf
+
+    // Detect formatting params from uploaded docx file
+    if (file.name?.toLowerCase().endsWith('.docx')) {
+      try {
+        const detected = await readDocxParams(file)
+        if (detected) loadFormatParams(detected)
+      } catch {}
+    }
+
+    takeBeforeSnapshot()
 
     const { value: htmlContent } = await mammoth.convertToHtml({ arrayBuffer: buf })
     const parser = new DOMParser()
@@ -165,7 +175,6 @@ const handleSaveTemplate = () => {
 
 const handleSave = () => {
   applyFormatting()
-  alert('排版参数已保存')
 }
 
 const handleLoadTemplate = () => {
@@ -196,9 +205,15 @@ const handleOneClickModify = async () => {
   }
   isProcessing.value = true
   formatProgress.value = 0
-  formatLog.value = ['开始排版处理...', '']
+  formatLog.value = [{ msg: '开始排版处理...', type: 'info', time: '' }]
   showFormatLog.value = true
   try {
+    addLog('正在检测后端服务...')
+    const backendOk = await healthCheck()
+    if (!backendOk) {
+      throw new Error('排版服务未启动，请先启动后端服务（http://localhost:8099）')
+    }
+
     addLog('正在应用排版参数...')
     applyFormatting()
     
@@ -218,9 +233,11 @@ const handleOneClickModify = async () => {
       router.push('/compare')
     }, 800)
   } catch (e) {
-    addLog('排版失败：' + e.message, 'error')
-    addLog(e.stack || '', 'error')
-    alert('排版失败：' + e.message)
+    const msg = e.message?.includes('Failed to fetch')
+      ? '无法连接到排版服务（http://localhost:8099），请确认后端服务已启动'
+      : e.message
+    addLog('排版失败：' + msg, 'error')
+    alert('排版失败：' + msg)
   } finally {
     isProcessing.value = false
   }
@@ -230,8 +247,17 @@ const addLog = (msg, type = 'info') => {
   formatLog.value.push({ msg, type, time: new Date().toLocaleTimeString() })
 }
 
+const handleCancel = () => {
+  const target = afterSnapshot.value || beforeSnapshot.value
+  if (target) {
+    Object.assign(formatParams, JSON.parse(JSON.stringify(target)))
+  }
+}
+
 const handleReset = () => {
-  router.push('/')
+  if (beforeSnapshot.value) {
+    Object.assign(formatParams, JSON.parse(JSON.stringify(beforeSnapshot.value)))
+  }
 }
 
 const onTemplateSaved = ({ name, category }) => {
@@ -264,7 +290,7 @@ const showEditor = computed(() => isDocx.value && isEditMode.value)
       <Sidebar
         :activeTab="activeTab"
         @tab-change="activeTab = $event"
-        @cancel="handleReset"
+        @cancel="handleCancel"
         @reset="handleReset"
         @apply="handleSave"
       />
@@ -308,6 +334,7 @@ const showEditor = computed(() => isDocx.value && isEditMode.value)
             :fig-caption="formatParams.fig_caption"
             :tbl-caption="formatParams.tbl_caption"
             :table="formatParams.table"
+            :table-settings="formatParams.table_settings"
             :active-sub-tab="'fig'"
           />
           <TOCPanel
