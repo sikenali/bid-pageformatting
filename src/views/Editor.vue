@@ -32,7 +32,7 @@ import {
 } from '@remixicon/vue'
 
 const router = useRouter()
-const { getFile } = useDocument()
+const { getFile, setFormatted } = useDocument()
 const currentFile = computed(() => getFile())
 const { formatParams, beforeSnapshot, afterSnapshot, applyFormatting, takeBeforeSnapshot, loadFormatParams } = useFormatState()
 const { saveTemplate, templates } = useTemplates()
@@ -222,6 +222,7 @@ const handleOneClickModify = async () => {
     
     addLog('正在执行格式化操作...')
     const blob = await formatDocument(currentFile.value, formatParams)
+    setFormatted(blob)
     formatProgress.value = 70
     
     addLog('正在生成排版结果...')
