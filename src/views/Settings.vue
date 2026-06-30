@@ -3,10 +3,12 @@ import { ref, nextTick, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSettings } from '../composables/useSettings'
 import { useTemplates } from '../composables/useTemplates'
-import { RiPaletteLine, RiBookmark3Line, RiEyeLine, RiCheckLine, RiFileTextLine, RiBuildingLine, RiBook2Line, RiBarChart2Line, RiFileEditLine, RiSettings3Line, RiBrushLine, RiDeleteBinLine, RiSearchLine } from '@remixicon/vue'
+import { useFormatState } from '../composables/useFormatState'
+import PreviewTemplateModal from '../components/PreviewTemplateModal.vue'
+import { RiPaletteLine, RiBookmark3Line, RiEyeLine, RiCheckLine, RiFileTextLine, RiBuildingLine, RiBook2Line, RiBarChart2Line, RiFileEditLine, RiSettings3Line, RiBrushLine, RiDeleteBinLine, RiSearchLine, RiLayout3Line, RiArrowRightLine } from '@remixicon/vue'
 
 const router = useRouter()
-const { theme: currentTheme, template: currentTemplate, annotationEnabled, highlightEnabled, setTheme, setTemplate, toggleAnnotation, toggleHighlight } = useSettings()
+const { theme: currentTheme, template: currentTemplate, previewEnabled, clearStylesEnabled, annotationEnabled, highlightEnabled, setTheme, setTemplate, togglePreview, toggleClearStyles, toggleAnnotation, toggleHighlight } = useSettings()
 const { templates, deleteTemplate, categoryMeta } = useTemplates()
 
 const activeSection = ref('theme')
@@ -21,15 +23,7 @@ const sectionTabs = [
 
 function selectSection(id) {
   activeSection.value = id
-  nextTick(() => {
-    positionIndicator()
-    // 切换到对应 section 时计算卡片指示器位置
-    if (id === 'theme') {
-      setTimeout(positionThemeIndicator, 50)
-    } else if (id === 'template') {
-      setTimeout(positionTemplateIndicator, 50)
-    }
-  })
+  nextTick(positionIndicator)
 }
 
 function positionIndicator() {
@@ -55,79 +49,20 @@ function positionIndicator() {
 onMounted(() => {
   nextTick(() => {
     positionIndicator()
-    setTimeout(positionThemeIndicator, 100)
-    // 首次加载完成后启用动效
-    setTimeout(() => { isInitialized.value = true }, 150)
+    positionCategoryIndicator()
+    setTimeout(() => {
+      isInitialized.value = true
+      isCategoryInitialized.value = true
+    }, 150)
   })
 })
 
-// 主题卡片选择器
-const themeContainerRef = ref(null)
-const themeIndicatorStyle = ref({ left: '0px', width: '0px' })
 
-function positionThemeIndicator() {
-  const container = themeContainerRef.value
-  if (!container) return
-  const cards = container.querySelectorAll('[data-theme-id]')
-  let targetCard = null
-  for (const card of cards) {
-    if (card.dataset.themeId === currentTheme.value) {
-      targetCard = card
-      break
-    }
-  }
-  if (!targetCard) return
-  const containerRect = container.getBoundingClientRect()
-  const cardRect = targetCard.getBoundingClientRect()
-  themeIndicatorStyle.value = {
-    left: `${cardRect.left - containerRect.left - 4}px`,
-    width: `${cardRect.width + 8}px`,
-  }
-}
-
-// 标准模板卡片选择器
-const templateContainerRef = ref(null)
-const templateIndicatorStyle = ref({ left: '0px', width: '0px' })
-
-function positionTemplateIndicator() {
-  const container = templateContainerRef.value
-  if (!container) return
-  const cards = container.querySelectorAll('[data-template-id]')
-  let targetCard = null
-  for (const card of cards) {
-    if (card.dataset.templateId === currentTemplate.value) {
-      targetCard = card
-      break
-    }
-  }
-  if (!targetCard) return
-  const containerRect = container.getBoundingClientRect()
-  const cardRect = targetCard.getBoundingClientRect()
-  templateIndicatorStyle.value = {
-    left: `${cardRect.left - containerRect.left - 4}px`,
-    width: `${cardRect.width + 8}px`,
-  }
-}
-
-onMounted(() => {
-  nextTick(() => {
-    positionIndicator()
-    // 首次加载时，主题是默认显示的，延迟计算确保 DOM 完全渲染
-    setTimeout(positionThemeIndicator, 100)
-  })
-})
 
 const themes = [
   { id: 'light', name: '浅色主题', desc: '经典羊皮纸底色', previewBg: '#FDF6E3' },
   { id: 'dark', name: '深色主题', desc: '深色护眼模式', previewBg: '#2C2416' },
   { id: 'paper', name: '纯白纸', desc: '清爽干净', previewBg: '#FFFFFF' },
-]
-
-const templates = [
-  { id: 'gb', name: '国家标准', sub: 'GB/T 7714', desc: '符合国家公文标准格式', icon: RiFileTextLine, iconColor: '#C8A45C' },
-  { id: 'government', name: '政府公文', sub: 'GB/T 9704', desc: '党政机关公文格式标准', icon: RiBuildingLine, iconColor: '#C43A31' },
-  { id: 'academic', name: '学术论文', sub: 'GB/T 7714', desc: '学术论文排版规范', icon: RiBook2Line, iconColor: '#6B8CAE' },
-  { id: 'business', name: '商务报告', sub: 'ISO 50001', desc: '国际商务文档模板', icon: RiBarChart2Line, iconColor: '#5B8C5A' },
 ]
 
 const displayOptions = [
@@ -136,7 +71,6 @@ const displayOptions = [
 ]
 
 // 模板设置相关状态
-const activeTemplateTab = ref('built-in') // 'built-in' or 'custom'
 const templateSearchKeyword = ref('')
 
 const templateCategories = [
@@ -147,21 +81,77 @@ const templateCategories = [
   { id: 'creative', label: '创意' },
 ]
 const activeCategory = ref('all')
+const categoryIndicatorStyle = ref({ left: '4px', width: '0px' })
+const categoryContainerRef = ref(null)
+const isCategoryInitialized = ref(false)
 
-const filteredTemplates = computed(() => {
-  if (activeTemplateTab.value === 'built-in') {
-    return templates.value.filter(t => t.builtIn)
+function positionCategoryIndicator() {
+  const container = categoryContainerRef.value
+  if (!container) return
+  const btns = container.querySelectorAll('button')
+  let targetBtn = null
+  for (const btn of btns) {
+    if (btn.dataset.catId === activeCategory.value) {
+      targetBtn = btn
+      break
+    }
   }
-  return templates.value.filter(tpl => {
-    const matchSearch = !templateSearchKeyword.value || tpl.name.toLowerCase().includes(templateSearchKeyword.value.toLowerCase())
-    const matchCategory = activeCategory.value === 'all' || tpl.category === activeCategory.value
-    return matchSearch && matchCategory && !tpl.builtIn
+  if (!targetBtn) return
+  const containerRect = container.getBoundingClientRect()
+  const btnRect = targetBtn.getBoundingClientRect()
+  categoryIndicatorStyle.value = {
+    left: `${btnRect.left - containerRect.left}px`,
+    width: `${btnRect.width}px`,
+  }
+}
+
+function selectCategory(id) {
+  activeCategory.value = id
+  nextTick(() => {
+    positionCategoryIndicator()
+    if (!isCategoryInitialized.value) {
+      setTimeout(() => { isCategoryInitialized.value = true }, 50)
+    }
   })
+}
+
+const templateSections = computed(() => {
+  const categories = ['official', 'academic', 'business', 'creative']
+  const result = []
+  for (const cat of categories) {
+    if (activeCategory.value !== 'all' && cat !== activeCategory.value) continue
+    let catTemplates = templates.value.filter(tpl => {
+      if (templateSearchKeyword.value && !tpl.name.toLowerCase().includes(templateSearchKeyword.value.toLowerCase())) return false
+      return tpl.category === cat
+    })
+    if (catTemplates.length > 0) {
+      catTemplates.sort((a, b) => {
+        if (a.builtIn && !b.builtIn) return -1
+        if (!a.builtIn && b.builtIn) return 1
+        return 0
+      })
+      result.push({ key: cat, templates: catTemplates })
+    }
+  }
+  return result
 })
 
 const handleDeleteCustomTemplate = (id) => {
   if (confirm('确定删除此自定义模板吗？')) {
     deleteTemplate(id)
+  }
+}
+
+const selectedTemplate = computed(() => templates.value.find(t => t.id == currentTemplate.value))
+const hasSelectedTemplate = computed(() => currentTemplate.value !== 'gb' && !!selectedTemplate.value)
+
+const showPreviewModal = ref(false)
+
+const { loadFormatParams } = useFormatState()
+
+const previewCurrentTemplate = () => {
+  if (hasSelectedTemplate.value) {
+    showPreviewModal.value = true
   }
 }
 </script>
@@ -188,7 +178,7 @@ const handleDeleteCustomTemplate = (id) => {
             class="relative z-10 w-full rounded-xl py-3 px-4 flex items-center gap-3 transition-colors text-left"
             :class="activeSection === tab.id ? 'text-white' : 'text-brown-dark hover:text-brown-dark'"
           >
-            <component :is="tab.icon" :size="20" :color="activeSection === tab.id ? 'white' : '#5C4033'" />
+            <component :is="tab.icon" :size="'20'" :color="activeSection === tab.id ? 'white' : '#5C4033'" />
             <div class="flex-1">
               <div class="text-[15px] font-semibold" :class="activeSection === tab.id ? 'text-white' : 'text-brown-dark'">{{ tab.label }}</div>
               <div class="text-[11px]" :class="activeSection === tab.id ? 'text-white/75' : 'text-brown-muted'">{{ tab.sublabel }}</div>
@@ -233,152 +223,153 @@ const handleDeleteCustomTemplate = (id) => {
       </div>
 
       <div class="flex-1 p-8 overflow-y-auto">
+        <div v-if="activeSection === 'template'" class="flex items-center justify-between mb-4">
+          <div ref="categoryContainerRef" class="flex items-center gap-4 p-1 rounded-xl bg-[#F0E8D5] relative">
+            <div
+              class="absolute top-1 bottom-1 bg-white rounded-lg shadow-sm pointer-events-none z-0 transition-all duration-300 ease-out"
+              :class="isCategoryInitialized ? '' : 'transition-none'"
+              :style="categoryIndicatorStyle">
+            </div>
+            <button
+              v-for="cat in templateCategories"
+              :key="cat.id"
+              :data-cat-id="cat.id"
+              @click="selectCategory(cat.id)"
+              class="relative z-10 px-4 py-2 rounded-lg text-[13px] transition-colors duration-200"
+              :class="activeCategory === cat.id
+                ? 'font-semibold text-cinnabar'
+                : 'font-medium text-brown hover:text-brown-dark'"
+            >
+              {{ cat.label }}
+            </button>
+          </div>
+          <div class="flex items-center gap-3">
+            <div v-if="hasSelectedTemplate" class="flex items-center gap-3">
+              <div class="flex items-center gap-2">
+                <RiLayout3Line size="18" color="#C43A31" />
+                <span class="text-[13px] font-medium text-brown">已选：</span>
+                <span class="px-2.5 py-0.5 bg-cinnabar text-white rounded-full text-[12px] font-semibold">{{ selectedTemplate.name }}</span>
+              </div>
+              <button
+                @click="previewCurrentTemplate"
+                class="flex items-center gap-1.5 px-3 py-1.5 bg-[#F5EFE0] border-[0.7px] border-tan-border rounded-lg text-[12px] font-medium text-brown"
+              >
+                <RiEyeLine size="14" color="#5C4033" />
+                <span>预览</span>
+              </button>
+            </div>
+            <div class="flex items-center gap-2 w-[220px] bg-[#FBF7EF] border-[0.7px] border-tan-border rounded-xl px-4 py-2">
+              <RiSearchLine size="16" color="#8B7355" class="shrink-0" />
+            <input
+              v-model="templateSearchKeyword"
+              type="text"
+              placeholder="搜索模板..."
+              class="flex-1 bg-transparent text-[13px] text-brown-dark placeholder-[#B8A88A] outline-none"
+            />
+          </div>
+        </div>
+      </div>
+
         <div class="bg-cream-dark border border-tan-light rounded-2xl p-8">
-          <div class="w-full h-[6px] bg-tan-dark rounded-[3px] mb-6"></div>
 
           <div v-if="activeSection === 'theme'" class="relative">
-            <div class="absolute -top-3 -bottom-3 rounded-2xl ring-2 ring-cinnabar ring-offset-2 ring-offset-cream-dark pointer-events-none bg-transparent"
-              :class="isInitialized ? 'transition-all duration-300 ease-out' : ''"
-              :style="themeIndicatorStyle">
-            </div>
-            <div ref="themeContainerRef" class="grid grid-cols-3 gap-4">
+            <div class="grid grid-cols-3 gap-4">
               <div
                 v-for="theme in themes" :key="theme.id"
                 :data-theme-id="theme.id"
-                @click="setTheme(theme.id); nextTick(positionThemeIndicator)"
-                class="bg-white rounded-xl p-8 text-center transition-all cursor-pointer relative"
+                @click="setTheme(theme.id)"
+                class="bg-white rounded-xl p-5 text-center transition-all cursor-pointer relative"
                 :class="currentTheme === theme.id ? 'shadow-lg shadow-cinnabar/18' : 'hover:shadow-md'"
               >
                 <div
-                  class="w-[150px] h-[100px] rounded-lg border border-[#E0D5C0] mx-auto mb-4"
+                  class="w-[90px] h-[60px] rounded-lg border border-[#E0D5C0] mx-auto mb-2"
                   :style="{ backgroundColor: theme.previewBg }"
                 ></div>
                 <h4
-                  class="text-[16px] font-bold mb-1"
+                  class="text-[14px] font-bold mb-0.5"
                   :class="currentTheme === theme.id ? 'text-cinnabar' : 'text-brown-dark'"
                 >{{ theme.name }}</h4>
-                <p class="text-[12px] text-brown-muted mb-3">{{ theme.desc }}</p>
+                <p class="text-[11px] text-brown-muted mb-1.5">{{ theme.desc }}</p>
                 <div
-                  class="w-[26px] h-[26px] rounded-full mx-auto flex items-center justify-center"
+                  class="w-[18px] h-[18px] rounded-full mx-auto flex items-center justify-center"
                   :class="currentTheme === theme.id ? 'bg-cinnabar' : 'bg-tan-dark'"
                 >
-                  <RiCheckLine v-if="currentTheme === theme.id" size="14" color="white" />
+                  <RiCheckLine v-if="currentTheme === theme.id" size="10" color="white" />
                 </div>
               </div>
             </div>
           </div>
 
           <div v-else-if="activeSection === 'template'" class="space-y-4">
-            <!-- Tab selector -->
-            <div class="flex items-center gap-4 border-b border-tan-border pb-3">
-              <button
-                @click="activeTemplateTab = 'built-in'"
-                class="px-4 py-2 rounded-lg text-[13px] font-medium transition-all"
-                :class="activeTemplateTab === 'built-in' ? 'bg-gold-dark text-white' : 'text-brown hover:bg-cream-darker'"
-              >
-                系统模板
-              </button>
-              <button
-                @click="activeTemplateTab = 'custom'"
-                class="px-4 py-2 rounded-lg text-[13px] font-medium transition-all"
-                :class="activeTemplateTab === 'custom' ? 'bg-gold-dark text-white' : 'text-brown hover:bg-cream-darker'"
-              >
-                自定义模板
-              </button>
+            <!-- No match -->
+            <div v-if="templateSections.length === 0" class="text-center py-12 bg-white rounded-xl">
+              <p class="text-[13px] text-brown-muted">暂无匹配模板</p>
             </div>
 
-            <!-- Built-in templates - bookshelf style -->
-            <div v-if="activeTemplateTab === 'built-in'">
-              <div class="grid grid-cols-3 gap-4">
-                <div
-                  v-for="tpl in filteredTemplates" :key="tpl.id"
-                  :data-template-id="tpl.id"
-                  @click="setTemplate(tpl.id); nextTick(positionTemplateIndicator)"
-                  class="bg-white rounded-xl p-5 text-center transition-all cursor-pointer relative border-2"
-                  :class="currentTemplate === tpl.id ? 'border-gold-dark shadow-lg shadow-gold-dark/18' : 'border-transparent hover:shadow-md hover:border-tan-border'"
-                >
+            <!-- Category sections -->
+            <template v-else>
+              <div v-for="sec in templateSections" :key="sec.key" class="space-y-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-[5px] h-[22px] rounded-full" :class="categoryMeta[sec.key]?.spineColor || 'bg-jade-light'"></div>
+                  <h3 class="text-[16px] font-bold text-brown-dark">{{ categoryMeta[sec.key]?.label || sec.key }}</h3>
+                  <span class="text-[12px] text-brown-muted">{{ categoryMeta[sec.key]?.label || sec.key }}模板 · {{ sec.templates.length }}个</span>
+                </div>
+                <div class="w-full h-[6px] bg-tan-dark rounded-[3px] -mt-2"></div>
+                <div class="grid grid-cols-4 gap-4">
                   <div
-                    class="w-[48px] h-[48px] rounded-full mx-auto mb-3 flex items-center justify-center"
-                    :class="currentTemplate === tpl.id ? 'bg-gold-dark/10' : 'bg-cream-darker'"
+                    v-for="tpl in sec.templates" :key="tpl.id"
+                    :data-template-id="tpl.id"
+                    @click="setTemplate(tpl.id)"
+                    class="flex flex-col items-center cursor-pointer group transition-all duration-300"
                   >
-                    <RiBook2Line size="24" :color="categoryMeta[tpl.category]?.iconColor || '#C8A45C'" />
-                  </div>
-                  <h4 class="text-[14px] font-semibold text-brown-dark mb-1">{{ tpl.name }}</h4>
-                  <p class="text-[11px] text-brown-muted">{{ categoryMeta[tpl.category]?.label || tpl.category }}</p>
-                  <div
-                    class="w-[24px] h-[24px] rounded-full mx-auto mt-3 flex items-center justify-center"
-                    :class="currentTemplate === tpl.id ? 'bg-gold-dark' : 'bg-tan-dark'"
-                  >
-                    <RiCheckLine v-if="currentTemplate === tpl.id" size="12" color="white" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Custom templates - bookshelf style with search and filter -->
-            <div v-else>
-              <div class="mb-4 space-y-3">
-                <div class="relative">
-                  <RiSearchLine size="16" color="#8B7355" class="absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    v-model="templateSearchKeyword"
-                    type="text"
-                    placeholder="搜索自定义模板..."
-                    class="w-full pl-10 pr-4 py-2.5 bg-white border border-tan-border rounded-xl text-[13px] text-brown-dark placeholder-brown-muted/60 outline-none focus:border-gold-dark transition-colors"
-                  />
-                </div>
-                <div class="flex gap-2">
-                  <button
-                    v-for="cat in templateCategories"
-                    :key="cat.id"
-                    @click="activeCategory = cat.id"
-                    class="px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all"
-                    :class="activeCategory === cat.id
-                      ? 'bg-gold-dark text-white'
-                      : 'bg-white border border-tan-border text-brown hover:border-tan-dark'"
-                  >
-                    {{ cat.label }}
-                  </button>
-                </div>
-              </div>
-
-              <div v-if="filteredTemplates.length === 0" class="text-center py-12 bg-white rounded-xl">
-                <p class="text-[13px] text-brown-muted">暂无自定义模板</p>
-              </div>
-              <div v-else class="grid grid-cols-3 gap-4">
-                <div
-                  v-for="tpl in filteredTemplates" :key="tpl.id"
-                  class="bg-white rounded-xl p-5 text-center transition-all cursor-pointer relative border-2 border-transparent hover:shadow-md hover:border-tan-border group"
-                >
-                  <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      @click.stop="handleDeleteCustomTemplate(tpl.id)"
-                      class="w-6 h-6 rounded-md flex items-center justify-center bg-red-50 hover:bg-red-100 transition-colors"
+                    <div
+                      class="w-[180px] h-[240px] rounded-lg overflow-hidden transition-all duration-300 relative border-[0.7px] border-tan-border shadow-[0_4px_16px_rgba(0,0,0,0.08)]"
+                      :class="currentTemplate == tpl.id ? 'ring-2 ring-gold-dark shadow-[0_4px_20px_rgba(196,58,49,0.2)]' : 'hover:shadow-[0_4px_20px_rgba(0,0,0,0.14)]'"
                     >
-                      <RiDeleteBinLine size="12" color="#C43A31" />
-                    </button>
-                  </div>
-                  <div
-                    class="w-[48px] h-[48px] rounded-full mx-auto mb-3 flex items-center justify-center"
-                    :class="currentTemplate === String(tpl.id) ? 'bg-gold-dark/10' : 'bg-cream-darker'"
-                  >
-                    <RiBook2Line size="24" :color="categoryMeta[tpl.category]?.iconColor || '#5B8C5A'" />
-                  </div>
-                  <h4 class="text-[14px] font-semibold text-brown-dark mb-1">{{ tpl.name }}</h4>
-                  <p class="text-[11px] text-brown-muted">{{ categoryMeta[tpl.category]?.label || tpl.category }}</p>
-                  <div
-                    class="w-[24px] h-[24px] rounded-full mx-auto mt-3 flex items-center justify-center"
-                    :class="currentTemplate === String(tpl.id) ? 'bg-gold-dark' : 'bg-tan-dark'"
-                  >
-                    <RiCheckLine v-if="currentTemplate === String(tpl.id)" size="12" color="white" />
+                      <div class="h-2" :class="categoryMeta[tpl.category]?.spineColor || 'bg-jade-light'"></div>
+                      <div class="bg-white h-[224px] flex flex-col items-center justify-center px-5 py-6">
+                        <div class="w-14 h-14 rounded-full bg-[#FDF0E0] flex items-center justify-center">
+                          <RiBook2Line size="28" :color="categoryMeta[tpl.category]?.iconColor || '#5B8C5A'" />
+                        </div>
+                        <div class="mt-4 text-center">
+                          <div class="text-[16px] font-bold text-brown-dark">{{ tpl.name }}</div>
+                          <div class="h-2"></div>
+                          <div class="text-[12px] text-brown-muted leading-relaxed">{{ tpl.builtIn ? tpl.description : '用户保存的自定义模板' }}</div>
+                        </div>
+                      </div>
+                      <div class="h-2" :class="categoryMeta[tpl.category]?.spineColor || 'bg-jade-light'"></div>
+                      <div v-if="!tpl.builtIn" class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button @click.stop="handleDeleteCustomTemplate(tpl.id)" class="w-7 h-7 rounded-md flex items-center justify-center bg-red-50 hover:bg-red-100 transition-colors shadow-sm">
+                          <RiDeleteBinLine size="14" color="#C43A31" />
+                        </button>
+                      </div>
+                    </div>
+                    <div class="h-3"></div>
+                    <Transition name="sel" mode="out-in">
+                      <div v-if="currentTemplate == tpl.id" key="selected" class="flex items-center justify-center gap-2">
+                        <div class="w-[18px] h-[18px] rounded-full bg-cinnabar flex items-center justify-center transition-all duration-300">
+                          <RiCheckLine size="10" color="white" />
+                        </div>
+                        <span class="text-[13px] font-semibold text-cinnabar">已选择</span>
+                      </div>
+                      <div v-else key="unselected" class="flex items-center justify-center gap-2">
+                        <div class="w-[18px] h-[18px] rounded-full border-[0.7px] border-tan-dark bg-cream-darker transition-all duration-300"></div>
+                        <span class="text-[13px] font-medium text-brown-muted">选择</span>
+                      </div>
+                    </Transition>
                   </div>
                 </div>
               </div>
-            </div>
+            </template>
+
+            <PreviewTemplateModal
+              v-if="showPreviewModal"
+              :template="selectedTemplate"
+              @close="showPreviewModal = false"
+            />
           </div>
 
           <div v-else class="space-y-4">
-            <!-- 新增：预览功能 -->
             <div class="flex items-center justify-between bg-white rounded-xl p-6">
               <div class="flex items-center gap-4">
                 <div class="w-[48px] h-[48px] rounded-lg bg-diff-green-bg flex items-center justify-center">
@@ -390,17 +381,20 @@ const handleDeleteCustomTemplate = (id) => {
                 </div>
               </div>
               <button
-                class="w-[56px] h-[30px] rounded-full relative transition-colors bg-jade-light"
+                @click="togglePreview()"
+                class="relative w-[52px] h-[28px] rounded-full transition-colors duration-200 ease-out"
+                :class="previewEnabled ? 'bg-jade-light' : 'bg-tan-dark'"
               >
                 <div
-                  class="absolute top-1/2 -translate-y-1/2 w-[26px] h-[26px] bg-white rounded-full shadow flex items-center justify-center transition-all duration-200 right-0.5"
+                  class="absolute top-0.5 w-[24px] h-[24px] bg-white rounded-full shadow-sm flex items-center justify-center transition-all duration-300 ease-out"
+                  :class="previewEnabled ? 'translate-x-[26px]' : 'translate-x-[2px]'"
+                  :style="{ transitionTimingFunction: 'cubic-bezier(.34,1.56,.64,1)' }"
                 >
-                  <RiCheckLine size="14" color="#5B8C5A" />
+                  <RiCheckLine v-if="previewEnabled" size="12" color="#5B8C5A" />
                 </div>
               </button>
             </div>
 
-            <!-- 新增：清除文档样式 -->
             <div class="flex items-center justify-between bg-white rounded-xl p-6">
               <div class="flex items-center gap-4">
                 <div class="w-[48px] h-[48px] rounded-lg bg-diff-green-bg flex items-center justify-center">
@@ -412,16 +406,20 @@ const handleDeleteCustomTemplate = (id) => {
                 </div>
               </div>
               <button
-                class="w-[56px] h-[30px] rounded-full relative transition-colors bg-tan-dark"
+                @click="toggleClearStyles()"
+                class="relative w-[52px] h-[28px] rounded-full transition-colors duration-200 ease-out"
+                :class="clearStylesEnabled ? 'bg-jade-light' : 'bg-tan-dark'"
               >
                 <div
-                  class="absolute top-1/2 -translate-y-1/2 w-[26px] h-[26px] bg-white rounded-full shadow flex items-center justify-center transition-all duration-200 left-0.5"
+                  class="absolute top-0.5 w-[24px] h-[24px] bg-white rounded-full shadow-sm flex items-center justify-center transition-all duration-300 ease-out"
+                  :class="clearStylesEnabled ? 'translate-x-[26px]' : 'translate-x-[2px]'"
+                  :style="{ transitionTimingFunction: 'cubic-bezier(.34,1.56,.64,1)' }"
                 >
+                  <RiCheckLine v-if="clearStylesEnabled" size="12" color="#5B8C5A" />
                 </div>
               </button>
             </div>
 
-            <!-- 原有：高亮修改处和批注展示 -->
             <div
               v-for="option in displayOptions"
               :key="option.id"
@@ -438,15 +436,16 @@ const handleDeleteCustomTemplate = (id) => {
                 </div>
               </div>
               <button
-              @click="option.id === 'annotation' ? toggleAnnotation() : toggleHighlight()"
-              class="w-[56px] h-[30px] rounded-full relative transition-colors"
-              :class="(option.id === 'annotation' ? annotationEnabled : highlightEnabled) ? 'bg-jade-light' : 'bg-tan-dark'"
+                @click="option.id === 'annotation' ? toggleAnnotation() : toggleHighlight()"
+                class="relative w-[52px] h-[28px] rounded-full transition-colors duration-200 ease-out"
+                :class="(option.id === 'annotation' ? annotationEnabled : highlightEnabled) ? 'bg-jade-light' : 'bg-tan-dark'"
               >
                 <div
-                  class="absolute top-1/2 -translate-y-1/2 w-[26px] h-[26px] bg-white rounded-full shadow flex items-center justify-center transition-all duration-200"
-                  :class="(option.id === 'annotation' ? annotationEnabled : highlightEnabled) ? 'right-0.5' : 'left-0.5'"
+                  class="absolute top-0.5 w-[24px] h-[24px] bg-white rounded-full shadow-sm flex items-center justify-center transition-all duration-300 ease-out"
+                  :class="(option.id === 'annotation' ? annotationEnabled : highlightEnabled) ? 'translate-x-[26px]' : 'translate-x-[2px]'"
+                  :style="{ transitionTimingFunction: 'cubic-bezier(.34,1.56,.64,1)' }"
                 >
-                  <RiCheckLine v-if="option.id === 'annotation' ? annotationEnabled : highlightEnabled" size="14" color="#5B8C5A" />
+                  <RiCheckLine v-if="option.id === 'annotation' ? annotationEnabled : highlightEnabled" size="12" color="#5B8C5A" />
                 </div>
               </button>
             </div>
@@ -482,8 +481,21 @@ const handleDeleteCustomTemplate = (id) => {
           </div>
         </div>
       </div>
-
-
     </div>
   </div>
 </template>
+
+<style scoped>
+.sel-enter-active,
+.sel-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.sel-enter-from {
+  opacity: 0;
+  transform: scale(0.85);
+}
+.sel-leave-to {
+  opacity: 0;
+  transform: scale(0.85);
+}
+</style>
