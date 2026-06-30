@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDocument } from '../composables/useDocument'
-import { RiFileWordLine, RiFilePdfLine, RiFileExcelLine, RiFilePptLine, RiUploadCloud2Line, RiAddLine } from '@remixicon/vue'
+import { RiFileWordLine, RiFilePdfLine, RiFileExcelLine, RiFilePptLine, RiUploadCloud2Line, RiAddLine, RiBook2Line } from '@remixicon/vue'
 
 const router = useRouter()
 const { setFile } = useDocument()
@@ -69,10 +69,10 @@ const handleFileChange = (e) => {
         @drop="handleDrop"
       >
         <div v-if="!uploading" class="w-20 h-20 mx-auto mb-6 bg-cream-darker rounded-full flex items-center justify-center">
-          <RiUploadCloud2Line size="36" color="#C43A31" />
+          <RiBook2Line size="36" color="#C43A31" />
         </div>
         <div v-else class="w-20 h-20 mx-auto mb-6 bg-cream-darker rounded-full flex items-center justify-center">
-          <RiUploadCloud2Line size="36" color="#5B8C5A" />
+          <RiBook2Line size="36" color="#5B8C5A" />
         </div>
 
         <p v-if="!uploading" class="text-xl font-semibold text-brown-dark mb-2">
