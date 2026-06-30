@@ -143,7 +143,7 @@ const handleDeleteCustomTemplate = (id) => {
 }
 
 const selectedTemplate = computed(() => templates.value.find(t => t.id == currentTemplate.value))
-const hasSelectedTemplate = computed(() => currentTemplate.value !== 'gb' && !!selectedTemplate.value)
+const hasSelectedTemplate = computed(() => currentTemplate.value != null && !!selectedTemplate.value)
 
 const showPreviewModal = ref(false)
 

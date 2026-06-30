@@ -12,7 +12,7 @@ function loadSettings() {
 
 const saved = loadSettings()
 const theme = ref(saved?.theme || 'light')
-const template = ref(saved?.template || 'gb')
+const template = ref(saved?.template ?? null)
 const previewEnabled = ref(saved?.previewEnabled ?? false)
 const clearStylesEnabled = ref(saved?.clearStylesEnabled ?? false)
 const annotationEnabled = ref(saved?.annotationEnabled ?? false)
