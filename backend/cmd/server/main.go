@@ -44,7 +44,7 @@ func handleFormat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseMultipartForm(32 << 20); err != nil {
+	if err := r.ParseMultipartForm(64 << 20); err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "failed to parse multipart form: " + err.Error()})
 		return
 	}
@@ -68,8 +68,16 @@ func handleFormat(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	if ext := filepath.Ext(header.Filename); ext != ".docx" {
+	// Check file extension (C6)
+	ext := filepath.Ext(header.Filename)
+	if ext != ".docx" {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "only .docx files are accepted"})
+		return
+	}
+
+	// Check file size (C5: 32MB limit)
+	if header.Size > 32*1024*1024 {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "file size exceeds 32MB limit"})
 		return
 	}
 
@@ -103,14 +111,18 @@ func handleFormat(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := wordformat.RunPipeline(doc, &cfg); err != nil {
+		doc.Close()
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "pipeline failed: " + err.Error()})
 		return
 	}
 
-	if err := doc.SaveToFile(outPath); err != nil {
+	// Use SaveDocx to bypass unioffice license check
+	if err := wordformat.SaveDocx(doc, outPath); err != nil {
+		doc.Close()
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to save formatted document: " + err.Error()})
 		return
 	}
+	doc.Close()
 
 	outFile, err := os.Open(outPath)
 	if err != nil {
