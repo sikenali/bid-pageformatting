@@ -13,6 +13,8 @@ function loadSettings() {
 const saved = loadSettings()
 const theme = ref(saved?.theme || 'light')
 const template = ref(saved?.template || 'gb')
+const previewEnabled = ref(saved?.previewEnabled ?? false)
+const clearStylesEnabled = ref(saved?.clearStylesEnabled ?? false)
 const annotationEnabled = ref(saved?.annotationEnabled ?? false)
 const highlightEnabled = ref(saved?.highlightEnabled ?? false)
 
@@ -26,6 +28,8 @@ function persistSettings() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({
     theme: theme.value,
     template: template.value,
+    previewEnabled: previewEnabled.value,
+    clearStylesEnabled: clearStylesEnabled.value,
     annotationEnabled: annotationEnabled.value,
     highlightEnabled: highlightEnabled.value,
   }))
@@ -46,6 +50,8 @@ export function useSettings() {
   }, { immediate: true })
 
   watch(template, persistSettings)
+  watch(previewEnabled, persistSettings)
+  watch(clearStylesEnabled, persistSettings)
   watch(annotationEnabled, persistSettings)
   watch(highlightEnabled, persistSettings)
 
@@ -54,11 +60,15 @@ export function useSettings() {
   return {
     theme,
     template,
+    previewEnabled,
+    clearStylesEnabled,
     annotationEnabled,
     highlightEnabled,
     currentThemeClasses,
     setTheme(val) { theme.value = val },
     setTemplate(val) { template.value = val },
+    togglePreview() { previewEnabled.value = !previewEnabled.value },
+    toggleClearStyles() { clearStylesEnabled.value = !clearStylesEnabled.value },
     toggleAnnotation() { annotationEnabled.value = !annotationEnabled.value },
     toggleHighlight() { highlightEnabled.value = !highlightEnabled.value },
   }
