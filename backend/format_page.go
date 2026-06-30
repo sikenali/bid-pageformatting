@@ -9,15 +9,28 @@ import (
 )
 
 func ApplyPageSetup(doc *document.Document, m *Margins) error {
+	return ApplyPageSetupWithHF(doc, m, nil)
+}
+
+func ApplyPageSetupWithHF(doc *document.Document, m *Margins, hf *HeaderFooter) error {
 	section := doc.BodySection()
 
-	top := measurement.Distance(twipsFromCM(m.TopCM))
-	right := measurement.Distance(twipsFromCM(m.RightCM))
-	bottom := measurement.Distance(twipsFromCM(m.BottomCM))
-	left := measurement.Distance(twipsFromCM(m.LeftCM))
-	header := measurement.Distance(twipsFromCM(m.HeaderMarginCM))
+	top := measurement.Distance(twipsFromCM(m.TopCM) * measurement.Twips)
+	right := measurement.Distance(twipsFromCM(m.RightCM) * measurement.Twips)
+	bottom := measurement.Distance(twipsFromCM(m.BottomCM) * measurement.Twips)
+	left := measurement.Distance(twipsFromCM(m.LeftCM) * measurement.Twips)
+	header := measurement.Distance(twipsFromCM(m.HeaderMarginCM) * measurement.Twips)
 	footer := header
-	gutter := measurement.Distance(twipsFromCM(m.GutterCM))
+	gutter := measurement.Distance(twipsFromCM(m.GutterCM) * measurement.Twips)
+
+	if hf != nil {
+		if hf.HeaderTopCM > 0 {
+			header = measurement.Distance(twipsFromCM(hf.HeaderTopCM) * measurement.Twips)
+		}
+		if hf.FooterBottomCM > 0 {
+			footer = measurement.Distance(twipsFromCM(hf.FooterBottomCM) * measurement.Twips)
+		}
+	}
 
 	section.SetPageMargins(top, right, bottom, left, header, footer, gutter)
 
