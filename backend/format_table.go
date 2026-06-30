@@ -1,6 +1,7 @@
 package wordformat
 
 import (
+	"github.com/unidoc/unioffice/color"
 	"github.com/unidoc/unioffice/document"
 	"github.com/unidoc/unioffice/measurement"
 	"github.com/unidoc/unioffice/schema/soo/wml"
@@ -10,9 +11,36 @@ func applyCellBorders(cell document.Cell, style string) {
 	if style == "" || style == "无" || style == "none" {
 		return
 	}
+	borders := cell.Properties().Borders()
+	black := color.FromHex("#000000")
+	thickness := measurement.Distance(8) * measurement.Point
 	switch style {
 	case "全部", "ALL", "all":
-		_ = cell
+		borders.SetAll(wml.ST_BorderSingle, black, thickness)
+	case "外框", "outside", "OUTSIDE":
+		borders.SetTop(wml.ST_BorderSingle, black, thickness)
+		borders.SetBottom(wml.ST_BorderSingle, black, thickness)
+		borders.SetLeft(wml.ST_BorderSingle, black, thickness)
+		borders.SetRight(wml.ST_BorderSingle, black, thickness)
+	case "内部", "inside", "INSIDE":
+		borders.SetInsideHorizontal(wml.ST_BorderSingle, black, thickness)
+		borders.SetInsideVertical(wml.ST_BorderSingle, black, thickness)
+	case "上", "top", "TOP":
+		borders.SetTop(wml.ST_BorderSingle, black, thickness)
+	case "下", "bottom", "BOTTOM":
+		borders.SetBottom(wml.ST_BorderSingle, black, thickness)
+	case "左", "left", "LEFT":
+		borders.SetLeft(wml.ST_BorderSingle, black, thickness)
+	case "右", "right", "RIGHT":
+		borders.SetRight(wml.ST_BorderSingle, black, thickness)
+	case "横线", "horizontal", "HORIZONTAL":
+		borders.SetTop(wml.ST_BorderSingle, black, thickness)
+		borders.SetBottom(wml.ST_BorderSingle, black, thickness)
+		borders.SetInsideHorizontal(wml.ST_BorderSingle, black, thickness)
+	case "竖线", "vertical", "VERTICAL":
+		borders.SetLeft(wml.ST_BorderSingle, black, thickness)
+		borders.SetRight(wml.ST_BorderSingle, black, thickness)
+		borders.SetInsideVertical(wml.ST_BorderSingle, black, thickness)
 	}
 }
 
@@ -100,6 +128,14 @@ func ApplyTableSettings(doc *document.Document, ts *TableSettings) error {
 		return nil
 	}
 
+	bs := &BodyStyle{
+		CNFont:  ts.CNFont,
+		ENFont:  ts.ENFont,
+		SizeCN:  ts.SizeCN,
+		LineSpacingMode: "MULTIPLE",
+		LineSpacingValue: ts.LineSpacingValue,
+	}
+
 	for _, tbl := range doc.Tables() {
 		if ts.AutoWidth {
 			tblPr := tbl.X().TblPr
@@ -135,21 +171,80 @@ func ApplyTableSettings(doc *document.Document, ts *TableSettings) error {
 					}
 				}
 				for _, p := range cell.Paragraphs() {
-					if ts.LineSpacingValue > 0 {
-						p.SetLineSpacing(
-							twipsFromLineSpacing("MULTIPLE", ts.LineSpacingValue)*measurement.Twips,
-							wml.ST_LineSpacingRuleAuto)
+					applyParagraphSpacing(p, bs)
+					if ts.Align != "" {
+						p.SetAlignment(alignFromString(ts.Align))
 					}
 					for _, r := range p.Runs() {
-						applyStyleToRun(r, &BodyStyle{
-							CNFont: ts.CNFont,
-							ENFont: ts.ENFont,
-							SizeCN: ts.SizeCN,
-						})
+						applyStyleToRun(r, bs)
 					}
 				}
 			}
 		}
 	}
 	return nil
+}
+
+func ApplyPreprocessTableCells(doc *document.Document, font, sizeCN, lineSpacing, align, border string, minHeight float64, autoWidth bool) error {
+	bs := &BodyStyle{
+		CNFont:  font,
+		ENFont:  font,
+		SizeCN:  sizeCN,
+	}
+	if lineSpacing != "" {
+		var v float64
+		parseFloatFromCNInto(lineSpacing, &v)
+		if v > 0 {
+			bs.LineSpacingMode = "MULTIPLE"
+			bs.LineSpacingValue = v
+		}
+	}
+
+	for _, tbl := range doc.Tables() {
+		if autoWidth {
+			tblPr := tbl.X().TblPr
+			if tblPr == nil {
+				tbl.X().TblPr = wml.NewCT_TblPr()
+				tblPr = tbl.X().TblPr
+			}
+			tblPr.TblW = wml.NewCT_TblWidth()
+			tblPr.TblW.TypeAttr = wml.ST_TblWidthAuto
+			tblPr.TblLayout = wml.NewCT_TblLayoutType()
+			tblPr.TblLayout.TypeAttr = wml.ST_TblLayoutTypeAutofit
+		}
+
+		for _, row := range tbl.Rows() {
+			if minHeight > 0 {
+				row.Properties().SetHeight(
+					measurement.Distance(minHeight)*measurement.Point,
+					wml.ST_HeightRuleAtLeast)
+			}
+			for _, cell := range row.Cells() {
+				if border != "" {
+					applyCellBorders(cell, border)
+				}
+				if align != "" {
+					switch align {
+					case "CENTER", "居中":
+						cell.Properties().SetVerticalAlignment(wml.ST_VerticalJcCenter)
+					case "TOP", "居上":
+						cell.Properties().SetVerticalAlignment(wml.ST_VerticalJcTop)
+					case "BOTTOM", "居下":
+						cell.Properties().SetVerticalAlignment(wml.ST_VerticalJcBottom)
+					}
+				}
+				for _, p := range cell.Paragraphs() {
+					applyParagraphSpacing(p, bs)
+					for _, r := range p.Runs() {
+						applyStyleToRun(r, bs)
+					}
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func parseFloatFromCNInto(s string, out *float64) {
+	*out = parseFloatFromCN(s)
 }
