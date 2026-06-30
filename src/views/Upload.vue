@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDocument } from '../composables/useDocument'
-import { RiFileWordLine, RiFilePdfLine, RiFileExcelLine, RiFilePptLine, RiUploadCloud2Line, RiAddLine, RiBook2Line } from '@remixicon/vue'
+import { RiFileWordLine, RiFilePdfLine, RiFileExcelLine, RiFilePptLine, RiUploadCloud2Line, RiBook2Line } from '@remixicon/vue'
 
 const router = useRouter()
 const { setFile } = useDocument()
@@ -18,15 +18,15 @@ const simulateUpload = (file) => {
   setFile(file)
 
   const interval = setInterval(() => {
-    uploadProgress.value += Math.random() * 15 + 5
+    uploadProgress.value += Math.random() * 25 + 15
     if (uploadProgress.value >= 100) {
       uploadProgress.value = 100
       clearInterval(interval)
       setTimeout(() => {
         router.push('/editor')
-      }, 300)
+      }, 100)
     }
-  }, 200)
+  }, 80)
 }
 
 const handleDragOver = (e) => {
@@ -108,8 +108,8 @@ const handleFileChange = (e) => {
           for="file-input"
           class="inline-flex items-center gap-2 px-6 py-3 bg-cinnabar text-white rounded-lg cursor-pointer hover:bg-cinnabar-dark transition-colors font-medium"
         >
-          <RiAddLine size="18" color="white" />
-          <span>选择文件</span>
+          <RiScrollFill size="18" color="white" />
+          <span>御赐墨宝</span>
         </label>
       </div>
 
