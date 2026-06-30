@@ -14,6 +14,13 @@ import (
 )
 
 func FlattenSDT(doc *document.Document) error {
+	// Fast path: if the document has no SDT elements, skip the round-trip
+	// serialization. SaveToFile is license-gated in unioffice v1.39+, so
+	// avoid it when the document already meets the precondition.
+	if len(doc.StructuredDocumentTags()) == 0 {
+		return nil
+	}
+
 	tmpDir, err := os.MkdirTemp("", "docx-sdt-flatten")
 	if err != nil {
 		return fmt.Errorf("create temp dir: %w", err)
