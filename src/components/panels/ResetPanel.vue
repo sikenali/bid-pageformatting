@@ -15,9 +15,12 @@ function toggle(obj, key) {
 }
 
 const tabSpaceOptions = [
-  { value: 2, label: '2 空格' },
-  { value: 4, label: '4 空格' },
-  { value: 8, label: '8 空格' },
+  { value: 1, label: '1 个' },
+  { value: 2, label: '2 个' },
+  { value: 4, label: '4 个' },
+  { value: 'none', label: '不处理' },
+  { value: 'delete', label: '删除处理' },
+  { value: 'enter', label: '回车换行' },
 ]
 </script>
 

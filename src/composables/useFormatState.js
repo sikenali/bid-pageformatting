@@ -251,7 +251,7 @@ const formatParams = reactive({
       clear_superscript: true,
       soft_enter_to_hard: true,
       tab_to_spaces_enabled: false,
-      tab_to_spaces: 4,
+      tab_to_spaces: 1,
       markdown_tags_to_plaintext: false,
       remove_extra_blank_lines: false,
     },
