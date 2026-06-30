@@ -62,6 +62,7 @@ type BodyStyle struct {
 	Bold                 bool    `json:"bold"`
 	Italic               bool    `json:"italic"`
 	Underline            bool    `json:"underline"`
+	UnderlineType        string  `json:"underline_type"`
 	Color                string  `json:"color"`
 	LineSpacingMode      string  `json:"line_spacing_mode"`
 	LineSpacingValue     float64 `json:"line_spacing_value"`
@@ -77,6 +78,10 @@ type BodyStyle struct {
 	RightIndentUnit      string  `json:"right_indent_unit"`
 	AddSpace             bool    `json:"add_space"`
 	SpaceCount           int     `json:"space_count"`
+	Highlight            string  `json:"highlight"`
+	Strike               bool    `json:"strike"`
+	KeepWithNext         bool    `json:"keep_with_next"`
+	PageBreakBefore      bool    `json:"page_break_before"`
 }
 
 type HeadingStyle struct {
