@@ -199,19 +199,15 @@ func ApplyTableSettings(doc *document.Document, ts *TableSettings) error {
 	return nil
 }
 
-func ApplyPreprocessTableCells(doc *document.Document, font, sizeCN, lineSpacing, align, border string, minHeight float64, autoWidth bool) error {
+func ApplyPreprocessTableCells(doc *document.Document, font, sizeCN string, lineSpacing float64, align, border string, minHeight float64, autoWidth bool) error {
 	bs := &BodyStyle{
 		CNFont:  font,
 		ENFont:  font,
 		SizeCN:  sizeCN,
 	}
-	if lineSpacing != "" {
-		var v float64
-		parseFloatFromCNInto(lineSpacing, &v)
-		if v > 0 {
-			bs.LineSpacingMode = "MULTIPLE"
-			bs.LineSpacingValue = v
-		}
+	if lineSpacing > 0 {
+		bs.LineSpacingMode = "MULTIPLE"
+		bs.LineSpacingValue = lineSpacing
 	}
 
 	for _, tbl := range doc.Tables() {
