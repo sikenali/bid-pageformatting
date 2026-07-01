@@ -14,9 +14,13 @@ const indicatorStyle = ref({ left: '4px', width: '56px' })
 function positionIndicator() {
   const bar = barRef.value
   if (!bar) return
-  const btns = bar.querySelectorAll('button')
+  const btns = bar.querySelectorAll('[data-level-btn]')
   const btn = btns[props.modelValue]
-  if (!btn) return
+  if (!btn) {
+    if (props.modelValue >= 0 && props.modelValue < btns.length) return
+    if (props.labels.length) console.warn(`LevelBar: modelValue ${props.modelValue} out of range for ${btns.length} buttons`)
+    return
+  }
   const barRect = bar.getBoundingClientRect()
   const btnRect = btn.getBoundingClientRect()
   indicatorStyle.value = {
@@ -31,6 +35,7 @@ function select(idx) {
 }
 
 watch(() => props.modelValue, () => { nextTick(positionIndicator) })
+watch(() => props.labels, () => { nextTick(positionIndicator) })
 onMounted(() => { nextTick(positionIndicator) })
 </script>
 
@@ -39,7 +44,7 @@ onMounted(() => { nextTick(positionIndicator) })
     <div class="absolute top-[3px] bottom-[3px] bg-white rounded-lg shadow-sm transition-all duration-300 ease-out pointer-events-none"
       :style="indicatorStyle">
     </div>
-    <button v-for="(label, idx) in labels" :key="idx"
+    <button v-for="(label, idx) in labels" :key="idx" data-level-btn
       @click="select(idx)"
       class="relative z-10 px-[10px] py-[5px] text-[12px] rounded-lg transition-colors duration-200 cursor-pointer"
       :class="modelValue === idx ? 'text-cinnabar font-semibold' : 'text-brown hover:text-brown-dark'"
