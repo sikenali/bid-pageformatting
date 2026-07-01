@@ -1,9 +1,10 @@
 <script setup>
-import { computed, ref, watch, onMounted, nextTick } from 'vue'
+import { computed, ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDocument } from '../composables/useDocument'
 import { useTemplates } from '../composables/useTemplates'
 import { useFormatState } from '../composables/useFormatState'
+import { useToast } from '../composables/useToast'
 import { formatDocument, healthCheck } from '../api/format'
 import { readDocxParams } from '../utils/docxReader'
 import Sidebar from '../components/Sidebar.vue'
@@ -36,6 +37,7 @@ const { getFile, setFormatted } = useDocument()
 const currentFile = computed(() => getFile())
 const { formatParams, beforeSnapshot, afterSnapshot, applyFormatting, takeBeforeSnapshot, loadFormatParams } = useFormatState()
 const { saveTemplate, templates } = useTemplates()
+const { showToast } = useToast()
 
 const activeTab = ref('reset')
 const showSaveModal = ref(false)
@@ -158,10 +160,18 @@ watch(currentFile, async (file) => {
     }
     headings.value = extracted
     totalPages.value = Math.max(1, Math.ceil(totalChars / 700))
+    
+    // Release mammoth worker to reduce memory footprint
+    try { mammoth.shutdownWorker() } catch {}
   } catch {
     totalPages.value = '--'
   }
 }, { immediate: true })
+
+onUnmounted(() => {
+  documentBuffer.value = null
+  vueOfficeBuffer.value = null
+})
 
 onMounted(() => {
   nextTick(() => {
@@ -184,7 +194,7 @@ const handleLoadTemplate = () => {
 const handleLoadSelected = (tpl) => {
   if (tpl.formatParams) {
     Object.assign(formatParams, JSON.parse(JSON.stringify(tpl.formatParams)))
-    alert(`已载入模板：${tpl.name}`)
+    showToast(`已载入模板：${tpl.name}`, 'success')
   }
   showLoadModal.value = false
 }
@@ -198,11 +208,11 @@ const handleDeleteTemplate = (id) => {
 }
 
 const handleOneClickModify = async () => {
-  if (!await handleLargeFileWarning()) return
   if (!currentFile.value) {
-    alert('未上传文件，请上传后再进行排版~')
+    showToast('未上传文件，请上传后再进行排版~', 'warning')
     return
   }
+  if (!await handleLargeFileWarning()) return
   isProcessing.value = true
   formatProgress.value = 0
   formatLog.value = [{ msg: '开始排版处理...', type: 'info', time: '' }]
@@ -238,7 +248,7 @@ const handleOneClickModify = async () => {
       ? '无法连接到排版服务（http://localhost:8099），请确认后端服务已启动'
       : e.message
     addLog('排版失败：' + msg, 'error')
-    alert('排版失败：' + msg)
+    showToast('排版失败：' + msg, 'error')
   } finally {
     isProcessing.value = false
   }
