@@ -1,14 +1,12 @@
 <script setup>
 import { RiCheckLine } from '@remixicon/vue'
-import DropdownSelect from '../DropdownSelect.vue'
+import DropdownSelect from '../ui/DropdownSelect.vue'
+import { cnFonts, enFonts, sizeCN } from '../../constants/ui'
 
 defineProps({
   params: { type: Object, required: true },
 })
 
-const cnFonts = ['宋体', '仿宋', '黑体', '楷体', '微软雅黑', '思源宋体'].map(v => ({ value: v, label: v }))
-const enFonts = ['Times New Roman', 'Arial', 'Calibri', 'Verdana', 'Courier New'].map(v => ({ value: v, label: v }))
-const sizeCN = ['初号', '小初', '一号', '小一', '二号', '小二', '三号', '四号', '小四', '五号', '小五'].map(v => ({ value: v, label: v }))
 const alignOptions = [
   { value: 'LEFT', label: '左对齐' },
   { value: 'CENTER', label: '居中' },
@@ -37,7 +35,7 @@ const pageNumberTypes = [
         <div class="w-full h-[6px] bg-tan-dark rounded-sm shrink-0"></div>
         <div class="flex items-center gap-[8px]">
           <div class="w-[5px] h-[18px] rounded-[2px] bg-cinnabar shrink-0"></div>
-          <span class="text-[14px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">页眉</span>
+          <span class="text-[15px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">页眉</span>
           <div class="flex-1"></div>
           <div class="flex items-center gap-[3px] cursor-pointer shrink-0" @click="params.enable_header = !params.enable_header">
             <span class="text-[12px] text-brown shrink-0">启用</span>
@@ -47,7 +45,7 @@ const pageNumberTypes = [
             </div>
           </div>
         </div>
-        <div :class="params.enable_header ? '' : 'pointer-events-none opacity-60'" class="flex flex-col gap-3">
+        <div :class="params.enable_header ? '' : 'pointer-events-none opacity-60'" class="flex flex-col gap-2">
           <div>
             <div class="flex items-center gap-1">
               <span class="text-[12px] text-brown shrink-0">页眉标题</span>
@@ -126,7 +124,7 @@ const pageNumberTypes = [
             </div>
           </div>
         </div>
-        <div :class="params.enable_footer ? '' : 'pointer-events-none opacity-60'" class="flex flex-col gap-3">
+        <div :class="params.enable_footer ? '' : 'pointer-events-none opacity-60'" class="flex flex-col gap-2">
           <div>
             <div class="flex items-center gap-[6px] flex-wrap py-[6px]">
               <div class="flex items-center gap-[3px] cursor-pointer" @click="params.clear_footer = !params.clear_footer">

@@ -1,18 +1,12 @@
 <script setup>
 import { RiCheckLine } from '@remixicon/vue'
-import DropdownSelect from '../DropdownSelect.vue'
+import DropdownSelect from '../ui/DropdownSelect.vue'
+import { paperSizes } from '../../constants/ui'
 
 defineProps({
   params: { type: Object, required: true },
 })
 
-const paperSizes = [
-  { value: 'A4', label: 'A4 (21.0×29.7cm)', w: 21.0, h: 29.7 },
-  { value: 'A3', label: 'A3 (29.7×42.0cm)', w: 29.7, h: 42.0 },
-  { value: 'B5', label: 'B5 (17.6×25.0cm)', w: 17.6, h: 25.0 },
-  { value: 'Letter', label: 'Letter (21.6×27.9cm)', w: 21.6, h: 27.9 },
-  { value: 'custom', label: '自定义', w: 21.0, h: 29.7 },
-]
 </script>
 
 <template>
@@ -24,7 +18,7 @@ const paperSizes = [
           <div class="w-[5px] h-[18px] rounded-[2px] bg-cinnabar shrink-0"></div>
           <span class="text-[15px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">纸张边距与尺寸</span>
         </div>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 gap-2">
           <!-- 第一排：边距 -->
           <div class="flex items-center gap-2">
             <span class="text-[13px] text-brown whitespace-nowrap shrink-0">上边距</span>
@@ -52,7 +46,7 @@ const paperSizes = [
           </div>
         </div>
         <div class="w-full h-[1px] bg-tan-border"></div>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 gap-2">
           <!-- 第二排：纸张大小 + 选项 -->
           <div class="flex items-center gap-2">
             <span class="text-[13px] text-brown whitespace-nowrap shrink-0">纸张大小</span>
