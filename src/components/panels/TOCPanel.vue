@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { RiCheckLine, RiAddLine, RiSubtractLine } from '@remixicon/vue'
 import DropdownSelect from '../ui/DropdownSelect.vue'
 import SpacingInput from '../ui/SpacingInput.vue'
@@ -17,6 +17,12 @@ const activeLevel = ref(0)
 const levelLabels = computed(() =>
   props.params.level_styles.map((_, idx) => `第${idx + 1}层`)
 )
+
+watch(() => props.params.enable, (val) => {
+  if (props.params.enable_level_styles !== val) {
+    props.params.enable_level_styles = val
+  }
+}, { immediate: true })
 
 function selectLevel(idx) {
   activeLevel.value = idx
