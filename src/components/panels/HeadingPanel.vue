@@ -1,7 +1,12 @@
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
-import { RiCheckLine, RiAlignLeft, RiAlignCenter, RiAlignRight, RiAlignJustify, RiAddLine, RiSubtractLine } from '@remixicon/vue'
-import DropdownSelect from '../DropdownSelect.vue'
+import { ref, computed, nextTick } from 'vue'
+import { RiAddLine, RiSubtractLine, RiAlignLeft, RiAlignCenter, RiAlignRight, RiAlignJustify } from '@remixicon/vue'
+import DropdownSelect from '../ui/DropdownSelect.vue'
+import AlignButtonGroup from '../ui/AlignButtonGroup.vue'
+import CheckboxToggle from '../ui/CheckboxToggle.vue'
+import SpacingInput from '../ui/SpacingInput.vue'
+import LevelBar from '../ui/LevelBar.vue'
+import { cnFonts, enFonts, sizeCN, lineSpacingModes, spacingUnits, numberingSchemes, wrappers } from '../../constants/ui'
 
 const props = defineProps({
   params: { type: Array, required: true },
@@ -20,10 +25,9 @@ function addRule() {
     first_line_indent_chars: 0, align: 'LEFT',
     add_space: false, space_count: 0,
   }
-  props.patterns.rules.push({ enabled: false, scheme: 'ARABIC', wrapper: 'DOT', multi_depth: '1', custom_example: '' })
+  props.patterns.rules.push({ enabled: false, scheme: 'ARABIC', wrapper: 'DOT', multi_depth: 1, custom_example: '' })
   props.params.push(defaultHeading)
   activeLevel.value = props.params.length - 1
-  nextTick(positionIndicator)
 }
 
 function removeRule() {
@@ -33,7 +37,6 @@ function removeRule() {
     if (activeLevel.value >= props.params.length) {
       activeLevel.value = props.params.length - 1
     }
-    nextTick(positionIndicator)
   }
 }
 
@@ -65,68 +68,15 @@ function getPreview(rule) {
 }
 
 const activeLevel = ref(0)
-const levelBarRef = ref(null)
-const indicatorStyle = ref({ left: '4px', width: '56px' })
-
-function positionIndicator() {
-  const bar = levelBarRef.value
-  if (!bar) return
-  const btns = bar.querySelectorAll('button')
-  const btn = btns[activeLevel.value]
-  if (!btn) return
-  const barRect = bar.getBoundingClientRect()
-  const btnRect = btn.getBoundingClientRect()
-  indicatorStyle.value = {
-    left: `${btnRect.left - barRect.left}px`,
-    width: `${btnRect.width}px`,
-  }
-}
 
 function selectLevel(idx) {
   activeLevel.value = idx
-  nextTick(positionIndicator)
 }
 
-onMounted(() => { nextTick(positionIndicator) })
-
-const cnFonts = ['宋体', '仿宋', '黑体', '楷体', '微软雅黑', '思源宋体'].map(v => ({ value: v, label: v }))
-const enFonts = ['Times New Roman', 'Arial', 'Calibri', 'Verdana', 'Courier New'].map(v => ({ value: v, label: v }))
-const sizeCN = ['初号', '小初', '一号', '小一', '二号', '小二', '三号', '四号', '小四', '五号', '小五'].map(v => ({ value: v, label: v }))
-const lineSpacingModes = [
-  { value: 'EXACT', label: '固定值' },
-  { value: 'SINGLE', label: '单倍行距' },
-  { value: 'MULTIPLE', label: '多倍行距' },
-  { value: 'AT_LEAST', label: '最小值' },
-]
-const spacingUnits = ['行', '厘米', '字符', '磅'].map(v => ({ value: v === '磅' ? 'pt' : v === '行' ? 'line' : v === '字符' ? 'char' : v === '厘米' ? 'cm' : v, label: v }))
-const indentUnits = ['行', '厘米', '字符', '磅'].map(v => ({ value: v === '磅' ? 'pt' : v === '行' ? 'line' : v === '字符' ? 'char' : v === '厘米' ? 'cm' : v, label: v }))
 const cnLevelNames = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
 const levelLabels = computed(() =>
   props.params.map((_, i) => (cnLevelNames[i] || `${i + 1}`) + '级标题')
 )
-
-const numberingSchemes = [
-  { value: 'NONE', label: '原有级别&标题' },
-  { value: 'ZH_NUM', label: '中文数字' },
-  { value: 'ALPHA_UPPER', label: '大写字母' },
-  { value: 'ALPHA_LOWER', label: '小写字母' },
-  { value: 'ARABIC', label: '阿拉伯数字' },
-  { value: 'ROMAN_UPPER', label: '大写罗马数字' },
-  { value: 'ROMAN_LOWER', label: '小写罗马数字' },
-]
-
-const wrappers = [
-  { value: 'NONE', label: '无前后缀' },
-  { value: 'DOT', label: '尾部加点.' },
-  { value: 'DOUBLE_PAREN', label: '双圆括号()' },
-  { value: 'SINGLE_PAREN', label: '单圆括号)' },
-  { value: 'DUNHAO', label: '顿号、' },
-  { value: 'DOUBLE_BRACKET', label: '双方括号[]' },
-  { value: 'SINGLE_BRACKET', label: '单方括号]' },
-  { value: 'DOUBLE_ANGLE', label: '双尖括号<>' },
-  { value: 'SINGLE_ANGLE', label: '单尖括号>' },
-  { value: 'CN_BRACKET', label: '中文方括号【】' },
-]
 
 </script>
 
@@ -200,17 +150,7 @@ const wrappers = [
           <div class="w-[5px] h-[18px] rounded-[2px] bg-cinnabar shrink-0"></div>
           <span class="text-[14px] font-bold text-brown-dark" style="font-family: 'Source Han Sans SC'">标题级别</span>
         </div>
-        <div ref="levelBarRef" class="bg-cream-darker rounded-lg p-[3px] flex items-center gap-[3px] relative">
-          <div class="absolute top-[3px] bottom-[3px] bg-white rounded-lg shadow-sm transition-all duration-300 ease-out pointer-events-none"
-            :style="indicatorStyle">
-          </div>
-          <button
-            v-for="(label, idx) in levelLabels" :key="idx"
-            @click="selectLevel(idx)"
-            class="relative z-10 px-[10px] py-[5px] text-[12px] rounded-lg transition-colors duration-200 cursor-pointer"
-            :class="activeLevel === idx ? 'text-cinnabar font-semibold' : 'text-brown hover:text-brown-dark'"
-          >{{ label }}</button>
-        </div>
+        <LevelBar v-model="activeLevel" :labels="levelLabels" />
         <Transition name="fade-slide" mode="out-in">
           <div :key="activeLevel" class="flex flex-col gap-3">
             <div>
@@ -238,27 +178,9 @@ const wrappers = [
                       <input type="color" v-model="props.params[activeLevel].color" class="absolute inset-0 opacity-0 w-full h-full cursor-pointer" />
                     </label>
                   </div>
-                  <div class="flex items-center gap-[3px] cursor-pointer" @click="props.params[activeLevel].bold = !props.params[activeLevel].bold">
-                    <div class="w-[16px] h-[16px] rounded-[3px] flex items-center justify-center transition-colors shrink-0"
-                      :class="props.params[activeLevel].bold ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
-                      <RiCheckLine v-if="props.params[activeLevel].bold" size="10" class="text-white" />
-                    </div>
-                    <span class="text-[12px] text-brown shrink-0">粗体</span>
-                  </div>
-                  <div class="flex items-center gap-[3px] cursor-pointer" @click="props.params[activeLevel].italic = !props.params[activeLevel].italic">
-                    <div class="w-[16px] h-[16px] rounded-[3px] flex items-center justify-center transition-colors shrink-0"
-                      :class="props.params[activeLevel].italic ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
-                      <RiCheckLine v-if="props.params[activeLevel].italic" size="10" class="text-white" />
-                    </div>
-                    <span class="text-[12px] text-brown shrink-0">斜体</span>
-                  </div>
-                  <div class="flex items-center gap-[3px] cursor-pointer" @click="props.params[activeLevel].underline = !props.params[activeLevel].underline">
-                    <div class="w-[16px] h-[16px] rounded-[3px] flex items-center justify-center transition-colors shrink-0"
-                      :class="props.params[activeLevel].underline ? 'bg-cinnabar' : 'bg-cream-darker border border-tan-border'">
-                      <RiCheckLine v-if="props.params[activeLevel].underline" size="10" class="text-white" />
-                    </div>
-                    <span class="text-[12px] text-brown shrink-0">下划线</span>
-                  </div>
+                  <CheckboxToggle v-model="props.params[activeLevel].bold" label="粗体" />
+                  <CheckboxToggle v-model="props.params[activeLevel].italic" label="斜体" />
+                  <CheckboxToggle v-model="props.params[activeLevel].underline" label="下划线" />
                 </div>
               </div>
             </div>
@@ -273,9 +195,7 @@ const wrappers = [
                 </div>
                 <div class="flex items-center gap-1">
                   <span class="text-[12px] text-brown shrink-0">值</span>
-                  <input type="number" min="0" step="0.5" v-model.number="props.params[activeLevel].line_spacing_value"
-                    class="w-[50px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
-                  <span class="text-[12px] text-brown shrink-0">磅</span>
+                  <SpacingInput v-model="props.params[activeLevel].line_spacing_value" unit="磅" step="0.5" width="w-[50px]" />
                 </div>
                 <div class="flex items-center gap-1">
                   <span class="text-[12px] text-brown shrink-0">段前</span>
@@ -310,9 +230,7 @@ const wrappers = [
                 </div>
                 <div class="flex items-center gap-1">
                   <span class="text-[12px] text-brown shrink-0">首行</span>
-                  <input type="number" min="0" step="0.1" v-model.number="props.params[activeLevel].first_line_indent_chars"
-                    class="w-[50px] bg-white border border-tan-border rounded-lg px-[8px] py-[6px] text-[12px] text-brown outline-none focus:border-cinnabar transition-colors" />
-                  <span class="text-[12px] text-brown shrink-0">字符</span>
+                  <SpacingInput v-model="props.params[activeLevel].first_line_indent_chars" unit="字符" width="w-[50px]" />
                 </div>
               </div>
             </div>
@@ -323,31 +241,12 @@ const wrappers = [
               <div class="flex flex-wrap items-center gap-[6px]">
                 <div class="flex items-center gap-1">
                   <span class="text-[12px] text-brown shrink-0">对齐方式</span>
-                  <div class="bg-cream-darker rounded-lg p-[3px] flex items-center relative">
-                    <div class="absolute top-[3px] bottom-[3px] w-7 bg-white rounded-[3px] shadow-sm transition-all duration-300 ease-out pointer-events-none"
-                      :style="{ left: `${3 + ['LEFT', 'CENTER', 'RIGHT', 'JUSTIFY'].indexOf(props.params[activeLevel].align) * 28}px` }">
-                    </div>
-                    <button @click="props.params[activeLevel].align = 'LEFT'"
-                      class="relative z-10 w-7 h-6 rounded-[3px] flex items-center justify-center transition-colors duration-200"
-                      :class="props.params[activeLevel].align === 'LEFT' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
-                      <RiAlignLeft size="13" />
-                    </button>
-                    <button @click="props.params[activeLevel].align = 'CENTER'"
-                      class="relative z-10 w-7 h-6 rounded-[3px] flex items-center justify-center transition-colors duration-200"
-                      :class="props.params[activeLevel].align === 'CENTER' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
-                      <RiAlignCenter size="13" />
-                    </button>
-                    <button @click="props.params[activeLevel].align = 'RIGHT'"
-                      class="relative z-10 w-7 h-6 rounded-[3px] flex items-center justify-center transition-colors duration-200"
-                      :class="props.params[activeLevel].align === 'RIGHT' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
-                      <RiAlignRight size="13" />
-                    </button>
-                    <button @click="props.params[activeLevel].align = 'JUSTIFY'"
-                      class="relative z-10 w-7 h-6 rounded-[3px] flex items-center justify-center transition-colors duration-200"
-                      :class="props.params[activeLevel].align === 'JUSTIFY' ? 'text-cinnabar' : 'text-brown-muted hover:text-brown'">
-                      <RiAlignJustify size="13" />
-                    </button>
-                  </div>
+                  <AlignButtonGroup v-model="props.params[activeLevel].align" :options="[
+                    { value: 'LEFT', icon: RiAlignLeft },
+                    { value: 'CENTER', icon: RiAlignCenter },
+                    { value: 'RIGHT', icon: RiAlignRight },
+                    { value: 'JUSTIFY', icon: RiAlignJustify },
+                  ]" />
                 </div>
                 <div class="flex items-center gap-[3px] cursor-pointer" @click="props.params[activeLevel].add_space = !props.params[activeLevel].add_space">
                   <div class="w-[16px] h-[16px] rounded-[3px] flex items-center justify-center transition-colors shrink-0"
