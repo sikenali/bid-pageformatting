@@ -72,7 +72,19 @@ func ApplyHeaderFooter(doc *document.Document, hf *HeaderFooter) error {
 			case "page_only", "PAGE_ONLY", "仅页码":
 				run.AddField("PAGE")
 			case "none", "NONE", "无":
+				// 不添加页码
+			case "standard", "STANDARD", "标准":
+				run.AddField("PAGE")
+				run.AddText(" / ")
+				run.AddField("NUMPAGES")
+			case "dash", "DASH", "短横线":
+				run.AddField("PAGE")
+				run.AddText(" - ")
+				run.AddField("NUMPAGES")
+			case "simple", "SIMPLE", "简单":
+				run.AddField("PAGE")
 			default:
+				// 默认标准格式
 				run.AddField("PAGE")
 				run.AddText(" / ")
 				run.AddField("NUMPAGES")

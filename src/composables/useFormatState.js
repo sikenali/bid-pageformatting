@@ -153,10 +153,10 @@ const formatParams = reactive({
 
   patterns: {
     rules: [
-      { enabled: false, scheme: 'ZH_NUM', wrapper: 'DUNHAO', multi_depth: '1', custom_example: '' },
-      { enabled: false, scheme: 'ZH_NUM', wrapper: 'DOUBLE_PAREN', multi_depth: '1', custom_example: '' },
-      { enabled: false, scheme: 'ARABIC', wrapper: 'DOT', multi_depth: '1', custom_example: '' },
-      { enabled: false, scheme: 'ARABIC', wrapper: 'SINGLE_PAREN', multi_depth: '1', custom_example: '' },
+      { enabled: false, scheme: 'ZH_NUM', wrapper: 'DUNHAO', multi_depth: 1, custom_example: '' },
+      { enabled: false, scheme: 'ZH_NUM', wrapper: 'DOUBLE_PAREN', multi_depth: 1, custom_example: '' },
+      { enabled: false, scheme: 'ARABIC', wrapper: 'DOT', multi_depth: 1, custom_example: '' },
+      { enabled: false, scheme: 'ARABIC', wrapper: 'SINGLE_PAREN', multi_depth: 1, custom_example: '' },
     ],
   },
 
