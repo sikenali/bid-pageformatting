@@ -1,7 +1,7 @@
 package wordformat
 
 import (
-	"github.com/unidoc/unioffice/document"
+	"github.com/unidoc/unioffice/v2/document"
 )
 
 func ClearIndents(doc *document.Document) error {

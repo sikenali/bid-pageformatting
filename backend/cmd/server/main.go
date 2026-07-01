@@ -10,7 +10,8 @@ import (
 	"path/filepath"
 
 	wordformat "github.com/anomalyco/bid-pageformatting-backend"
-	"github.com/unidoc/unioffice/document"
+	"github.com/unidoc/unioffice/v2/common/license"
+	"github.com/unidoc/unioffice/v2/document"
 )
 
 func corsMiddleware(next http.Handler) http.Handler {
@@ -116,8 +117,7 @@ func handleFormat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Use SaveDocx to bypass unioffice license check
-	if err := wordformat.SaveDocx(doc, outPath); err != nil {
+	if err := doc.SaveToFile(outPath); err != nil {
 		doc.Close()
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to save formatted document: " + err.Error()})
 		return
@@ -137,7 +137,53 @@ func handleFormat(w http.ResponseWriter, r *http.Request) {
 	io.Copy(w, outFile)
 }
 
+func handleConfig(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		cfg := wordformat.LoadConfigForAPI()
+		writeJSON(w, http.StatusOK, cfg)
+	case http.MethodPut:
+		var req struct {
+			LicenseEntries []wordformat.LicenseEntryRequest `json:"license_entries"`
+		}
+		body, _ := io.ReadAll(r.Body)
+		json.Unmarshal(body, &req)
+		if err := wordformat.SaveLicenseEntries(req.LicenseEntries); err != nil {
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			return
+		}
+		writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
+	default:
+		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
+	}
+}
+
 func main() {
+	// Register unidoc license before any document operations
+	key := os.Getenv("UNIDOC_LICENSE_KEY")
+	if key == "" {
+		raw, err := os.ReadFile("config.json")
+		if err == nil {
+			var cfg struct {
+				UnidocLicenseKey string `json:"unidoc_license_key"`
+			}
+			json.Unmarshal(raw, &cfg)
+			key = cfg.UnidocLicenseKey
+		}
+	}
+	if key != "" {
+		if len(key) >= 64 {
+			key = key[:64]
+		}
+		if err := license.SetMeteredKey(key); err != nil {
+			log.Printf("[WARN] license set failed: %v", err)
+		} else {
+			log.Println("[OK] unidoc license registered")
+		}
+	} else {
+		log.Println("[WARN] no unidoc license key found")
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8099"
@@ -146,6 +192,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/health", handleHealth)
 	mux.HandleFunc("/api/format", handleFormat)
+	mux.HandleFunc("/api/config", handleConfig)
 
 	handler := corsMiddleware(mux)
 

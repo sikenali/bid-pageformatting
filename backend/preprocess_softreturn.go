@@ -1,8 +1,8 @@
 package wordformat
 
 import (
-	"github.com/unidoc/unioffice/document"
-	"github.com/unidoc/unioffice/schema/soo/wml"
+	"github.com/unidoc/unioffice/v2/document"
+	"github.com/unidoc/unioffice/v2/schema/soo/wml"
 )
 
 func ReplaceSoftReturns(doc *document.Document) error {
@@ -13,9 +13,9 @@ func ReplaceSoftReturns(doc *document.Document) error {
 			innerContents := r.X().EG_RunInnerContent
 			hasSoftBreak := false
 			for _, eg := range innerContents {
-				if eg.Br != nil && eg.Br.TypeAttr == wml.ST_BrTypeTextWrapping {
+				if eg.RunInnerContentChoice != nil && eg.RunInnerContentChoice.Br != nil && eg.RunInnerContentChoice.Br.TypeAttr == wml.ST_BrTypeTextWrapping {
 					hasSoftBreak = true
-					eg.Br = nil
+					eg.RunInnerContentChoice.Br = nil
 				}
 			}
 			if hasSoftBreak {

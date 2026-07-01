@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/unidoc/unioffice/document"
+	"github.com/unidoc/unioffice/v2/document"
 )
 
 func FlattenSDT(doc *document.Document) error {

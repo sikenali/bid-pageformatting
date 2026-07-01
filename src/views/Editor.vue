@@ -223,19 +223,20 @@ const handleOneClickModify = async () => {
     if (!backendOk) {
       throw new Error('排版服务未启动，请先启动后端服务（http://localhost:8099）')
     }
+    addLog('后端服务正常')
 
-    addLog('正在应用排版参数...')
-    applyFormatting()
-    
-    addLog('正在读取文档内容...')
-    formatProgress.value = 30
-    
-    addLog('正在执行格式化操作...')
+    addLog('正在读取并格式化文档...')
+    formatProgress.value = 20
+    takeBeforeSnapshot()
+
+    addLog('正在调用后端排版服务...')
+    formatProgress.value = 40
     const blob = await formatDocument(currentFile.value, formatParams)
+    formatProgress.value = 80
+
+    addLog('正在应用排版结果...')
     setFormatted(blob)
-    formatProgress.value = 70
-    
-    addLog('正在生成排版结果...')
+    applyFormatting()
     formatProgress.value = 100
     addLog('排版完成！')
     

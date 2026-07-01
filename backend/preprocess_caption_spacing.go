@@ -3,8 +3,8 @@ package wordformat
 import (
 	"regexp"
 
-	"github.com/unidoc/unioffice/document"
-	"github.com/unidoc/unioffice/measurement"
+	"github.com/unidoc/unioffice/v2/document"
+	"github.com/unidoc/unioffice/v2/measurement"
 )
 
 func AdjustCaptionSpacing(doc *document.Document, cfg *Config) error {

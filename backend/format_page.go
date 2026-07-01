@@ -1,11 +1,11 @@
 package wordformat
 
 import (
-	"github.com/unidoc/unioffice/color"
-	"github.com/unidoc/unioffice/document"
-	"github.com/unidoc/unioffice/measurement"
-	"github.com/unidoc/unioffice/schema/soo/ofc/sharedTypes"
-	"github.com/unidoc/unioffice/schema/soo/wml"
+	"github.com/unidoc/unioffice/v2/color"
+	"github.com/unidoc/unioffice/v2/document"
+	"github.com/unidoc/unioffice/v2/measurement"
+	"github.com/unidoc/unioffice/v2/schema/soo/ofc/sharedTypes"
+	"github.com/unidoc/unioffice/v2/schema/soo/wml"
 )
 
 func ApplyPageSetup(doc *document.Document, m *Margins) error {

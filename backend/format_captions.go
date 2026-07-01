@@ -3,7 +3,7 @@ package wordformat
 import (
 	"regexp"
 
-	"github.com/unidoc/unioffice/document"
+	"github.com/unidoc/unioffice/v2/document"
 )
 
 func ApplyCaptionFormats(doc *document.Document, fig, tbl *CaptionStyle) error {

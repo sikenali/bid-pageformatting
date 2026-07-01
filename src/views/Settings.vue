@@ -6,7 +6,7 @@ import { useTemplates } from '../composables/useTemplates'
 import { useFormatState } from '../composables/useFormatState'
 import { useToast } from '../composables/useToast'
 import PreviewTemplateModal from '../components/PreviewTemplateModal.vue'
-import { RiPaletteLine, RiBookmark3Line, RiEyeLine, RiCheckLine, RiFileTextLine, RiBuildingLine, RiBook2Line, RiBarChart2Line, RiFileEditLine, RiSettings3Line, RiBrushLine, RiDeleteBinLine, RiSearchLine, RiLayout3Line, RiArrowRightLine } from '@remixicon/vue'
+import { RiPaletteLine, RiBookmark3Line, RiEyeLine, RiCheckLine, RiFileTextLine, RiBuildingLine, RiBook2Line, RiBarChart2Line, RiFileEditLine, RiSettings3Line, RiBrushLine, RiDeleteBinLine, RiSearchLine, RiLayout3Line, RiArrowRightLine, RiKeyLine, RiEyeOffLine } from '@remixicon/vue'
 
 const { success } = useToast()
 const router = useRouter()
@@ -21,6 +21,7 @@ const sectionTabs = [
   { id: 'theme', label: '主题设置', sublabel: 'Theme', icon: RiPaletteLine, activeBg: 'bg-cinnabar' },
   { id: 'template', label: '模板设置', sublabel: 'Template', icon: RiBookmark3Line, activeBg: 'bg-gold-dark' },
   { id: 'display', label: '显示设置', sublabel: 'Display', icon: RiEyeLine, activeBg: 'bg-jade-light' },
+  { id: 'apikey', label: 'API Key', sublabel: 'API Key', icon: RiKeyLine, activeBg: 'bg-indigo-500' },
 ]
 
 function selectSection(id) {
@@ -52,6 +53,7 @@ onMounted(() => {
   nextTick(() => {
     positionIndicator()
     positionCategoryIndicator()
+    loadApiKeyConfig()
     setTimeout(() => {
       isInitialized.value = true
       isCategoryInitialized.value = true
@@ -149,6 +151,66 @@ const hasSelectedTemplate = computed(() => currentTemplate.value != null && !!se
 
 const showPreviewModal = ref(false)
 
+// API Key related state
+const apiKeyEntries = ref([])
+const apiKeyVisible = ref({})
+const apiKeyLoading = ref(false)
+const API_CONFIG_URL = (import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8099') + '/api/config'
+
+async function loadApiKeyConfig() {
+  try {
+    apiKeyLoading.value = true
+    const res = await fetch(API_CONFIG_URL)
+    const data = await res.json()
+    const entries = data.license_entries || []
+    // 如果没有已配置的密钥，初始化默认条目
+    if (entries.length === 0) {
+      apiKeyEntries.value = [{ name: 'sikenali', key: '0e89c80551170586abdf25f914ac5fd874cb017c288390ca117fe4cfd17a81fe', isNew: true }]
+    } else {
+      apiKeyEntries.value = entries.map(e => ({ name: e.name, key: '', isNew: false }))
+    }
+  } catch (e) {
+    console.error('Failed to load API key config:', e)
+    // 加载失败时也初始化默认条目
+    if (apiKeyEntries.value.length === 0) {
+      apiKeyEntries.value = [{ name: 'sikenali', key: '0e89c80551170586abdf25f914ac5fd874cb017c288390ca117fe4cfd17a81fe', isNew: true }]
+    }
+  } finally {
+    apiKeyLoading.value = false
+  }
+}
+
+async function saveApiKeyConfig() {
+  try {
+    apiKeyLoading.value = true
+    const res = await fetch(API_CONFIG_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ license_entries: apiKeyEntries.value }),
+    })
+    if (res.ok) {
+      success('配置已保存，密钥已加密存储~')
+      await loadApiKeyConfig()
+    }
+  } catch (e) {
+    console.error('Failed to save API key config:', e)
+  } finally {
+    apiKeyLoading.value = false
+  }
+}
+
+function addApiKeyEntry() {
+  apiKeyEntries.value.push({ name: '', key: '', isNew: true })
+}
+
+function removeApiKeyEntry(index) {
+  apiKeyEntries.value.splice(index, 1)
+}
+
+function toggleKeyVisibility(index) {
+  apiKeyVisible.value = { ...apiKeyVisible.value, [index]: !apiKeyVisible.value[index] }
+}
+
 const { loadFormatParams } = useFormatState()
 
 const previewCurrentTemplate = () => {
@@ -196,18 +258,19 @@ const previewCurrentTemplate = () => {
         <div class="flex items-center gap-3">
           <div
             class="w-10 h-10 rounded-lg flex items-center justify-center"
-            :class="activeSection === 'theme' ? 'bg-cinnabar' : activeSection === 'template' ? 'bg-gold-dark' : 'bg-jade-light'"
+            :class="activeSection === 'theme' ? 'bg-cinnabar' : activeSection === 'template' ? 'bg-gold-dark' : activeSection === 'display' ? 'bg-jade-light' : 'bg-indigo-500'"
           >
             <RiPaletteLine v-if="activeSection === 'theme'" size="20" color="white" />
             <RiBookmark3Line v-else-if="activeSection === 'template'" size="20" color="white" />
-            <RiEyeLine v-else size="20" color="white" />
+            <RiEyeLine v-else-if="activeSection === 'display'" size="20" color="white" />
+            <RiKeyLine v-else size="20" color="white" />
           </div>
           <div>
             <h2 class="text-[18px] font-bold text-brown-dark">
-              {{ activeSection === 'theme' ? '主题设置' : activeSection === 'template' ? '模板设置' : '显示设置' }}
+              {{ activeSection === 'theme' ? '主题设置' : activeSection === 'template' ? '模板设置' : activeSection === 'display' ? '显示设置' : 'API Key' }}
             </h2>
             <p class="text-[12px] text-brown-muted">
-              {{ activeSection === 'theme' ? '选择界面配色方案' : activeSection === 'template' ? '管理模板与排版标准' : '控制修改建议的展示方式' }}
+              {{ activeSection === 'theme' ? '选择界面配色方案' : activeSection === 'template' ? '管理模板与排版标准' : activeSection === 'display' ? '控制修改建议的展示方式' : '管理第三方服务的授权密钥' }}
             </p>
           </div>
         </div>
@@ -220,9 +283,9 @@ const previewCurrentTemplate = () => {
             <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 whitespace-nowrap px-2 py-1 rounded-md text-[11px] font-medium bg-brown-dark text-cream opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">取消</span>
           </button>
           <button
-            @click="success('当前页面参数修改已保存~')"
+            @click="activeSection === 'apikey' ? saveApiKeyConfig() : success('当前页面参数修改已保存~')"
             class="group relative flex items-center gap-2 px-6 py-3 text-white rounded-xl text-[14px] font-semibold transition-all duration-200"
-            :class="activeSection === 'template' ? 'bg-gold-dark hover:bg-gold-dark/85' : activeSection === 'display' ? 'bg-jade-light hover:bg-jade-light/85' : 'bg-cinnabar hover:bg-cinnabar/85'"
+            :class="activeSection === 'template' ? 'bg-gold-dark hover:bg-gold-dark/85' : activeSection === 'display' ? 'bg-jade-light hover:bg-jade-light/85' : activeSection === 'apikey' ? 'bg-indigo-500 hover:bg-indigo-500/85' : 'bg-cinnabar hover:bg-cinnabar/85'"
           >
             <RiCheckLine size="16" color="white" />
             <span>准奏</span>
@@ -370,7 +433,7 @@ const previewCurrentTemplate = () => {
             />
           </div>
 
-          <div v-else class="space-y-4">
+          <div v-else-if="activeSection === 'display'" class="space-y-4">
             <div class="flex items-center justify-between bg-white rounded-xl p-6">
               <div class="flex items-center gap-4">
                 <div class="w-[48px] h-[48px] rounded-lg bg-diff-green-bg flex items-center justify-center">
@@ -475,6 +538,66 @@ const previewCurrentTemplate = () => {
                   <div class="rounded-lg p-3" style="border-width: 2.7px; border-style: solid; background: rgba(107,140,174,0.1); border-color: #6B8CAE;">
                     <div class="text-[12px] font-semibold text-cloud-blue">字体建议</div>
                     <p class="text-[12px] text-brown leading-relaxed mt-1">正文建议使用仿宋_GB2312</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-else-if="activeSection === 'apikey'" class="space-y-4">
+            <div class="bg-white rounded-xl p-6">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center">
+                  <RiKeyLine size="22" color="#6366F1" />
+                </div>
+                <div>
+                  <h4 class="text-[16px] font-semibold text-brown-dark">授权密钥管理</h4>
+                  <p class="text-[12px] text-brown-muted mt-0.5">配置第三方服务的 API Key，保存后将自动加密存储</p>
+                </div>
+              </div>
+
+              <div v-if="apiKeyLoading && apiKeyEntries.length === 0" class="text-center py-8 text-[13px] text-brown-muted">
+                加载中...
+              </div>
+
+              <div v-for="(entry, index) in apiKeyEntries" :key="index" class="mb-4 last:mb-0">
+                <!-- Name field -->
+                <div class="flex items-center gap-2 mb-2">
+                  <label class="text-[12px] font-medium text-brown w-12 shrink-0 text-right">名称</label>
+                  <input
+                    v-model="entry.name"
+                    type="text"
+                    placeholder="输入密钥名称"
+                    class="flex-1 bg-[#FAFAF5] border border-tan-border rounded-lg px-3 py-2 text-[13px] text-brown-dark placeholder-[#B8A88A] outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 transition-colors"
+                  />
+                  <button
+                    @click="removeApiKeyEntry(index)"
+                    class="w-6 h-6 rounded flex items-center justify-center hover:bg-red-50 transition-colors shrink-0"
+                    title="删除此密钥"
+                  >
+                    <RiDeleteBinLine size="13" color="#C43A31" />
+                  </button>
+                </div>
+
+                <!-- API Key field -->
+                <div class="flex items-center gap-2">
+                  <label class="text-[12px] font-medium text-brown w-12 shrink-0 text-right">API Key</label>
+                  <div class="flex-1 relative">
+                    <input
+                      :type="apiKeyVisible[index] ? 'text' : 'password'"
+                      :value="entry.isNew ? entry.key : '••••••••'"
+                      :placeholder="entry.isNew ? '输入 API Key' : '已配置'"
+                      @input="entry.isNew = true; apiKeyEntries[index].key = $event.target.value"
+                      class="w-full bg-[#FAFAF5] border border-tan-border rounded-lg pl-3 pr-10 py-2 text-[13px] text-brown-dark placeholder-[#B8A88A] outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 transition-colors font-mono"
+                    />
+                    <button
+                      @click="toggleKeyVisibility(index)"
+                      class="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded flex items-center justify-center hover:bg-white transition-colors"
+                      :title="apiKeyVisible[index] ? '隐藏' : '显示'"
+                    >
+                      <RiEyeLine v-if="!apiKeyVisible[index]" size="15" color="#8B7355" />
+                      <RiEyeOffLine v-else size="15" color="#8B7355" />
+                    </button>
                   </div>
                 </div>
               </div>

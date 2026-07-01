@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/unidoc/unioffice/measurement"
+	"github.com/unidoc/unioffice/v2/measurement"
 
-	"github.com/unidoc/unioffice/document"
+	"github.com/unidoc/unioffice/v2/document"
 )
 
 func InjectTOC(doc *document.Document, tocCfg *TOCConfig) error {

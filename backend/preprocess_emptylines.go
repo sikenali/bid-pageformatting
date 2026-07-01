@@ -3,7 +3,7 @@ package wordformat
 import (
 	"strings"
 
-	"github.com/unidoc/unioffice/document"
+	"github.com/unidoc/unioffice/v2/document"
 )
 
 func DeleteEmptyLines(doc *document.Document) error {
@@ -26,7 +26,7 @@ func DeleteEmptyLines(doc *document.Document) error {
 func hasDrawingOrObject(p *document.Paragraph) bool {
 	for _, r := range p.Runs() {
 		for _, eg := range r.X().EG_RunInnerContent {
-			if eg.Drawing != nil {
+			if eg.RunInnerContentChoice != nil && eg.RunInnerContentChoice.Drawing != nil {
 				return true
 			}
 		}

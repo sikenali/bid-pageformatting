@@ -10,8 +10,8 @@ import (
 	"strings"
 	"unsafe"
 
-	"github.com/unidoc/unioffice/common"
-	"github.com/unidoc/unioffice/document"
+	"github.com/unidoc/unioffice/v2/common"
+	"github.com/unidoc/unioffice/v2/document"
 )
 
 // SaveDocx writes a document to a zip file using only public APIs, bypassing

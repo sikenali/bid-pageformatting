@@ -1,3 +1,8 @@
 node_modules
 .DS_Store
 *.local
+backend/config.json
+backend/*.exe
+backend/testdata/*.docx
+backend/testdata/*.json
+backend/unidoc.license

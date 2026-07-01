@@ -3,7 +3,7 @@ package wordformat
 import (
 	"fmt"
 
-	"github.com/unidoc/unioffice/document"
+	"github.com/unidoc/unioffice/v2/document"
 )
 
 func headingStyleIDs(level int) []string {

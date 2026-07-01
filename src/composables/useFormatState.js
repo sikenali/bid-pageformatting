@@ -358,25 +358,35 @@ function applyFormatting() {
   diffs.value = computeDiffs(beforeSnapshot.value, afterSnapshot.value)
 }
 
-function loadFormatParams(params) {
-  if (!params) return
-  for (const key of Object.keys(params)) {
-    if (key in formatParams) {
-      if (typeof params[key] === 'object' && !Array.isArray(params[key])) {
-        Object.assign(formatParams[key], params[key])
-      } else if (Array.isArray(formatParams[key]) && Array.isArray(params[key])) {
-        params[key].forEach((item, i) => {
-          if (formatParams[key][i]) {
-            Object.assign(formatParams[key][i], item)
+function deepMerge(target, source) {
+  for (const key of Object.keys(source)) {
+    if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+      if (target[key] && typeof target[key] === 'object') {
+        deepMerge(target[key], source[key])
+      } else {
+        target[key] = { ...source[key] }
+      }
+    } else if (Array.isArray(source[key])) {
+      if (Array.isArray(target[key])) {
+        source[key].forEach((item, i) => {
+          if (target[key][i] && typeof item === 'object' && item !== null) {
+            deepMerge(target[key][i], item)
           } else {
-            formatParams[key].push(item)
+            target[key].push(item)
           }
         })
       } else {
-        formatParams[key] = params[key]
+        target[key] = [...source[key]]
       }
+    } else {
+      target[key] = source[key]
     }
   }
+}
+
+function loadFormatParams(params) {
+  if (!params) return
+  deepMerge(formatParams, params)
 }
 
 export function useFormatState() {

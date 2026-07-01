@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/unidoc/unioffice/document"
-	"github.com/unidoc/unioffice/schema/soo/wml"
+	"github.com/unidoc/unioffice/v2/document"
+	"github.com/unidoc/unioffice/v2/schema/soo/wml"
 )
 
 var zhNumPattern = `[一二三四五六七八九十百千]+`

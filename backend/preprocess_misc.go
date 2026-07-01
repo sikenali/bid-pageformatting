@@ -3,7 +3,7 @@ package wordformat
 import (
 	"strings"
 
-	"github.com/unidoc/unioffice/document"
+	"github.com/unidoc/unioffice/v2/document"
 )
 
 func ClearSuperscript(doc *document.Document) error {

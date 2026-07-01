@@ -6,7 +6,7 @@ import (
 	"os"
 
 	wordformat "github.com/anomalyco/bid-pageformatting-backend"
-	"github.com/unidoc/unioffice/document"
+	"github.com/unidoc/unioffice/v2/document"
 )
 
 func main() {

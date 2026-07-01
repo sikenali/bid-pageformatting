@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/unidoc/unioffice/document"
+	"github.com/unidoc/unioffice/v2/document"
 )
 
 func InsertCJKEUSpacing(doc *document.Document) error {

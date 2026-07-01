@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8099'
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8099'
 
 function flattenCleanup(config) {
   const c = config.cleanup || {}
@@ -53,7 +53,7 @@ function flattenCleanup(config) {
     PreprocessTableCellEnable: config.table_settings?.enable ?? false,
     PreprocessTableCellFont: config.table_settings?.cn_font ?? '宋体',
     PreprocessTableCellSize: config.table_settings?.size_cn ?? '四号',
-    PreprocessTableCellLineSpacing: String(config.table_settings?.line_spacing_value ?? 20),
+    PreprocessTableCellLineSpacing: config.table_settings?.line_spacing_value ?? 20,
     PreprocessTableCellMinHeight: config.table_settings?.min_line_height ?? 15,
     PreprocessTableCellAlign: config.table_settings?.align ?? 'CENTER',
     PreprocessTableCellBorder: config.table_settings?.border_style ?? 'single',
